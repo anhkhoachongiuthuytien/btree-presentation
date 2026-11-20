@@ -261,109 +261,193 @@ const slide17: SlideDef = {
 };
 
 // ============================================================================
-// SLIDE 18 — Chi phí thời gian của ba thao tác (+ Cây minh họa động từng phép)
+// SLIDE 19 — Chi phí thời gian của ba thao tác (Bảng + So sánh Thuận lợi vs Xấu nhất)
 // ============================================================================
-function buildS18OpTree(mode: number): { title: string; caption: string; scene: TreeSceneSpec } {
-  if (mode === 1) {
-    // Search: single path down h + 1 nodes with bisect O(log M)
+interface S18CompareSpec {
+  opName: string;
+  bestTitle: string;
+  bestCost: string;
+  bestCap: string;
+  bestScene: TreeSceneSpec;
+  worstTitle: string;
+  worstCost: string;
+  worstCap: string;
+  worstScene: TreeSceneSpec;
+}
+
+function buildS18Compare(opIdx: number): S18CompareSpec {
+  if (opIdx === 2) {
+    // INSERT: Best vs Worst
     return {
-      title: 'Minh họa Search: đi 1 đường qua h + 1 nút',
-      caption: 'Mỗi tầng dùng bisect O(log M) · Tổng O((h+1) log M) = O(log N)',
-      scene: {
-        viewBox: [0, 0, 420, 220],
+      opName: 'Insert',
+      bestTitle: 'Thuận lợi · Chèn cuối lá còn chỗ',
+      bestCost: 'O(log N)',
+      bestCap: 'Tìm đường O(log N) → thêm 35 vào cuối lá còn trống (0 dịch đuôi, 0 tách nút).',
+      bestScene: {
+        viewBox: [0, 0, 520, 194],
         nodes: [
-          { id: 'op-r', x: 210, y: 34, cellW: 40, cellH: 30, state: 'active', tag: 'bisect O(log M)', tagPos: 'right', tagTone: 'cobalt', keys: [{ id: 'o18-40', label: '40', tone: 'active' }] },
-          { id: 'op-i0', x: 112, y: 108, cellW: 36, cellH: 28, state: 'active', tag: 'mức 1', tagPos: 'left', tagTone: 'cobalt', keys: [{ id: 'o18-20', label: '20', tone: 'active' }] },
-          { id: 'op-i1', x: 315, y: 108, cellW: 36, cellH: 28, state: 'muted', keys: [{ id: 'o18-70', label: '70', tone: 'muted' }] },
-          { id: 'op-l0', x: 64, y: 184, cellW: 34, cellH: 28, state: 'muted', keys: [{ id: 'o18-5', label: '5', tone: 'muted' }] },
-          { id: 'op-l1', x: 168, y: 184, cellW: 36, cellH: 28, state: 'success', tag: 'Tìm thấy', tagPos: 'right', tagTone: 'success', keys: [{ id: 'o18-25', label: '25' }, { id: 'o18-30', label: '30', tone: 'success' }] },
-          { id: 'op-l2', x: 315, y: 184, cellW: 34, cellH: 28, state: 'muted', keys: [{ id: 'o18-80', label: '80', tone: 'muted' }] },
+          { id: 'ib-r', x: 260, y: 30, cellW: 44, cellH: 28, state: 'active', keys: [{ id: 'ib-40', label: '40' }] },
+          { id: 'ib-i0', x: 148, y: 86, cellW: 40, cellH: 26, state: 'active', keys: [{ id: 'ib-20', label: '20' }] },
+          { id: 'ib-i1', x: 388, y: 86, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
+          { id: 'ib-l0', x: 66, y: 142, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-5', label: '5', tone: 'muted' }] },
+          {
+            id: 'ib-l1',
+            x: 230,
+            y: 142,
+            capacity: 3,
+            cellW: 40,
+            cellH: 26,
+            state: 'success',
+            tag: '+35 cuối lá · 0 split',
+            tagPos: 'bottom',
+            tagTone: 'success',
+            keys: [
+              { id: 'ib-25', label: '25' },
+              { id: 'ib-30', label: '30' },
+              { id: 'ib-35', label: '35', tone: 'success' },
+            ],
+          },
+          { id: 'ib-l2', x: 432, y: 142, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
         ],
         edges: [
-          { id: 'oe-r0', fromNode: 'op-r', portIndex: 0, toNode: 'op-i0', state: 'active', arrow: true },
-          { id: 'oe-r1', fromNode: 'op-r', portIndex: 1, toNode: 'op-i1', state: 'muted' },
-          { id: 'oe-00', fromNode: 'op-i0', portIndex: 0, toNode: 'op-l0', state: 'muted' },
-          { id: 'oe-01', fromNode: 'op-i0', portIndex: 1, toNode: 'op-l1', state: 'active', arrow: true },
-          { id: 'oe-10', fromNode: 'op-i1', portIndex: 0, toNode: 'op-l2', state: 'muted' },
+          { id: 'ibe0', fromNode: 'ib-r', portIndex: 0, toNode: 'ib-i0', state: 'active', arrow: true },
+          { id: 'ibe1', fromNode: 'ib-r', portIndex: 1, toNode: 'ib-i1', state: 'muted' },
+          { id: 'ibe2', fromNode: 'ib-i0', portIndex: 0, toNode: 'ib-l0', state: 'muted' },
+          { id: 'ibe3', fromNode: 'ib-i0', portIndex: 1, toNode: 'ib-l1', state: 'active', arrow: true },
+          { id: 'ibe4', fromNode: 'ib-i1', portIndex: 0, toNode: 'ib-l2', state: 'muted' },
         ],
       },
-    };
-  }
-
-  if (mode === 2) {
-    // Insert: leaf overflow -> cascading split upward O(M) per level
-    return {
-      title: 'Minh họa Insert: dịch mảng & Split lan lên gốc',
-      caption: 'Mỗi mức sửa tốn O(M) dịch/tách list · Xấu nhất lan h + 1 mức → O(M(h+1))',
-      scene: {
-        viewBox: [0, 0, 420, 220],
+      worstTitle: 'Xấu nhất · Split dây chuyền lên gốc',
+      worstCost: 'O(M(h + 1))',
+      worstCap: 'Mỗi mức đều tràn và phải dịch/tách list O(M), lan đủ h + 1 tầng tới gốc.',
+      worstScene: {
+        viewBox: [0, 0, 520, 178],
         nodes: [
-          { id: 'op-r', x: 196, y: 34, cellW: 38, cellH: 28, state: 'overflow', tag: 'Split O(M) ↑', tagPos: 'right', tagTone: 'error', keys: [{ id: 'o18-30', label: '30' }, { id: 'o18-50', label: '50', tone: 'active' }, { id: 'o18-75', label: '75' }] },
-          { id: 'op-i0', x: 112, y: 108, cellW: 34, cellH: 28, state: 'overflow', tag: 'Split O(M) ↑', tagPos: 'right', tagTone: 'error', keys: [{ id: 'o18-15', label: '15' }, { id: 'o18-25', label: '25', tone: 'active' }] },
-          { id: 'op-i1', x: 345, y: 108, cellW: 34, cellH: 28, state: 'muted', keys: [{ id: 'o18-85', label: '85', tone: 'muted' }] },
-          { id: 'op-l1', x: 112, y: 184, cellW: 34, cellH: 28, state: 'overflow', tag: 'Lá tràn (dịch O(M))', tagPos: 'right', tagTone: 'error', keys: [{ id: 'o18-18', label: '18' }, { id: 'o18-22', label: '22', tone: 'active' }, { id: 'o18-28', label: '28' }] },
+          { id: 'iw-r', x: 245, y: 34, cellW: 40, cellH: 28, state: 'overflow', tag: 'Mức 0 · Split O(M)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-30', label: '30' }, { id: 'iw-50', label: '50', tone: 'active' }, { id: 'iw-75', label: '75' }] },
+          { id: 'iw-i0', x: 145, y: 94, cellW: 38, cellH: 28, state: 'overflow', tag: 'Mức 1 · Split O(M)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-15', label: '15' }, { id: 'iw-25', label: '25', tone: 'active' }] },
+          { id: 'iw-i1', x: 432, y: 94, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'iw-85', label: '85', tone: 'muted' }] },
+          { id: 'iw-l1', x: 145, y: 152, cellW: 38, cellH: 28, state: 'overflow', tag: 'Mức h · Tràn O(M)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-18', label: '18' }, { id: 'iw-22', label: '22', tone: 'active' }, { id: 'iw-28', label: '28' }] },
         ],
         edges: [
-          { id: 'oe-r0', fromNode: 'op-r', portIndex: 0, toNode: 'op-i0', state: 'error' },
-          { id: 'oe-r1', fromNode: 'op-r', portIndex: 1, toNode: 'op-i1', state: 'muted' },
-          { id: 'oe-01', fromNode: 'op-i0', portIndex: 1, toNode: 'op-l1', state: 'error' },
+          { id: 'iwe0', fromNode: 'iw-r', portIndex: 0, toNode: 'iw-i0', state: 'error' },
+          { id: 'iwe1', fromNode: 'iw-r', portIndex: 1, toNode: 'iw-i1', state: 'muted' },
+          { id: 'iwe2', fromNode: 'iw-i0', portIndex: 1, toNode: 'iw-l1', state: 'error' },
         ],
         transfers: [
-          { id: 'tr-up1', fromX: 146, fromY: 168, toX: 148, toY: 122, ctrlX: 184, ctrlY: 146, label: '↑', tone: 'error' },
-          { id: 'tr-up2', fromX: 148, fromY: 96, toX: 174, toY: 48, ctrlX: 136, ctrlY: 64, label: '↑', tone: 'error' },
+          { id: 'iw-u1', fromX: 112, fromY: 144, toX: 112, toY: 102, ctrlX: 74, ctrlY: 122, label: '↑', tone: 'error' },
+          { id: 'iw-u2', fromX: 118, fromY: 82, toX: 182, toY: 42, ctrlX: 112, ctrlY: 48, label: '↑', tone: 'error' },
         ],
       },
     };
   }
 
-  if (mode === 3) {
-    // Delete: predecessor path O(log N) + cascading merge upward O(M(h+1))
+  if (opIdx === 3) {
+    // DELETE: Best vs Worst
     return {
-      title: 'Minh họa Delete: tìm tiền nhiệm + Merge lan lên',
-      caption: 'Đi tiếp xuống tiền nhiệm vẫn O(log N) · Gộp lan tới gốc tốn O(M(h+1))',
-      scene: {
-        viewBox: [0, 0, 420, 220],
+      opName: 'Delete',
+      bestTitle: 'Thuận lợi · Xóa cuối lá còn đủ khóa',
+      bestCost: 'O(log N)',
+      bestCap: 'Tìm xuống lá O(log N) → pop 30 ở cuối lá, còn [25] ≥ min_keys (0 mượn/gộp).',
+      bestScene: {
+        viewBox: [0, 0, 520, 194],
         nodes: [
-          { id: 'op-r', x: 210, y: 34, cellW: 40, cellH: 30, state: 'active', tag: 'Xóa 40 → đổi 38', tagPos: 'right', tagTone: 'warn', keys: [{ id: 'o18-40', label: '40', tone: 'error' }] },
-          { id: 'op-i0', x: 112, y: 108, cellW: 36, cellH: 28, state: 'underflow', tag: 'Gộp O(M) ↑', tagPos: 'left', tagTone: 'error', keys: [{ id: 'o18-20', label: '20', tone: 'active' }] },
-          { id: 'op-i1', x: 315, y: 108, cellW: 36, cellH: 28, state: 'muted', keys: [{ id: 'o18-70', label: '70', tone: 'muted' }] },
-          { id: 'op-l0', x: 60, y: 184, cellW: 34, cellH: 28, state: 'muted', keys: [{ id: 'o18-10', label: '10', tone: 'muted' }] },
-          { id: 'op-l1', x: 172, y: 184, cellW: 38, cellH: 28, state: 'underflow', tag: 'Tiền nhiệm 38 (thiếu → gộp)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'o18-38', label: '38', tone: 'active' }] },
+          { id: 'db-r', x: 260, y: 30, cellW: 44, cellH: 28, state: 'active', keys: [{ id: 'db-40', label: '40' }] },
+          { id: 'db-i0', x: 148, y: 86, cellW: 40, cellH: 26, state: 'active', keys: [{ id: 'db-20', label: '20' }] },
+          { id: 'db-i1', x: 388, y: 86, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'db-70', label: '70', tone: 'muted' }] },
+          { id: 'db-l0', x: 66, y: 142, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-5', label: '5', tone: 'muted' }] },
+          {
+            id: 'db-l1',
+            x: 230,
+            y: 142,
+            cellW: 42,
+            cellH: 26,
+            state: 'success',
+            tag: 'pop(30) · còn đủ khóa',
+            tagPos: 'bottom',
+            tagTone: 'success',
+            keys: [
+              { id: 'db-25', label: '25', tone: 'success' },
+              { id: 'db-30', label: '30', tone: 'error' },
+            ],
+          },
+          { id: 'db-l2', x: 432, y: 142, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-80', label: '80', tone: 'muted' }] },
         ],
         edges: [
-          { id: 'oe-r0', fromNode: 'op-r', portIndex: 0, toNode: 'op-i0', state: 'active', arrow: true },
-          { id: 'oe-r1', fromNode: 'op-r', portIndex: 1, toNode: 'op-i1', state: 'muted' },
-          { id: 'oe-00', fromNode: 'op-i0', portIndex: 0, toNode: 'op-l0', state: 'muted' },
-          { id: 'oe-01', fromNode: 'op-i0', portIndex: 1, toNode: 'op-l1', state: 'dashed', arrow: true },
+          { id: 'dbe0', fromNode: 'db-r', portIndex: 0, toNode: 'db-i0', state: 'active', arrow: true },
+          { id: 'dbe1', fromNode: 'db-r', portIndex: 1, toNode: 'db-i1', state: 'muted' },
+          { id: 'dbe2', fromNode: 'db-i0', portIndex: 0, toNode: 'db-l0', state: 'muted' },
+          { id: 'dbe3', fromNode: 'db-i0', portIndex: 1, toNode: 'db-l1', state: 'active', arrow: true },
+          { id: 'dbe4', fromNode: 'db-i1', portIndex: 0, toNode: 'db-l2', state: 'muted' },
+        ],
+      },
+      worstTitle: 'Xấu nhất · Tiền nhiệm + Merge lan lên gốc',
+      worstCost: 'O(M(h + 1))',
+      worstCap: 'Thay 40 bằng tiền nhiệm 38 rồi gộp O(M) lan ngược h + 1 mức tới gốc.',
+      worstScene: {
+        viewBox: [0, 0, 520, 178],
+        nodes: [
+          { id: 'dw-r', x: 245, y: 34, cellW: 44, cellH: 30, state: 'overflow', tag: 'Xóa 40 → đổi 38', tagPos: 'right', tagTone: 'warn', keys: [{ id: 'dw-40', label: '40', tone: 'error' }] },
+          { id: 'dw-i0', x: 145, y: 94, cellW: 40, cellH: 28, state: 'underflow', tag: 'Mức 1 · Gộp O(M)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'dw-20', label: '20', tone: 'active' }] },
+          { id: 'dw-i1', x: 430, y: 94, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'dw-70', label: '70', tone: 'muted' }] },
+          { id: 'dw-l0', x: 64, y: 152, cellW: 34, cellH: 26, state: 'muted', keys: [{ id: 'dw-10', label: '10', tone: 'muted' }] },
+          { id: 'dw-l1', x: 185, y: 152, cellW: 40, cellH: 28, state: 'underflow', tag: 'Lá thiếu → Gộp O(M)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'dw-38', label: '38', tone: 'active' }] },
+        ],
+        edges: [
+          { id: 'dwe0', fromNode: 'dw-r', portIndex: 0, toNode: 'dw-i0', state: 'error' },
+          { id: 'dwe1', fromNode: 'dw-r', portIndex: 1, toNode: 'dw-i1', state: 'muted' },
+          { id: 'dwe2', fromNode: 'dw-i0', portIndex: 0, toNode: 'dw-l0', state: 'muted' },
+          { id: 'dwe3', fromNode: 'dw-i0', portIndex: 1, toNode: 'dw-l1', state: 'error' },
         ],
         transfers: [
-          { id: 'tr-pr', fromX: 182, fromY: 164, toX: 204, toY: 54, ctrlX: 242, ctrlY: 110, label: '38 ↑', tone: 'warn' },
+          { id: 'dw-pr', fromX: 162, fromY: 142, toX: 220, toY: 32, ctrlX: 36, ctrlY: 56, label: '38 ↑', tone: 'warn' },
         ],
       },
     };
   }
 
-  // Step 0 or Step 4 (overview / worst-case spine across h + 1 levels)
-  const isWorst = mode === 4;
+  // SEARCH (default & step 1 & step 4)
   return {
-    title: isWorst ? 'Xấu nhất: sửa lan đủ h + 1 mức → O(M(h + 1))' : 'Cấu trúc đường đi trên B-tree (h + 1 mức)',
-    caption: isWorst ? 'Nếu split/merge chỉ hiếm khi lên cao, kỳ vọng trung bình giảm còn O(log N + M)!' : 'Nhấn vào hàng Search / Insert / Delete để xem minh họa cây tương ứng.',
-    scene: {
-      viewBox: [0, 0, 420, 232],
+    opName: 'Search',
+    bestTitle: 'Thuận lợi · Gặp ngay tại gốc',
+    bestCost: 'O(1)',
+    bestCap: 'Khóa k = 40 nằm ngay ở gốc có O(1) khóa → dừng ngay tại mức 0, không đi xuống.',
+    bestScene: {
+      viewBox: [0, 0, 520, 178],
       nodes: [
-        { id: 'op-r', x: 210, y: 34, cellW: 40, cellH: 30, state: isWorst ? 'overflow' : 'normal', tag: isWorst ? 'Mức 0: O(M)' : 'Mức 0 (Gốc)', tagPos: 'right', tagTone: isWorst ? 'error' : 'default', keys: [{ id: 'o18-r', label: '40', tone: isWorst ? 'active' : 'default' }] },
-        { id: 'op-i0', x: 116, y: 106, cellW: 36, cellH: 28, state: isWorst ? 'overflow' : 'normal', tag: isWorst ? 'Mức 1: O(M)' : 'Mức 1', tagPos: 'right', tagTone: isWorst ? 'error' : 'default', keys: [{ id: 'o18-i0', label: '20', tone: isWorst ? 'active' : 'default' }] },
-        { id: 'op-i1', x: 340, y: 106, cellW: 36, cellH: 28, state: isWorst ? 'muted' : 'normal', keys: [{ id: 'o18-i1', label: '70', tone: isWorst ? 'muted' : 'default' }] },
-        { id: 'op-l0', x: 56, y: 176, cellW: 34, cellH: 28, state: isWorst ? 'muted' : 'normal', keys: [{ id: 'o18-l0', label: '10', tone: isWorst ? 'muted' : 'default' }] },
-        { id: 'op-l1', x: 172, y: 176, cellW: 36, cellH: 28, state: isWorst ? 'overflow' : 'normal', tag: isWorst ? 'Mức h: O(M)' : 'Mức h (Lá)', tagPos: 'bottom', tagTone: isWorst ? 'error' : 'default', keys: [{ id: 'o18-l1', label: '25', tone: isWorst ? 'active' : 'default' }, { id: 'o18-l2', label: '30' }] },
-        { id: 'op-l2', x: 340, y: 176, cellW: 34, cellH: 28, state: isWorst ? 'muted' : 'normal', keys: [{ id: 'o18-l3', label: '80', tone: isWorst ? 'muted' : 'default' }] },
+        { id: 'sb-r', x: 260, y: 36, cellW: 48, cellH: 32, state: 'success', tag: 'Khớp 40 ngay tại gốc!', tagPos: 'right', tagTone: 'success', keys: [{ id: 'sb-40', label: '40', tone: 'success' }] },
+        { id: 'sb-i0', x: 150, y: 98, cellW: 38, cellH: 26, state: 'muted', keys: [{ id: 'sb-20', label: '20', tone: 'muted' }] },
+        { id: 'sb-i1', x: 370, y: 98, cellW: 38, cellH: 26, state: 'muted', keys: [{ id: 'sb-70', label: '70', tone: 'muted' }] },
+        { id: 'sb-l0', x: 85, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sb-5', label: '5', tone: 'muted' }] },
+        { id: 'sb-l1', x: 215, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sb-25', label: '25', tone: 'muted' }, { id: 'sb-30', label: '30', tone: 'muted' }] },
+        { id: 'sb-l2', x: 370, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sb-80', label: '80', tone: 'muted' }] },
       ],
       edges: [
-        { id: 'oe-r0', fromNode: 'op-r', portIndex: 0, toNode: 'op-i0', state: isWorst ? 'error' : 'normal' },
-        { id: 'oe-r1', fromNode: 'op-r', portIndex: 1, toNode: 'op-i1', state: isWorst ? 'muted' : 'normal' },
-        { id: 'oe-00', fromNode: 'op-i0', portIndex: 0, toNode: 'op-l0', state: isWorst ? 'muted' : 'normal' },
-        { id: 'oe-01', fromNode: 'op-i0', portIndex: 1, toNode: 'op-l1', state: isWorst ? 'error' : 'normal' },
-        { id: 'oe-10', fromNode: 'op-i1', portIndex: 0, toNode: 'op-l2', state: isWorst ? 'muted' : 'normal' },
+        { id: 'sbe0', fromNode: 'sb-r', portIndex: 0, toNode: 'sb-i0', state: 'muted' },
+        { id: 'sbe1', fromNode: 'sb-r', portIndex: 1, toNode: 'sb-i1', state: 'muted' },
+        { id: 'sbe2', fromNode: 'sb-i0', portIndex: 0, toNode: 'sb-l0', state: 'muted' },
+        { id: 'sbe3', fromNode: 'sb-i0', portIndex: 1, toNode: 'sb-l1', state: 'muted' },
+        { id: 'sbe4', fromNode: 'sb-i1', portIndex: 0, toNode: 'sb-l2', state: 'muted' },
+      ],
+    },
+    worstTitle: 'Xấu nhất · Đi trọn h + 1 mức xuống lá',
+    worstCost: 'O(log N)',
+    worstCap: 'Mỗi tầng bisect O(log M), đi đủ h + 1 nút → O((h + 1) log M) = O(log N).',
+    worstScene: {
+      viewBox: [0, 0, 520, 178],
+      nodes: [
+        { id: 'sw-r', x: 250, y: 34, cellW: 44, cellH: 30, state: 'active', tag: 'bisect O(log M)', tagPos: 'right', tagTone: 'cobalt', keys: [{ id: 'sw-40', label: '40', tone: 'active' }] },
+        { id: 'sw-i0', x: 145, y: 94, cellW: 40, cellH: 28, state: 'active', tag: 'mức 1', tagPos: 'left', tagTone: 'cobalt', keys: [{ id: 'sw-20', label: '20', tone: 'active' }] },
+        { id: 'sw-i1', x: 380, y: 94, cellW: 38, cellH: 26, state: 'muted', keys: [{ id: 'sw-70', label: '70', tone: 'muted' }] },
+        { id: 'sw-l0', x: 64, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'sw-5', label: '5', tone: 'muted' }] },
+        { id: 'sw-l1', x: 215, y: 152, cellW: 40, cellH: 28, state: 'success', tag: 'Mức h · Thấy 30', tagPos: 'right', tagTone: 'success', keys: [{ id: 'sw-25', label: '25' }, { id: 'sw-30', label: '30', tone: 'success' }] },
+        { id: 'sw-l2', x: 425, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'sw-80', label: '80', tone: 'muted' }] },
+      ],
+      edges: [
+        { id: 'swe0', fromNode: 'sw-r', portIndex: 0, toNode: 'sw-i0', state: 'active', arrow: true },
+        { id: 'swe1', fromNode: 'sw-r', portIndex: 1, toNode: 'sw-i1', state: 'muted' },
+        { id: 'swe2', fromNode: 'sw-i0', portIndex: 0, toNode: 'sw-l0', state: 'muted' },
+        { id: 'swe3', fromNode: 'sw-i0', portIndex: 1, toNode: 'sw-l1', state: 'active', arrow: true },
+        { id: 'swe4', fromNode: 'sw-i1', portIndex: 0, toNode: 'sw-l2', state: 'muted' },
       ],
     },
   };
@@ -379,7 +463,7 @@ const slide18: SlideDef = {
   fullScript:
     'Với search, mỗi mức ta chỉ đi một nhánh và dùng bisect tốn O(log M) trong nút; qua h + 1 mức, tổng chi phí là O(log N) với N đủ lớn theo cận chiều cao và sức chứa thực; gặp ở gốc có O(1) khóa thì tốt nhất O(1). Với insert và delete, tình huống thuận lợi tìm đường O(log N) rồi thêm/xóa cuối lá không phải dịch đuôi nên vẫn O(log N). Trong trường hợp xấu nhất, tách hoặc gộp có thể lan tới gốc; mỗi mức sửa tốn O(M) do dịch, cắt hay nối danh sách khóa và con, tổng O(M(h + 1)). Tìm tiền nhiệm đi tiếp xuống lá nên phần tìm đường vẫn O(log N).',
   fullView: {
-    summary: 'Bảng chi phí thời gian của Search, Insert, Delete (kèm cây minh họa tương ứng cho từng thao tác) và tóm tắt trường hợp trung bình.',
+    summary: 'Bảng chi phí thời gian của Search, Insert, Delete kèm so sánh trực quan trường hợp Thuận lợi và Xấu nhất cho từng thao tác.',
     sections: [
       {
         heading: 'Bảng tổng hợp (giả sử so sánh khóa tốn O(1))',
@@ -400,61 +484,85 @@ const slide18: SlideDef = {
   mount(ctx) {
     ctx.slideEl.innerHTML = `
       <div class="slide-frame">
-        <header class="slide-header">
-          <h1 class="slide-title"><span>Độ phức tạp thời gian</span> các thao tác</h1>
+        <header class="slide-header slide-header--split">
+          <div>
+            <h1 class="slide-title"><span>Độ phức tạp thời gian</span> các thao tác</h1>
+          </div>
+          <div class="s18-op-tabs" data-role="op-tabs">
+            <button type="button" class="s18-tab is-on" data-op="1">Search</button>
+            <button type="button" class="s18-tab" data-op="2">Insert</button>
+            <button type="button" class="s18-tab" data-op="3">Delete</button>
+          </div>
         </header>
 
-        <div class="s18-grid">
-          <div class="s18-table-col">
+        <div class="s18-top-row">
+          <div class="s18-table-wrap">
             <table class="complexity-table">
               <thead>
                 <tr>
                   <th>Thao tác</th>
                   <th>Tìm đường</th>
                   <th>Xử lý 1 nút</th>
-                  <th>Thuận lợi</th>
+                  <th data-col="best">Thuận lợi</th>
                   <th data-col="worst">Xấu nhất</th>
                 </tr>
               </thead>
               <tbody>
                 <tr data-row="1" class="s18-click-row">
                   <td><strong>Search</strong></td>
-                  <td>tối đa ${texInline('h+1')} nút<br/><small>bisect ${texInline('O(\\log M)')}</small></td>
+                  <td>tối đa ${texInline('h+1')} nút · bisect ${texInline('O(\\log M)')}</td>
                   <td>${texInline('O(\\log M)')}</td>
-                  <td>${texInline('O(1)')}<br/><small>gặp ở gốc có ${texInline('O(1)')} khóa</small></td>
+                  <td data-col="best"><strong>${texInline('O(1)')}</strong> <small>gặp ở gốc</small></td>
                   <td data-col="worst"><strong>${texInline('O(\\log N)')}</strong></td>
                 </tr>
                 <tr data-row="2" class="s18-click-row">
                   <td><strong>Insert</strong></td>
-                  <td>${texInline('O(\\log N)')}<br/><small>gồm kiểm tra trùng</small></td>
-                  <td>${texInline('O(M)')}<br/><small>dịch / tách list</small></td>
-                  <td>${texInline('O(\\log N)')}<br/><small>cuối lá còn chỗ</small></td>
-                  <td data-col="worst"><strong>${texInline('O(M(h+1))')}</strong><br/><small>split lan tới gốc</small></td>
+                  <td>${texInline('O(\\log N)')} <small>gồm kiểm tra trùng</small></td>
+                  <td>${texInline('O(M)')} <small>dịch / tách list</small></td>
+                  <td data-col="best"><strong>${texInline('O(\\log N)')}</strong> <small>cuối lá còn chỗ</small></td>
+                  <td data-col="worst"><strong>${texInline('O(M(h+1))')}</strong> <small>split lan gốc</small></td>
                 </tr>
                 <tr data-row="3" class="s18-click-row">
                   <td><strong>Delete</strong></td>
-                  <td>${texInline('O(\\log N)')}<br/><small>kể cả tiền nhiệm</small></td>
-                  <td>${texInline('O(M)')}<br/><small>dịch / mượn / gộp</small></td>
-                  <td>${texInline('O(\\log N)')}<br/><small>cuối lá đủ khóa</small></td>
-                  <td data-col="worst"><strong>${texInline('O(M(h+1))')}</strong><br/><small>merge lan tới gốc</small></td>
+                  <td>${texInline('O(\\log N)')} <small>kể cả tiền nhiệm</small></td>
+                  <td>${texInline('O(M)')} <small>dịch / mượn / gộp</small></td>
+                  <td data-col="best"><strong>${texInline('O(\\log N)')}</strong> <small>cuối lá đủ khóa</small></td>
+                  <td data-col="worst"><strong>${texInline('O(M(h+1))')}</strong> <small>merge lan gốc</small></td>
                 </tr>
               </tbody>
             </table>
-            <div class="table-footnote">Giả thiết nền: so sánh khóa ${texInline('O(1)')}; chiều cao ${texInline('h = O(\\log_M N)')} ⇒ ${texInline('(h+1)\\log M = O(\\log N)')}. (Nhấn từng hàng để đổi cây minh họa.)</div>
           </div>
 
-          <aside class="s18-right-col">
-            <div class="canva-card s18-op-vis">
-              <div class="s18-op-vis__title" data-role="op-title"></div>
-              <div class="s18-op-tree" data-role="op-tree"></div>
-              <div class="s18-op-vis__cap" data-role="op-cap"></div>
+          <aside class="s18-top-side">
+            <div class="canva-card s18-base-note">
+              <div class="s18-base-kicker">GIẢ THIẾT NỀN</div>
+              <p>So sánh khóa ${texInline('O(1)')}; chiều cao ${texInline('h = O(\\log_M N)')} ⇒ <strong>${texInline('(h+1)\\log M = O(\\log N)')}</strong>.</p>
             </div>
-
             <button type="button" class="s18-avg-link" data-role="goto-19">
-              <span><em>Muốn nói về độ phức tạp trung bình, ta cần giả thiết gì?</em></span>
-              <strong>Xem trang riêng · Trang 20 →</strong>
+              <span><em>Độ phức tạp trung bình cần giả thiết gì?</em></span>
+              <strong>Xem chứng minh · Trang 20 →</strong>
             </button>
           </aside>
+        </div>
+
+        <div class="s18-compare-grid">
+          <div class="canva-card s18-case-card s18-case-card--best">
+            <div class="s18-case-head">
+              <span class="s18-case-title" data-role="best-title"></span>
+              <span class="s18-cost-pill s18-cost-pill--best" data-role="best-cost"></span>
+            </div>
+            <div class="s18-op-tree" data-role="best-tree"></div>
+            <div class="s18-case-cap" data-role="best-cap"></div>
+          </div>
+
+          <div class="canva-card s18-case-card s18-case-card--worst">
+            <div class="s18-case-head">
+              <span class="s18-case-title" data-role="worst-title"></span>
+              <span class="s18-cost-pill s18-cost-pill--worst" data-role="worst-cost"></span>
+            </div>
+            <div class="s18-op-tree" data-role="worst-tree"></div>
+            <div class="s18-case-cap" data-role="worst-cap"></div>
+          </div>
         </div>
       </div>
     `;
@@ -464,134 +572,205 @@ const slide18: SlideDef = {
       ctx.goToSlide(20);
     });
 
+    const selectOp = (opIdx: number) => {
+      renderS18Compare(ctx.slideEl, opIdx, ctx.getReducedMotion());
+    };
+
     ctx.slideEl.querySelectorAll<HTMLElement>('.s18-click-row').forEach((tr) => {
       tr.addEventListener('click', (e) => {
         e.stopPropagation();
-        const r = Number(tr.dataset.row);
-        renderS18Tree(ctx.slideEl, r, ctx.getReducedMotion());
+        selectOp(Number(tr.dataset.row));
+      });
+    });
+
+    ctx.slideEl.querySelectorAll<HTMLButtonElement>('.s18-tab').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectOp(Number(btn.dataset.op));
       });
     });
   },
   renderStep(step, _prev, ctx) {
     const rows = ctx.slideEl.querySelectorAll<HTMLElement>('.complexity-table tbody tr');
     const worstCells = ctx.slideEl.querySelectorAll<HTMLElement>('[data-col="worst"]');
+    const bestCells = ctx.slideEl.querySelectorAll<HTMLElement>('[data-col="best"]');
     const goto19 = ctx.slideEl.querySelector<HTMLElement>('[data-role="goto-19"]')!;
 
     rows.forEach((tr) => {
       const r = Number(tr.dataset.row);
-      tr.classList.toggle('is-hidden-row', step < r);
+      tr.classList.toggle('is-hidden-row', step > 0 && step < r);
       tr.classList.toggle('is-active-row', step === r);
     });
     worstCells.forEach((c) => c.classList.toggle('is-worst-hl', step >= 4));
+    bestCells.forEach((c) => c.classList.toggle('is-best-hl', step >= 4));
     goto19.classList.toggle('is-lit', step >= 4);
 
-    renderS18Tree(ctx.slideEl, step, ctx.getReducedMotion());
+    const activeOp = step === 2 ? 2 : step === 3 ? 3 : step === 4 ? 2 : 1;
+    renderS18Compare(ctx.slideEl, activeOp, ctx.getReducedMotion());
   },
   cancelAnimations(slideEl) {
-    const t = slideEl.querySelector<HTMLElement>('[data-role="op-tree"]');
-    if (t) cancelTreeAnimations(t);
+    slideEl.querySelectorAll<HTMLElement>('.s18-op-tree').forEach((t) => cancelTreeAnimations(t));
   },
 };
 
-function renderS18Tree(slideEl: HTMLElement, mode: number, reducedMotion: boolean): void {
-  const titleEl = slideEl.querySelector<HTMLElement>('[data-role="op-title"]')!;
-  const treeEl = slideEl.querySelector<HTMLElement>('[data-role="op-tree"]')!;
-  const capEl = slideEl.querySelector<HTMLElement>('[data-role="op-cap"]')!;
-  const data = buildS18OpTree(mode);
-  titleEl.textContent = data.title;
-  capEl.textContent = data.caption;
-  renderTreeScene(treeEl, data.scene, { reducedMotion });
+function renderS18Compare(slideEl: HTMLElement, opIdx: number, reducedMotion: boolean): void {
+  const spec = buildS18Compare(opIdx);
+  slideEl.querySelector<HTMLElement>('[data-role="best-title"]')!.textContent = spec.bestTitle;
+  slideEl.querySelector<HTMLElement>('[data-role="best-cost"]')!.textContent = spec.bestCost;
+  slideEl.querySelector<HTMLElement>('[data-role="best-cap"]')!.textContent = spec.bestCap;
+  slideEl.querySelector<HTMLElement>('[data-role="worst-title"]')!.textContent = spec.worstTitle;
+  slideEl.querySelector<HTMLElement>('[data-role="worst-cost"]')!.textContent = spec.worstCost;
+  slideEl.querySelector<HTMLElement>('[data-role="worst-cap"]')!.textContent = spec.worstCap;
+
+  slideEl.querySelectorAll<HTMLElement>('.s18-tab').forEach((btn) => {
+    btn.classList.toggle('is-on', Number(btn.dataset.op) === opIdx);
+  });
+  slideEl.querySelectorAll<HTMLElement>('.complexity-table tbody tr').forEach((tr) => {
+    tr.classList.toggle('is-active-row', Number(tr.dataset.row) === opIdx);
+  });
+
+  renderTreeScene(slideEl.querySelector<HTMLElement>('[data-role="best-tree"]')!, spec.bestScene, { reducedMotion });
+  renderTreeScene(slideEl.querySelector<HTMLElement>('[data-role="worst-tree"]')!, spec.worstScene, { reducedMotion });
 }
 
 // ============================================================================
-// SLIDE 19 — Chi phí trung bình và giả thiết (+ Cây quyết định 3 nhánh & Cây mức sửa R)
+// SLIDE 20 — Chi phí trung bình và chứng minh chi tiết từng bước
 // ============================================================================
-function buildS19DecisionTree(active: boolean): TreeSceneSpec {
-  const tAct = active ? 'active' : 'muted';
-  const tOk = active ? 'success' : 'muted';
-  const tDef = active ? 'guide' : 'muted';
-  const st = active ? 'normal' : 'muted';
-  return {
-    viewBox: [0, 0, 520, 204],
-    nodes: [
-      { id: 'dt-r', x: 260, y: 26, cellW: 78, cellH: 28, state: active ? 'active' : 'muted', keys: [{ id: 'dtr', label: 'k ? x₀', tone: tAct }] },
-      { id: 'dt-l', x: 110, y: 90, cellW: 66, cellH: 26, state: st, keys: [{ id: 'dtl', label: 'k ? x₁', tone: tDef }] },
-      { id: 'dt-m', x: 260, y: 90, cellW: 66, cellH: 26, state: active ? 'success' : 'muted', keys: [{ id: 'dtm', label: 'Thấy', tone: tOk }] },
-      { id: 'dt-rg', x: 410, y: 90, cellW: 66, cellH: 26, state: st, keys: [{ id: 'dtrg', label: 'k ? x₂', tone: tDef }] },
-      { id: 'dt-ll', x: 46, y: 150, cellW: 44, cellH: 22, state: st, keys: [{ id: 'dtll', label: '1/N', tone: tDef }] },
-      { id: 'dt-lm', x: 110, y: 150, cellW: 44, cellH: 22, state: st, keys: [{ id: 'dtlm', label: '1/N', tone: tOk }] },
-      { id: 'dt-lr', x: 174, y: 150, cellW: 44, cellH: 22, state: st, keys: [{ id: 'dtlr', label: '1/N', tone: tDef }] },
-      { id: 'dt-rl', x: 346, y: 150, cellW: 44, cellH: 22, state: st, keys: [{ id: 'dtrl', label: '1/N', tone: tDef }] },
-      { id: 'dt-rm', x: 410, y: 150, cellW: 44, cellH: 22, state: st, keys: [{ id: 'dtrm', label: '1/N', tone: tOk }] },
-      { id: 'dt-rr', x: 474, y: 150, cellW: 44, cellH: 22, state: st, keys: [{ id: 'dtrr', label: '1/N', tone: tDef }] },
-    ],
-    edges: [
-      { id: 'dte0', fromNode: 'dt-r', portIndex: 0, toNode: 'dt-l', state: active ? 'active' : 'muted', label: '<' },
-      { id: 'dte1', fromNode: 'dt-r', portIndex: 1, toNode: 'dt-m', state: active ? 'active' : 'muted', label: '=' },
-      { id: 'dte2', fromNode: 'dt-r', portIndex: 1, toNode: 'dt-rg', state: active ? 'active' : 'muted', label: '>' },
-      { id: 'dte3', fromNode: 'dt-l', portIndex: 0, toNode: 'dt-ll', state: st },
-      { id: 'dte4', fromNode: 'dt-l', portIndex: 0, toNode: 'dt-lm', state: st },
-      { id: 'dte5', fromNode: 'dt-l', portIndex: 1, toNode: 'dt-lr', state: st },
-      { id: 'dte6', fromNode: 'dt-rg', portIndex: 0, toNode: 'dt-rl', state: st },
-      { id: 'dte7', fromNode: 'dt-rg', portIndex: 0, toNode: 'dt-rm', state: st },
-      { id: 'dte8', fromNode: 'dt-rg', portIndex: 1, toNode: 'dt-rr', state: st },
-    ],
-    overlaySvg: `
-      <text x="260" y="192" text-anchor="middle" fill="${active ? '#004AAD' : '#94A3B8'}" font-size="12" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Cây tam phân · độ sâu TB ≥ log₃ N</text>
+function buildS19DecisionSvg(active: boolean): string {
+  const stroke = active ? '#1d4ed8' : '#94a3b8';
+  const okStroke = active ? '#16a34a' : '#94a3b8';
+  const hiFill = active ? '#fef08a' : '#f1f5f9';
+  const okFill = active ? '#dcfce7' : '#f1f5f9';
+  const leafFill = active ? '#eff6ff' : '#f8fafc';
+  const ink = active ? '#0f1d3a' : '#64748b';
+  const lblFill = active ? '#004aad' : '#94a3b8';
+
+  return `
+  <svg class="s19-proof-svg" viewBox="0 0 540 166" role="img" aria-label="Cây quyết định tam phân chứng minh độ sâu trung bình">
+    <defs>
+      <marker id="s19-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto">
+        <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="${stroke}"/>
+      </marker>
+    </defs>
+
+    <!-- Level horizontal guide lines -->
+    <line x1="12" y1="26" x2="432" y2="26" stroke="rgba(59,130,246,0.14)" stroke-dasharray="4 4"/>
+    <line x1="12" y1="84" x2="432" y2="84" stroke="rgba(59,130,246,0.14)" stroke-dasharray="4 4"/>
+    <line x1="12" y1="142" x2="432" y2="142" stroke="rgba(59,130,246,0.14)" stroke-dasharray="4 4"/>
+
+    <!-- Right-side tier capacity annotations -->
+    <g font-family="'IBM Plex Mono', monospace" font-size="11.5" font-weight="700" fill="${lblFill}">
+      <text x="442" y="30">Mức 0: 1 nút</text>
+      <text x="442" y="88">Mức 1: ≤ 3 nút</text>
+      <text x="442" y="146">Mức d: ≤ 3ᵈ nút</text>
+    </g>
+
+    <!-- Edges from root (222, 42) -->
+    <line x1="194" y1="40" x2="108" y2="68" stroke="${stroke}" stroke-width="2" marker-end="url(#s19-arr)"/>
+    <line x1="222" y1="40" x2="222" y2="68" stroke="${okStroke}" stroke-width="2" marker-end="url(#s19-arr)"/>
+    <line x1="250" y1="40" x2="336" y2="68" stroke="${stroke}" stroke-width="2" marker-end="url(#s19-arr)"/>
+
+    <!-- Clean non-overlapping branch pills -->
+    <g font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="800" text-anchor="middle">
+      <rect x="130" y="42" width="22" height="17" rx="4" fill="#dbeafe" stroke="${stroke}" stroke-width="1"/>
+      <text x="141" y="54" fill="${lblFill}">&lt;</text>
+      <rect x="211" y="45" width="22" height="17" rx="4" fill="#dcfce7" stroke="${okStroke}" stroke-width="1"/>
+      <text x="222" y="57" fill="#15803d">=</text>
+      <rect x="292" y="42" width="22" height="17" rx="4" fill="#dbeafe" stroke="${stroke}" stroke-width="1"/>
+      <text x="303" y="54" fill="${lblFill}">&gt;</text>
+    </g>
+
+    <!-- Edges from level 1 to level 2 -->
+    <g stroke="${stroke}" stroke-width="1.5" opacity="0.72">
+      <line x1="90" y1="98" x2="44" y2="128"/>
+      <line x1="104" y1="98" x2="104" y2="128"/>
+      <line x1="118" y1="98" x2="164" y2="128"/>
+      <line x1="326" y1="98" x2="280" y2="128"/>
+      <line x1="340" y1="98" x2="340" y2="128"/>
+      <line x1="354" y1="98" x2="400" y2="128"/>
+    </g>
+
+    <!-- Root node -->
+    <rect x="178" y="12" width="88" height="28" rx="3" fill="${hiFill}" stroke="${active ? '#ca8a04' : stroke}" stroke-width="2"/>
+    <text x="222" y="30" text-anchor="middle" fill="${ink}" font-family="'IBM Plex Mono', monospace" font-size="13.5" font-weight="800">k ? x₀</text>
+
+    <!-- Level 1 nodes -->
+    <rect x="66" y="70" width="76" height="28" rx="3" fill="#ffffff" stroke="${stroke}" stroke-width="1.8"/>
+    <text x="104" y="88" text-anchor="middle" fill="${ink}" font-family="'IBM Plex Mono', monospace" font-size="13" font-weight="700">k ? x₁</text>
+
+    <rect x="186" y="70" width="72" height="28" rx="3" fill="${okFill}" stroke="${okStroke}" stroke-width="1.8"/>
+    <text x="222" y="88" text-anchor="middle" fill="#14532d" font-family="'Be Vietnam Pro', sans-serif" font-size="12.5" font-weight="800">Tìm thấy</text>
+
+    <rect x="302" y="70" width="76" height="28" rx="3" fill="#ffffff" stroke="${stroke}" stroke-width="1.8"/>
+    <text x="340" y="88" text-anchor="middle" fill="${ink}" font-family="'IBM Plex Mono', monospace" font-size="13" font-weight="700">k ? x₂</text>
+
+    <!-- Level 2 outcome leaves (spacious, zero overlap) -->
+    ${[
+      { x: 44, ok: false },
+      { x: 104, ok: true },
+      { x: 164, ok: false },
+      { x: 280, ok: false },
+      { x: 340, ok: true },
+      { x: 400, ok: false },
+    ]
+      .map(
+        (lf) => `
+      <rect x="${lf.x - 24}" y="130" width="48" height="24" rx="3" fill="${lf.ok ? okFill : leafFill}" stroke="${lf.ok ? okStroke : stroke}" stroke-width="1.4"/>
+      <text x="${lf.x}" y="146" text-anchor="middle" fill="${lf.ok ? '#14532d' : ink}" font-family="'IBM Plex Mono', monospace" font-size="11.5" font-weight="700">1/N</text>
     `,
-  };
+      )
+      .join('')}
+  </svg>`;
 }
 
-function buildS19ClimbTree(assumptionOn: boolean, revealed: boolean): TreeSceneSpec {
+function buildS19AlignedClimbSvg(assumptionOn: boolean, revealed: boolean): string {
   const worst = revealed && !assumptionOn;
-  return {
-    viewBox: [0, 0, 290, 152],
-    nodes: [
-      {
-        id: 'cl-r',
-        x: 112,
-        y: 26,
-        cellW: 36,
-        cellH: 24,
-        state: worst ? 'overflow' : 'normal',
-        tag: worst ? 'j=3: lan tới gốc!' : 'j=3: Pr ≤ p²',
-        tagPos: 'right',
-        tagTone: worst ? 'error' : 'default',
-        keys: [{ id: 'clr0', label: 'Gốc', tone: worst ? 'error' : 'muted' }],
-      },
-      {
-        id: 'cl-m',
-        x: 78,
-        y: 78,
-        cellW: 36,
-        cellH: 24,
-        state: worst ? 'overflow' : revealed ? 'active' : 'normal',
-        tag: worst ? 'j=2: sửa O(M)' : 'j=2: Pr ≤ p',
-        tagPos: 'right',
-        tagTone: worst ? 'error' : 'cobalt',
-        keys: [{ id: 'clm0', label: 'Cha', tone: worst ? 'error' : revealed ? 'guide' : 'default' }],
-      },
-      {
-        id: 'cl-b',
-        x: 54,
-        y: 128,
-        cellW: 36,
-        cellH: 24,
-        state: worst ? 'overflow' : revealed ? 'active' : 'normal',
-        tag: 'j=1: lá (Pr ≤ 1)',
-        tagPos: 'right',
-        tagTone: worst ? 'error' : 'warn',
-        keys: [{ id: 'clb0', label: 'Lá', tone: worst ? 'error' : 'active' }],
-      },
-    ],
-    edges: [
-      { id: 'cle0', fromNode: 'cl-r', portIndex: 0, toNode: 'cl-m', state: worst ? 'error' : 'dashed' },
-      { id: 'cle1', fromNode: 'cl-m', portIndex: 0, toNode: 'cl-b', state: worst ? 'error' : revealed ? 'active' : 'normal' },
-    ],
-    transfers: [
-      { id: 'clt0', fromX: 30, fromY: 126, toX: 30, toY: 28, ctrlX: 10, ctrlY: 78, label: 'R ↑', tone: worst ? 'error' : 'cobalt' },
-    ],
-  };
+  const stroke = worst ? '#dc2626' : '#1d4ed8';
+  const fillTop = worst ? '#fee2e2' : '#eef5ff';
+  const fillMid = worst ? '#fee2e2' : '#dbeafe';
+  const fillBot = worst ? '#fee2e2' : '#fef08a';
+  const ink = worst ? '#991b1b' : '#0f1d3a';
+
+  const rows = [
+    { y: 26, name: 'Gốc', j: 'j = 3', pr: worst ? '100% (xấu nhất)' : 'Pr(R ≥ 3) ≤ p²', w: worst ? 186 : 48, fill: worst ? '#ef4444' : '#60a5fa' },
+    { y: 82, name: 'Cha', j: 'j = 2', pr: worst ? '100% (xấu nhất)' : 'Pr(R ≥ 2) ≤ p', w: worst ? 186 : 104, fill: worst ? '#ef4444' : '#3b82f6' },
+    { y: 138, name: 'Lá', j: 'j = 1', pr: worst ? '100% (xấu nhất)' : 'Pr(R ≥ 1) ≤ 1', w: 186, fill: worst ? '#dc2626' : '#004aad' },
+  ];
+
+  return `
+  <svg class="s19-proof-svg" viewBox="0 0 540 166" role="img" aria-label="Sơ đồ số mức sửa R đối chiếu xác suất giảm dần">
+    <defs>
+      <marker id="s19-up" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="${stroke}"/>
+      </marker>
+    </defs>
+
+    <!-- Upward climb arrow R -->
+    <path d="M 32 142 L 32 24" stroke="${stroke}" stroke-width="2.4" stroke-dasharray="${worst ? 'none' : '5 3'}" marker-end="url(#s19-up)"/>
+    <rect x="8" y="70" width="28" height="22" rx="3" fill="${worst ? '#dc2626' : '#004aad'}"/>
+    <text x="22" y="85" text-anchor="middle" fill="#ffffff" font-family="'IBM Plex Mono', monospace" font-size="11.5" font-weight="800">R↑</text>
+
+    <!-- Vertical tree edges -->
+    <line x1="118" y1="40" x2="118" y2="68" stroke="${stroke}" stroke-width="2" stroke-dasharray="${worst ? 'none' : '4 3'}"/>
+    <line x1="118" y1="96" x2="118" y2="124" stroke="${stroke}" stroke-width="2"/>
+
+    <!-- 3 Aligned Rows: Tree Node (left) <--> Horizontal Probability Bar (right) -->
+    ${rows
+      .map((r, idx) => {
+        const boxFill = idx === 0 ? fillTop : idx === 1 ? fillMid : fillBot;
+        return `
+        <line x1="162" y1="${r.y}" x2="210" y2="${r.y}" stroke="rgba(59,130,246,0.28)" stroke-dasharray="3 3"/>
+        <rect x="74" y="${r.y - 14}" width="88" height="28" rx="3" fill="${boxFill}" stroke="${stroke}" stroke-width="1.8"/>
+        <text x="118" y="${r.y + 5}" text-anchor="middle" fill="${ink}" font-family="'Be Vietnam Pro', sans-serif" font-size="13" font-weight="800">${r.name}</text>
+
+        <text x="218" y="${r.y + 4}" fill="${ink}" font-family="'IBM Plex Mono', monospace" font-size="12" font-weight="800">${r.j}</text>
+        <rect x="266" y="${r.y - 12}" width="186" height="24" rx="3" fill="#edf4ff" stroke="rgba(59,130,246,0.25)" stroke-width="1"/>
+        <rect class="s19-hbar" x="266" y="${r.y - 12}" width="${r.w}" height="24" rx="3" fill="${r.fill}"/>
+        <text x="460" y="${r.y + 4}" fill="${worst ? '#991b1b' : '#004aad'}" font-family="'IBM Plex Mono', monospace" font-size="11.5" font-weight="800">${worst ? 'O(M)' : idx === 0 ? '≤ p²' : idx === 1 ? '≤ p' : '≤ 1'}</text>
+      `;
+      })
+      .join('')}
+  </svg>`;
 }
 
 const slide19: SlideDef = {
@@ -604,12 +783,12 @@ const slide19: SlideDef = {
   fullScript:
     'Phân tích trung bình luôn phải nêu rõ phân bố truy vấn và giả thiết về số mức sửa cây. Với tìm kiếm thành công, giả sử N khóa có xác suất được tìm bằng nhau là 1/N; mỗi phép so sánh có tối đa 3 kết quả (<, =, >), nên cây quyết định tam phân cho số phép so sánh kỳ vọng E[C] ≥ log₃ N = Ω(log N). Ghép với cận trên O(log N), ta có E[T_tìm kiếm] = Θ(log N). Với chèn và xóa, gọi R là số mức phải tách, mượn hoặc gộp leo từ lá lên gốc (0 ≤ R ≤ h + 1). Ta có E[T] = O(log N + M(1 + E[R])). Chỉ khi có giả thiết Pr(R ≥ j) ≤ p^(j−1) với hằng số 0 ≤ p < 1 độc lập N, M thì tổng xác suất đuôi E[R] ≤ 1/(1 − p) = O(1), suy ra O(log N + M). Nếu chưa biết phân bố, dùng cận xấu nhất O(M(h + 1)).',
   fullView: {
-    summary: 'Phân tích kỳ vọng cho Search (cây quyết định 3 nhánh → Θ(log N)) và Insert/Delete (số mức leo R trên B-tree → O(log N + M) có điều kiện).',
+    summary: 'Chứng minh chi tiết từng bước cho kỳ vọng Search (cây quyết định tam phân → Θ(log N)) và Insert/Delete (tổng xác suất đuôi E[R] → O(log N + M) có điều kiện).',
     sections: [
       {
         heading: '1. Tìm kiếm thành công',
         bodyHtml:
-          '<p>Phân bố đều 1/N trên N khóa; mỗi phép so sánh có tối đa 3 kết quả (&lt;, =, &gt;). Cây quyết định tam phân cho ' +
+          '<p>Phân bố đều 1/N trên N khóa; mỗi phép so sánh có tối đa 3 kết quả (&lt;, =, &gt;). Cây quyết định tam phân có tối đa ' + texInline('3^d') + ' nút ở độ sâu ' + texInline('d') + ' ⇒ ' +
           texInline('E[C] \\ge \\log_3 N = \\Omega(\\log N)') +
           ', kết hợp cận trên ' + texInline('O(\\log N)') + ' cho ' + texInline('E[T_{\\text{tìm kiếm}}] = \\Theta(\\log N)') + '.</p>',
       },
@@ -632,7 +811,7 @@ const slide19: SlideDef = {
         <header class="slide-header slide-header--split">
           <div>
             <h1 class="slide-title"><em class="hl-cobalt">B-tree:</em> <span>độ phức tạp</span> trung bình</h1>
-            <p class="slide-lead">Phải nêu phân bố truy vấn và giả thiết về số mức sửa cây.</p>
+            <p class="slide-lead">Phải nêu rõ phân bố truy vấn và giả thiết về số mức sửa cây khi chứng minh kỳ vọng.</p>
           </div>
           <label class="toggle-pill" data-role="toggle-wrap">
             <input type="checkbox" data-role="assump-toggle" checked />
@@ -642,32 +821,24 @@ const slide19: SlideDef = {
 
         <div class="s19-cols">
           <article class="canva-card s19-card" data-card="search">
-            <h3>1. Tìm kiếm thành công (Cây quyết định 3 nhánh)</h3>
-            <p class="s19-hyp">${texInline('N')} khóa đồng xác suất ${texInline('1/N')}; mỗi phép so sánh rẽ tối đa 3 hướng (<code>&lt;</code>, <code>=</code>, <code>&gt;</code>).</p>
-            <div class="s19-tree-box" data-role="tree-dec"></div>
-            <div class="s19-math-block" data-role="s19-m1">
-              ${texBlock('E[C] \\ge \\log_3 N = \\Omega(\\log N)')}
-              <div class="s19-res-badge">Ghép cận trên ${texInline('O(\\log N)')} ⇒ <strong>${texInline('E[T_{\\text{tìm kiếm}}] = \\Theta(\\log N)')}</strong></div>
+            <h3>1. Tìm kiếm thành công (Cây quyết định tam phân)</h3>
+            <div class="s19-svg-stage" data-role="tree-dec"></div>
+            <div class="s19-proof-steps" data-role="s19-m1">
+              <div class="proof-row"><span class="proof-tag">B1</span><div>Mỗi phép so sánh rẽ tối đa <strong>3 hướng</strong> (<code>&lt;</code>, <code>=</code>, <code>&gt;</code>) ⇒ mức ${texInline('d')} có tối đa ${texInline('3^d')} kết quả.</div></div>
+              <div class="proof-row"><span class="proof-tag">B2</span><div>Với ${texInline('N')} khóa đồng xác suất ${texInline('1/N')}: số phép so sánh trung bình ${texInline('E[C] \\ge \\log_3 N = \\Omega(\\log N)')}.</div></div>
+              <div class="s19-res-badge"><strong>B3 · Kết luận:</strong> Ghép cận trên ${texInline('O(\\log N)')} ⇒ <strong>${texInline('E[T_{\\text{tìm kiếm}}] = \\Theta(\\log N)')}</strong></div>
             </div>
           </article>
 
           <article class="canva-card s19-card" data-card="update">
-            <h3>2. Chèn và xóa — Số mức leo sửa ${texInline('R')}</h3>
-            <p class="s19-hyp">${texInline('R')} (${texInline('0 \\le R \\le h + 1')}): số mức tách/mượn/gộp; tìm đường ${texInline('O(\\log N)')} + sửa ${texInline('O(M)')}/mức.</p>
-            <div class="s19-math-block" data-role="s19-m2">
-              ${texBlock('E[T] = O\\big(\\log N + M(1 + E[R])\\big)')}
-            </div>
-            <div class="s19-tail" data-role="s19-tail">
-              <div class="s19-climb-row">
-                <div class="s19-climb-tree" data-role="tree-climb"></div>
-                <div class="tail-bars" aria-label="Minh họa giả thiết đuôi xác suất giảm dần">
-                  <div class="tail-bar" style="--h:88%;--bi:0"><span>j=1</span><b>1</b></div>
-                  <div class="tail-bar" style="--h:56%;--bi:1"><span>j=2</span><b>p</b></div>
-                  <div class="tail-bar" style="--h:36%;--bi:2"><span>j=3</span><b>p²</b></div>
-                  <div class="tail-bar" style="--h:20%;--bi:3"><span>…</span><b>pʲ⁻¹</b></div>
-                </div>
+            <h3>2. Chèn và xóa — Chứng minh kỳ vọng số mức sửa ${texInline('R')}</h3>
+            <div class="s19-svg-stage" data-role="tree-climb"></div>
+            <div class="s19-proof-steps" data-role="s19-m2">
+              <div class="proof-row"><span class="proof-tag">B1</span><div>Gọi ${texInline('R \\in [0, h+1]')} là số mức sửa (${texInline('O(M)')}/mức) ⇒ ${texInline('E[T] = O(\\log N + M(1 + E[R]))')}.</div></div>
+              <div class="s19-tail" data-role="s19-tail">
+                <div class="proof-row" data-role="tail-b2"></div>
+                <div data-role="tail-formula"></div>
               </div>
-              <div class="tail-formula" data-role="tail-formula"></div>
             </div>
           </article>
         </div>
@@ -682,7 +853,7 @@ const slide19: SlideDef = {
     const checkbox = ctx.slideEl.querySelector<HTMLInputElement>('[data-role="assump-toggle"]')!;
     toggleWrap.addEventListener('click', (e) => e.stopPropagation());
     checkbox.addEventListener('change', () => {
-      updateS19Tail(ctx.slideEl, checkbox.checked, true, ctx.getReducedMotion());
+      updateS19Tail(ctx.slideEl, checkbox.checked, true);
     });
   },
   renderStep(step, _prev, ctx) {
@@ -700,42 +871,29 @@ const slide19: SlideDef = {
     cUpdate.classList.toggle('is-active-card', step >= 2);
     tail.classList.toggle('is-dim', step < 3);
 
-    renderTreeScene(tDec, buildS19DecisionTree(step >= 1), { reducedMotion: ctx.getReducedMotion() });
+    tDec.innerHTML = buildS19DecisionSvg(step >= 1);
 
     if (step >= 3) {
       checkbox.checked = true;
-      updateS19Tail(ctx.slideEl, true, true, ctx.getReducedMotion());
+      updateS19Tail(ctx.slideEl, true, true);
     } else {
-      updateS19Tail(ctx.slideEl, false, false, ctx.getReducedMotion());
+      updateS19Tail(ctx.slideEl, false, false);
     }
-  },
-  cancelAnimations(slideEl) {
-    slideEl.querySelectorAll<HTMLElement>('[data-role^="tree-"]').forEach((el) => cancelTreeAnimations(el));
   },
 };
 
-function updateS19Tail(slideEl: HTMLElement, assumptionOn: boolean, revealed: boolean, reducedMotion: boolean): void {
-  const bars = slideEl.querySelector<HTMLElement>('.tail-bars')!;
+function updateS19Tail(slideEl: HTMLElement, assumptionOn: boolean, revealed: boolean): void {
+  const b2 = slideEl.querySelector<HTMLElement>('[data-role="tail-b2"]')!;
   const formula = slideEl.querySelector<HTMLElement>('[data-role="tail-formula"]')!;
   const tClimb = slideEl.querySelector<HTMLElement>('[data-role="tree-climb"]')!;
-  bars.classList.toggle('is-off', !assumptionOn);
-  bars.classList.remove('is-growing');
-  if (assumptionOn && revealed && !reducedMotion) {
-    void bars.offsetWidth;
-    bars.classList.add('is-growing');
-  }
-  renderTreeScene(tClimb, buildS19ClimbTree(assumptionOn, revealed), { reducedMotion });
+  tClimb.innerHTML = buildS19AlignedClimbSvg(assumptionOn, revealed);
 
   if (assumptionOn) {
-    formula.innerHTML = `
-      <div class="s19-eq-sm">${texInline('E[R] = \\sum_{j=1}^{h+1} \\Pr(R \\ge j) \\le \\frac{1}{1-p} = O(1)')}</div>
-      <div class="s19-res-badge is-ok">Suy ra <strong>${texInline('E[T_{\\text{chèn}}],\\; E[T_{\\text{xóa}}] = O(\\log N + M)')}</strong></div>
-    `;
+    b2.innerHTML = `<span class="proof-tag">B2</span><div>Từ ${texInline('\\Pr(R \\ge j) \\le p^{j-1}')} (${texInline('0 \\le p < 1')}): ${texInline('E[R] = \\sum_{j=1}^{h+1} \\Pr(R \\ge j) \\le \\frac{1}{1-p} = O(1)')}.</div>`;
+    formula.innerHTML = `<div class="s19-res-badge is-ok"><strong>B3 · Kết luận:</strong> Thay ${texInline('E[R] = O(1)')} ⇒ <strong>${texInline('E[T_{\\text{chèn}}],\\; E[T_{\\text{xóa}}] = O(\\log N + M)')}</strong></div>`;
   } else {
-    formula.innerHTML = `
-      <div class="s19-eq-sm"><em>Đã tắt giả thiết phân bố đuôi (${texInline('p')}) — cây có thể leo tới gốc!</em></div>
-      <div class="s19-res-badge is-warn">Quay về cận xấu nhất: <strong>${texInline('O(M(h + 1))')}</strong></div>
-    `;
+    b2.innerHTML = `<span class="proof-tag proof-tag--warn">B2</span><div><em>Tắt giả thiết đuôi (${texInline('p')}):</em> không có cận hằng cho ${texInline('E[R]')}, phép sửa có thể leo trọn ${texInline('h + 1')} tầng!</div>`;
+    formula.innerHTML = `<div class="s19-res-badge is-warn"><strong>B3 · Cận an toàn:</strong> Quay về cận xấu nhất <strong>${texInline('O(M(h + 1))')}</strong></div>`;
   }
 }
 
@@ -894,7 +1052,7 @@ const slide20: SlideDef = {
 };
 
 // ============================================================================
-// SLIDE 21 — Độ phức tạp không gian (Bố cục Canva 2×2 chuẩn)
+// SLIDE 22 — Độ phức tạp không gian (Mô phỏng bộ nhớ sống động 3 vùng)
 // ============================================================================
 function buildS21StoreSvg(active: boolean, animate: boolean): string {
   const op = active ? 1 : 0.42;
@@ -903,28 +1061,39 @@ function buildS21StoreSvg(active: boolean, animate: boolean): string {
   const sideF = active ? '#1D4ED8' : '#94A3B8';
   const stg = (i: number) => (animate ? `class="s21-stagger is-anim" style="--st:${i}"` : '');
   return `
-  <svg class="s21-canva-svg" viewBox="0 0 460 175" role="img" aria-label="Bộ nhớ lưu cây B-tree">
+  <svg class="s21-canva-svg" viewBox="0 0 460 178" role="img" aria-label="Bộ nhớ lưu cây B-tree">
     <defs>
       <marker id="s21-a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
         <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#0F1D3A"/>
       </marker>
+      <path id="s21-ptr0" d="M 178 58 L 72 112"/>
+      <path id="s21-ptr1" d="M 219 58 L 219 112"/>
+      <path id="s21-ptr2" d="M 260 58 L 366 112"/>
     </defs>
     <g opacity="${op}">
-      <!-- Labels keys / children -->
+      <!-- Live count chips -->
+      ${active ? `
+      <g>
+        <rect x="308" y="14" width="136" height="22" rx="3" fill="#0F1D3A"/>
+        <text x="376" y="29" text-anchor="middle" fill="#FEF08A" font-size="11" font-weight="800" font-family="'IBM Plex Mono', monospace">N=8 khóa · K=4 nút</text>
+        <rect x="308" y="42" width="136" height="20" rx="3" fill="#DBEAFE" stroke="#3B82F6" stroke-width="1"/>
+        <text x="376" y="56" text-anchor="middle" fill="#004AAD" font-size="10.5" font-weight="800" font-family="'IBM Plex Mono', monospace">K−1 = 3 tham chiếu</text>
+      </g>` : ''}
+
       <g ${stg(0)}>
         <text x="108" y="34" text-anchor="end" fill="#0F1D3A" font-size="12" font-weight="700" font-family="'IBM Plex Mono', monospace">keys</text>
         <line x1="114" y1="30" x2="152" y2="30" stroke="#0F1D3A" stroke-width="1.5" marker-end="url(#s21-a1)"/>
         <text x="108" y="60" text-anchor="end" fill="#0F1D3A" font-size="12" font-weight="700" font-family="'IBM Plex Mono', monospace">children</text>
         <line x1="114" y1="56" x2="152" y2="56" stroke="#0F1D3A" stroke-width="1.5" marker-end="url(#s21-a1)"/>
 
-        <!-- Root 3D node with keys + children ports row -->
+        <!-- Root 3D node with keys + children ports -->
         <polygon points="158,14 166,7 288,7 280,14" fill="${topF}" stroke="${stroke}" stroke-width="1.4"/>
         <polygon points="280,14 288,7 288,61 280,68" fill="${sideF}" stroke="${stroke}" stroke-width="1.4"/>
-        <rect x="158" y="14" width="122" height="27" fill="#FFFFFF" stroke="${stroke}" stroke-width="1.8"/>
-        <line x1="219" y1="14" x2="219" y2="41" stroke="${stroke}" stroke-width="1.5"/>
+        <rect class="${active ? 's21-mem-cell' : ''}" style="--mc:0" x="158" y="14" width="61" height="27" fill="#FFFFFF" stroke="${stroke}" stroke-width="1.8"/>
+        <rect class="${active ? 's21-mem-cell' : ''}" style="--mc:1" x="219" y="14" width="61" height="27" fill="#FFFFFF" stroke="${stroke}" stroke-width="1.8"/>
         <text x="188" y="33" text-anchor="middle" fill="#0F1D3A" font-size="15" font-weight="800" font-family="'IBM Plex Mono', monospace">20</text>
         <text x="250" y="33" text-anchor="middle" fill="#0F1D3A" font-size="15" font-weight="800" font-family="'IBM Plex Mono', monospace">40</text>
-        <!-- Children port strip -->
+
         <rect x="158" y="41" width="122" height="27" fill="#EEF7FF" stroke="${stroke}" stroke-width="1.8"/>
         <line x1="199" y1="41" x2="199" y2="68" stroke="${stroke}" stroke-width="1.4"/>
         <line x1="239" y1="41" x2="239" y2="68" stroke="${stroke}" stroke-width="1.4"/>
@@ -933,27 +1102,32 @@ function buildS21StoreSvg(active: boolean, animate: boolean): string {
         <circle cx="260" cy="54" r="3.5" fill="#0F1D3A"/>
       </g>
 
-      <!-- 3 Child arrows (draw smoothly downward) -->
-      <line class="${animate ? 's21-edge-draw is-anim' : ''}" style="--ed:0.1s" pathLength="1" x1="178" y1="58" x2="72" y2="112" stroke="#0F1D3A" stroke-width="1.7" marker-end="url(#s21-a1)"/>
-      <line class="${animate ? 's21-edge-draw is-anim' : ''}" style="--ed:0.22s" pathLength="1" x1="219" y1="58" x2="219" y2="112" stroke="#0F1D3A" stroke-width="1.7" marker-end="url(#s21-a1)"/>
-      <line class="${animate ? 's21-edge-draw is-anim' : ''}" style="--ed:0.34s" pathLength="1" x1="260" y1="58" x2="366" y2="112" stroke="#0F1D3A" stroke-width="1.7" marker-end="url(#s21-a1)"/>
+      <!-- 3 Child pointer edges + living pointer signal beads -->
+      <line class="${animate ? 's21-edge-draw is-anim' : ''}" style="--ed:0.1s" pathLength="1" x1="178" y1="58" x2="72" y2="112" stroke="#0F1D3A" stroke-width="1.8" marker-end="url(#s21-a1)"/>
+      <line class="${animate ? 's21-edge-draw is-anim' : ''}" style="--ed:0.22s" pathLength="1" x1="219" y1="58" x2="219" y2="112" stroke="#0F1D3A" stroke-width="1.8" marker-end="url(#s21-a1)"/>
+      <line class="${animate ? 's21-edge-draw is-anim' : ''}" style="--ed:0.34s" pathLength="1" x1="260" y1="58" x2="366" y2="112" stroke="#0F1D3A" stroke-width="1.8" marker-end="url(#s21-a1)"/>
+      ${active ? `
+        <circle r="3.6" fill="#38BDF8" stroke="#004AAD" stroke-width="1.2" class="s21-search-bead"><animateMotion dur="2.2s" repeatCount="indefinite"><mpath href="#s21-ptr0"/></animateMotion></circle>
+        <circle r="3.6" fill="#38BDF8" stroke="#004AAD" stroke-width="1.2" class="s21-search-bead"><animateMotion dur="2.2s" begin="0.45s" repeatCount="indefinite"><mpath href="#s21-ptr1"/></animateMotion></circle>
+        <circle r="3.6" fill="#38BDF8" stroke="#004AAD" stroke-width="1.2" class="s21-search-bead"><animateMotion dur="2.2s" begin="0.9s" repeatCount="indefinite"><mpath href="#s21-ptr2"/></animateMotion></circle>
+      ` : ''}
 
-      <!-- 3 Leaves -->
+      <!-- 3 Leaves with sequential memory pulse -->
       ${[
-        { cx: 72, a: '5', b: '10' },
-        { cx: 219, a: '25', b: '30' },
-        { cx: 366, a: '50', b: '60' },
+        { cx: 72, a: '5', b: '10', c0: 2, c1: 3 },
+        { cx: 219, a: '25', b: '30', c0: 4, c1: 5 },
+        { cx: 366, a: '50', b: '60', c0: 6, c1: 7 },
       ]
         .map(
           (lf, i) => `
           <g ${stg(i + 1)}>
             <polygon points="${lf.cx - 52},118 ${lf.cx - 46},112 ${lf.cx + 58},112 ${lf.cx + 52},118" fill="${topF}" stroke="${stroke}" stroke-width="1.3"/>
             <polygon points="${lf.cx + 52},118 ${lf.cx + 58},112 ${lf.cx + 58},142 ${lf.cx + 52},148" fill="${sideF}" stroke="${stroke}" stroke-width="1.3"/>
-            <rect x="${lf.cx - 52}" y="118" width="104" height="30" fill="#FFFFFF" stroke="${stroke}" stroke-width="1.7"/>
-            <line x1="${lf.cx}" y1="118" x2="${lf.cx}" y2="148" stroke="${stroke}" stroke-width="1.4"/>
+            <rect class="${active ? 's21-mem-cell' : ''}" style="--mc:${lf.c0}" x="${lf.cx - 52}" y="118" width="52" height="30" fill="#FFFFFF" stroke="${stroke}" stroke-width="1.7"/>
+            <rect class="${active ? 's21-mem-cell' : ''}" style="--mc:${lf.c1}" x="${lf.cx}" y="118" width="52" height="30" fill="#FFFFFF" stroke="${stroke}" stroke-width="1.7"/>
             <text x="${lf.cx - 26}" y="138" text-anchor="middle" fill="#0F1D3A" font-size="14.5" font-weight="800" font-family="'IBM Plex Mono', monospace">${lf.a}</text>
             <text x="${lf.cx + 26}" y="138" text-anchor="middle" fill="#0F1D3A" font-size="14.5" font-weight="800" font-family="'IBM Plex Mono', monospace">${lf.b}</text>
-            <text x="${lf.cx}" y="165" text-anchor="middle" fill="#1E3A8A" font-size="11.5" font-weight="600" font-family="'IBM Plex Mono', monospace">children = []</text>
+            <text x="${lf.cx}" y="166" text-anchor="middle" fill="#1E3A8A" font-size="11.5" font-weight="600" font-family="'IBM Plex Mono', monospace">children = []</text>
           </g>`,
         )
         .join('')}
@@ -980,7 +1154,6 @@ function buildS21SearchStackSvg(active: boolean, animate: boolean): string {
       <path id="s21-search-route" d="M 191 40 L 285 114 L 245 178" />
     </defs>
     <g opacity="${op}">
-      <!-- Edges -->
       <line x1="168" y1="54" x2="108" y2="96" stroke="${dimStroke}" stroke-width="1.8" marker-end="url(#s21-ad)"/>
       <line class="${animate ? 's21-edge-draw is-anim' : ''}" style="--ed:0.08s" pathLength="1" x1="214" y1="54" x2="278" y2="94" stroke="${hi}" stroke-width="3.2" marker-end="url(#s21-ab)"/>
       <line x1="86" y1="128" x2="54" y2="162" stroke="${dimStroke}" stroke-width="1.6" marker-end="url(#s21-ad)"/>
@@ -994,13 +1167,13 @@ function buildS21SearchStackSvg(active: boolean, animate: boolean): string {
       <rect x="154" y="24" width="74" height="32" fill="#FFFFFF" stroke="${hi}" stroke-width="1.8"/>
       <text x="191" y="45" text-anchor="middle" fill="#0F1D3A" font-size="16" font-weight="800" font-family="'IBM Plex Mono', monospace">40</text>
 
-      <!-- Internal [20] (dim) -->
+      <!-- Internal [20] -->
       <polygon points="62,98 68,92 140,92 134,98" fill="#BFDBFE" stroke="${dimStroke}" stroke-width="1.3"/>
       <polygon points="134,98 140,92 140,122 134,128" fill="#93C5FD" stroke="${dimStroke}" stroke-width="1.3"/>
       <rect x="62" y="98" width="72" height="30" fill="#EEF7FF" stroke="${dimStroke}" stroke-width="1.6"/>
       <text x="98" y="118" text-anchor="middle" fill="#0F1D3A" font-size="15" font-weight="700" font-family="'IBM Plex Mono', monospace">20</text>
 
-      <!-- Internal [60] (active) -->
+      <!-- Internal [60] -->
       <polygon points="248,98 256,91 330,91 322,98" fill="${cobalt}" stroke="${hi}" stroke-width="1.5"/>
       <polygon points="322,98 330,91 330,123 322,130" fill="#1D4ED8" stroke="${hi}" stroke-width="1.5"/>
       <rect x="248" y="98" width="74" height="32" fill="#FFFFFF" stroke="${hi}" stroke-width="2.2"/>
@@ -1013,43 +1186,43 @@ function buildS21SearchStackSvg(active: boolean, animate: boolean): string {
       <rect x="106" y="164" width="78" height="28" fill="#EEF7FF" stroke="${dimStroke}" stroke-width="1.5"/>
       <text x="145" y="183" text-anchor="middle" fill="#0F1D3A" font-size="13.5" font-weight="700" font-family="'IBM Plex Mono', monospace">25 | 30</text>
 
-      <polygon points="204,164 211,158 293,158 286,164" fill="${cobalt}" stroke="${hi}" stroke-width="1.5"/>
-      <polygon points="286,164 293,158 293,186 286,192" fill="#1D4ED8" stroke="${hi}" stroke-width="1.5"/>
-      <rect x="204" y="164" width="82" height="28" fill="#FFFFFF" stroke="${hi}" stroke-width="2.4"/>
-      <text x="245" y="183" text-anchor="middle" fill="#0F1D3A" font-size="14.5" font-weight="800" font-family="'IBM Plex Mono', monospace">45 | <tspan fill="#004AAD">50</tspan></text>
+      <polygon points="204,164 211,158 293,158 286,164" fill="#4ADE80" stroke="#16A34A" stroke-width="1.5"/>
+      <polygon points="286,164 293,158 293,186 286,192" fill="#16A34A" stroke="#16A34A" stroke-width="1.5"/>
+      <rect x="204" y="164" width="82" height="28" fill="#FFFFFF" stroke="#16A34A" stroke-width="2.4"/>
+      <text x="245" y="183" text-anchor="middle" fill="#0F1D3A" font-size="14.5" font-weight="800" font-family="'IBM Plex Mono', monospace">45 | <tspan fill="#15803D">50</tspan></text>
 
       <rect x="308" y="164" width="78" height="28" fill="#EEF7FF" stroke="${dimStroke}" stroke-width="1.5"/>
       <text x="347" y="183" text-anchor="middle" fill="#0F1D3A" font-size="13.5" font-weight="700" font-family="'IBM Plex Mono', monospace">65 | 70</text>
 
-      <!-- Call Stack Container Box -->
-      <text x="536" y="16" text-anchor="middle" fill="#0F1D3A" font-size="13" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">h = 2, có 3 khung gọi</text>
-      <rect x="434" y="24" width="204" height="158" rx="10" fill="rgba(255,255,255,0.42)" stroke="#3B82F6" stroke-width="1.8"/>
-      <text x="536" y="200" text-anchor="middle" fill="#0F1D3A" font-size="13" font-weight="700" font-style="italic" font-family="'Be Vietnam Pro', sans-serif">O(1) mỗi khung</text>
+      <!-- Call Stack Container -->
+      <text x="536" y="16" text-anchor="middle" fill="#0F1D3A" font-size="13" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Call Stack · h + 1 = 3 khung</text>
+      <rect x="434" y="24" width="204" height="158" rx="4" fill="rgba(255,255,255,0.68)" stroke="#004AAD" stroke-width="1.8"/>
+      <text x="536" y="200" text-anchor="middle" fill="#0F1D3A" font-size="12.5" font-weight="700" font-family="'IBM Plex Mono', monospace">3 × O(1) con trỏ (không copy cây!)</text>
 
-      <!-- 3 Stacked Call Frames (staggered bottom-up push: root -> [60] -> [45,50]) -->
+      <!-- 3 Stacked Call Frames with synchronized live push pulse -->
       ${[
-        { y: 38, txt: 'search(node [45, 50])', ord: 2 },
-        { y: 88, txt: 'search(node [60])', ord: 1 },
-        { y: 138, txt: 'search(root)', ord: 0 },
+        { y: 38, txt: '3. search([45, 50])', ord: 2 },
+        { y: 88, txt: '2. search([60])', ord: 1 },
+        { y: 138, txt: '1. search(root)', ord: 0 },
       ]
         .map(
           (f) => `
           <g ${stg(f.ord)}>
             <polygon points="448,${f.y} 454,${f.y - 5} 628,${f.y - 5} 622,${f.y}" fill="${cobalt}" stroke="${hi}" stroke-width="1.2"/>
             <polygon points="622,${f.y} 628,${f.y - 5} 628,${f.y + 27} 622,${f.y + 32}" fill="#2563EB" stroke="${hi}" stroke-width="1.2"/>
-            <rect x="448" y="${f.y}" width="174" height="32" fill="#FFFFFF" stroke="${hi}" stroke-width="1.6"/>
-            <text x="535" y="${f.y + 21}" text-anchor="middle" fill="#0F1D3A" font-size="12.5" font-weight="700" font-family="'IBM Plex Mono', monospace">${f.txt}</text>
+            <rect class="${active ? 's21-stack-pulse' : ''}" style="--sp:${f.ord}" x="448" y="${f.y}" width="174" height="32" fill="#FFFFFF" stroke="${hi}" stroke-width="1.6"/>
+            <text x="535" y="${f.y + 21}" text-anchor="middle" fill="#0F1D3A" font-size="12.5" font-weight="800" font-family="'IBM Plex Mono', monospace">${f.txt}</text>
           </g>`,
         )
         .join('')}
 
-      <!-- Reference connector arrows from levels to stack box -->
-      <path ${flowCls} d="M 236 36 L 404 36 L 404 54 L 444 54" fill="none" stroke="${hi}" stroke-width="1.7" marker-end="url(#s21-ab)"/>
-      <path ${flowCls} d="M 330 108 L 404 108 L 404 104 L 444 104" fill="none" stroke="${hi}" stroke-width="1.7" marker-end="url(#s21-ab)"/>
-      <path ${flowCls} d="M 386 178 L 412 178 L 412 154 L 444 154" fill="none" stroke="${hi}" stroke-width="1.7" marker-end="url(#s21-ab)"/>
+      <!-- Animated pointer links: stack frame -> node in tree -->
+      <path ${flowCls} d="M 444 154 L 404 154 L 404 38 L 238 38" fill="none" stroke="${hi}" stroke-width="1.7" marker-end="url(#s21-ab)"/>
+      <path ${flowCls} d="M 444 104 L 332 104" fill="none" stroke="${hi}" stroke-width="1.7" marker-end="url(#s21-ab)"/>
+      <path ${flowCls} d="M 444 54 L 408 54 L 408 146 L 296 146 L 288 156" fill="none" stroke="#16A34A" stroke-width="1.8" marker-end="url(#s21-ab)"/>
       ${active ? `
-      <circle r="4.5" fill="#FEF08A" stroke="#004AAD" stroke-width="1.8" class="s21-search-bead">
-        <animateMotion dur="2.4s" repeatCount="indefinite"><mpath href="#s21-search-route"/></animateMotion>
+      <circle r="5" fill="#FEF08A" stroke="#004AAD" stroke-width="1.8" class="s21-search-bead">
+        <animateMotion dur="2.7s" repeatCount="indefinite"><mpath href="#s21-search-route"/></animateMotion>
       </circle>` : ''}
     </g>
   </svg>`;
@@ -1068,77 +1241,80 @@ function buildS21TempBufSvg(active: boolean, animate: boolean): string {
       </marker>
     </defs>
     <g opacity="${op}">
-      <!-- Left: Ngăn xếp đệ quy O(h+1) -->
+      <!-- Left: Recursion Stack O(h+1) -->
       <g ${stg(0)}>
-        <text x="80" y="18" text-anchor="middle" fill="#0F1D3A" font-size="12.5" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Ngăn xếp đệ quy</text>
+        <text x="80" y="18" text-anchor="middle" fill="#0F1D3A" font-size="12.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Ngăn xếp đệ quy</text>
         ${[30, 56, 102]
           .map(
-            (y) => `
+            (y, idx) => `
             <g>
               <polygon points="18,${y} 23,${y - 4} 145,${y - 4} 140,${y}" fill="${cobalt}" stroke="${hi}" stroke-width="1.1"/>
               <polygon points="140,${y} 145,${y - 4} 145,${y + 18} 140,${y + 22}" fill="#2563EB" stroke="${hi}" stroke-width="1.1"/>
-              <rect x="18" y="${y}" width="122" height="22" fill="#FFFFFF" stroke="${hi}" stroke-width="1.5"/>
+              <rect class="${active ? 's21-unwind-box' : ''}" style="--uw:${2 - idx}" x="18" y="${y}" width="122" height="22" fill="#FFFFFF" stroke="${hi}" stroke-width="1.5"/>
               <text x="79" y="${y + 15}" text-anchor="middle" fill="#0F1D3A" font-size="12" font-weight="700" font-family="'IBM Plex Mono', monospace">node, key, i</text>
             </g>`,
           )
           .join('')}
         <text x="79" y="95" text-anchor="middle" fill="#0F1D3A" font-size="18" font-weight="800">⋮</text>
-        <text x="79" y="144" text-anchor="middle" fill="#0F1D3A" font-size="15" font-weight="800" font-style="italic" font-family="Georgia, serif">O(h + 1)</text>
+        <text x="79" y="144" text-anchor="middle" fill="#004AAD" font-size="14.5" font-weight="800" font-family="'IBM Plex Mono', monospace">O(h + 1)</text>
       </g>
 
-      <!-- Plus sign -->
-      <text ${stg(1)} x="176" y="88" text-anchor="middle" fill="#0F1D3A" font-size="30" font-weight="800">+</text>
+      <text ${stg(1)} x="176" y="88" text-anchor="middle" fill="#0F1D3A" font-size="28" font-weight="800">+</text>
 
-      <!-- Right: Vùng tạm tại node đang xử lý O(M) -->
+      <!-- Right: Reusable O(M) temp buffer -->
       <g ${stg(1)}>
-        <text x="348" y="26" text-anchor="middle" fill="#0F1D3A" font-size="12.5" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Vùng tạm tại node đang xử lý</text>
-        <text x="242" y="64" text-anchor="end" fill="#0F1D3A" font-size="12" font-weight="800" font-family="'IBM Plex Mono', monospace">keys</text>
-        <text x="242" y="106" text-anchor="end" fill="#0F1D3A" font-size="12" font-weight="800" font-family="'IBM Plex Mono', monospace">children</text>
+        <text x="348" y="18" text-anchor="middle" fill="#0F1D3A" font-size="12.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Vùng tạm tái sử dụng từng mức</text>
+        ${active ? `
+          <rect x="262" y="24" width="174" height="16" rx="2" fill="#FEF08A" stroke="#CA8A04" stroke-width="1"/>
+          <text x="349" y="35.5" text-anchor="middle" fill="#854D0E" font-size="9.5" font-weight="800" font-family="'IBM Plex Mono', monospace">TÁI SỬ DỤNG · KHÔNG NHÂN h</text>
+        ` : ''}
+        <text x="242" y="68" text-anchor="end" fill="#0F1D3A" font-size="12" font-weight="800" font-family="'IBM Plex Mono', monospace">keys</text>
+        <text x="242" y="108" text-anchor="end" fill="#0F1D3A" font-size="12" font-weight="800" font-family="'IBM Plex Mono', monospace">children</text>
 
         ${[
-          { y: 46, vals: ['k₀', 'k₁', '⋯', 'kₜ'] },
-          { y: 88, vals: ['c₀', 'c₁', '⋯', 'cₜ'] },
+          { y: 50, vals: ['k₀', 'k₁', '⋯', 'kₜ'] },
+          { y: 90, vals: ['c₀', 'c₁', '⋯', 'cₜ'] },
         ]
           .map(
-            (row) => `
+            (row, rIdx) => `
             <g>
               <polygon points="250,${row.y} 256,${row.y - 5} 454,${row.y - 5} 448,${row.y}" fill="${cobalt}" stroke="${hi}" stroke-width="1.2"/>
               <polygon points="448,${row.y} 454,${row.y - 5} 454,${row.y + 21} 448,${row.y + 26}" fill="#2563EB" stroke="${hi}" stroke-width="1.2"/>
-              <rect x="250" y="${row.y}" width="198" height="26" fill="#FFFFFF" stroke="${hi}" stroke-width="1.6"/>
-              <line x1="299" y1="${row.y}" x2="299" y2="${row.y + 26}" stroke="${hi}" stroke-width="1.3"/>
-              <line x1="348" y1="${row.y}" x2="348" y2="${row.y + 26}" stroke="${hi}" stroke-width="1.3"/>
-              <line x1="399" y1="${row.y}" x2="399" y2="${row.y + 26}" stroke="${hi}" stroke-width="1.3"/>
-              <text x="275" y="${row.y + 18}" text-anchor="middle" fill="#0F1D3A" font-size="13" font-weight="700" font-family="'IBM Plex Mono', monospace">${row.vals[0]}</text>
-              <text x="324" y="${row.y + 18}" text-anchor="middle" fill="#0F1D3A" font-size="13" font-weight="700" font-family="'IBM Plex Mono', monospace">${row.vals[1]}</text>
-              <text x="374" y="${row.y + 18}" text-anchor="middle" fill="#0F1D3A" font-size="15" font-weight="700">${row.vals[2]}</text>
-              <text x="424" y="${row.y + 18}" text-anchor="middle" fill="#0F1D3A" font-size="13" font-weight="700" font-family="'IBM Plex Mono', monospace">${row.vals[3]}</text>
+              ${[0, 1, 2, 3]
+                .map(
+                  (ci) => `
+                <rect class="${active ? 's21-buf-cell' : ''}" style="--bc:${ci + rIdx}" x="${250 + ci * 49.5}" y="${row.y}" width="49.5" height="26" fill="#FFFFFF" stroke="${hi}" stroke-width="1.4"/>
+                <text x="${275 + ci * 49.5}" y="${row.y + 18}" text-anchor="middle" fill="#0F1D3A" font-size="13" font-weight="700" font-family="'IBM Plex Mono', monospace">${row.vals[ci]}</text>
+              `,
+                )
+                .join('')}
             </g>`,
           )
           .join('')}
-        <text x="348" y="144" text-anchor="middle" fill="#0F1D3A" font-size="15" font-weight="800" font-style="italic" font-family="Georgia, serif">O(M)</text>
+        <text x="348" y="144" text-anchor="middle" fill="#004AAD" font-size="14.5" font-weight="800" font-family="'IBM Plex Mono', monospace">O(M) (giải phóng sau mỗi mức)</text>
       </g>
 
-      <!-- Bottom unwind flow: Mức h -> Mức h-1 -> ... -> Mức 0 -->
+      <!-- Bottom live unwind flow -->
       <g ${stg(2)}>
-        <rect class="${active ? 's21-unwind-box' : ''}" style="--uw:0" x="52" y="164" width="76" height="26" rx="4" fill="#FFFFFF" stroke="${hi}" stroke-width="1.8"/>
-        <text x="90" y="182" text-anchor="middle" fill="#0F1D3A" font-size="12.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Mức h</text>
-        <line x1="128" y1="177" x2="154" y2="177" stroke="${hi}" stroke-width="1.8" marker-end="url(#s21-ac)"/>
+        <rect class="${active ? 's21-unwind-box' : ''}" style="--uw:0" x="42" y="164" width="84" height="26" rx="3" fill="#FFFFFF" stroke="${hi}" stroke-width="1.8"/>
+        <text x="84" y="182" text-anchor="middle" fill="#0F1D3A" font-size="12.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Mức h (lá)</text>
+        <line x1="126" y1="177" x2="152" y2="177" stroke="${hi}" stroke-width="1.8" marker-end="url(#s21-ac)"/>
       </g>
 
       <g ${stg(3)}>
-        <rect class="${active ? 's21-unwind-box' : ''}" style="--uw:1" x="160" y="164" width="90" height="26" rx="4" fill="#EEF7FF" stroke="${cobalt}" stroke-width="1.6"/>
-        <text x="205" y="182" text-anchor="middle" fill="#0F1D3A" font-size="12.5" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Mức h − 1</text>
-        <line x1="250" y1="177" x2="274" y2="177" stroke="${hi}" stroke-width="1.8" marker-end="url(#s21-ac)"/>
+        <rect class="${active ? 's21-unwind-box' : ''}" style="--uw:1" x="158" y="164" width="96" height="26" rx="3" fill="#EEF7FF" stroke="${cobalt}" stroke-width="1.6"/>
+        <text x="206" y="182" text-anchor="middle" fill="#0F1D3A" font-size="12.5" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Mức h − 1</text>
+        <line x1="254" y1="177" x2="278" y2="177" stroke="${hi}" stroke-width="1.8" marker-end="url(#s21-ac)"/>
       </g>
 
       <g ${stg(4)}>
-        <text x="292" y="182" text-anchor="middle" fill="#0F1D3A" font-size="18" font-weight="800">⋯</text>
-        <line x1="308" y1="177" x2="332" y2="177" stroke="${hi}" stroke-width="1.8" marker-end="url(#s21-ac)"/>
-        <rect class="${active ? 's21-unwind-box' : ''}" style="--uw:2" x="338" y="164" width="76" height="26" rx="4" fill="#EEF7FF" stroke="${cobalt}" stroke-width="1.6"/>
-        <text x="376" y="182" text-anchor="middle" fill="#0F1D3A" font-size="12.5" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Mức 0</text>
+        <text x="296" y="182" text-anchor="middle" fill="#0F1D3A" font-size="18" font-weight="800">⋯</text>
+        <line x1="312" y1="177" x2="336" y2="177" stroke="${hi}" stroke-width="1.8" marker-end="url(#s21-ac)"/>
+        <rect class="${active ? 's21-unwind-box' : ''}" style="--uw:2" x="342" y="164" width="86" height="26" rx="3" fill="#EEF7FF" stroke="${cobalt}" stroke-width="1.6"/>
+        <text x="385" y="182" text-anchor="middle" fill="#0F1D3A" font-size="12.5" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Mức 0 (gốc)</text>
       </g>
 
-      <text x="235" y="212" text-anchor="middle" fill="#0F1D3A" font-size="14" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Tách/gộp lần lượt khi đệ quy trả về.</text>
+      <text x="235" y="212" text-anchor="middle" fill="#0F1D3A" font-size="13.5" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Mỗi mức quay lui dùng xong giải phóng ngay → chỉ cần O(M).</text>
     </g>
   </svg>`;
 }
@@ -1153,7 +1329,7 @@ const slide21: SlideDef = {
   fullScript:
     'Ta tách riêng phần bộ nhớ lưu cây và bộ nhớ phụ khi chạy thao tác. Lưu cây gồm N khóa trong K nút; mỗi nút có ít nhất 1 khóa (cây không rỗng) nên K ≤ N, cùng K − 1 tham chiếu con và O(K) bộ nhớ quản lý — tổng Θ(N). Với tìm kiếm đệ quy, mỗi mức chỉ đi xuống một nút con, xếp tối đa h + 1 khung gọi, mỗi khung chỉ giữ tham chiếu và vài biến cục bộ O(1), tổng phụ O(h + 1). Với chèn và xóa, ngoài ngăn xếp O(h + 1), khi quay lui tách hoặc gộp từng mức cần thêm vùng danh sách tạm O(M) được giải phóng sau mỗi mức — tổng bộ nhớ phụ là O(h + M + 1).',
   fullView: {
-    summary: 'Phân tách bộ nhớ lưu cây Θ(N) và bộ nhớ phụ: Search O(h + 1), Insert/Delete O(h + M + 1) — bám sát bố cục 4 khối trực quan trên Canva.',
+    summary: 'Phân tách bộ nhớ lưu cây Θ(N) và bộ nhớ phụ: Search O(h + 1), Insert/Delete O(h + M + 1) kèm mô phỏng chuyển động con trỏ, ngăn xếp và vùng tạm tái sử dụng.',
     sections: [
       {
         heading: 'Bốn kết luận không gian',
@@ -1170,17 +1346,21 @@ const slide21: SlideDef = {
   mount(ctx) {
     ctx.slideEl.innerHTML = `
       <div class="slide-frame s21-canva-frame">
-        <header class="s21-canva-head">
+        <header class="s21-canva-head s21-head-split">
           <h1 class="s21-canva-title">Độ phức tạp <span>không gian</span></h1>
+          <div class="s21-mem-meter" data-role="mem-meter">
+            <span class="mm-seg mm-tree" data-seg="1">Lưu cây · Θ(N)</span>
+            <span class="mm-seg mm-stack" data-seg="2">Stack · O(h+1)</span>
+            <span class="mm-seg mm-buf" data-seg="3">Vùng tạm · O(M)</span>
+          </div>
         </header>
 
         <div class="s21-canva-grid">
-          <!-- Left Column: Bộ nhớ lưu cây (top) + Bộ nhớ phụ khi chèn và xóa (bottom) -->
           <div class="s21-left-col">
             <div class="s21-block" data-zone="tree">
               <h2 class="s21-block-title">Bộ nhớ lưu cây</h2>
               <div class="s21-svg-box" data-role="tree-store"></div>
-              <div class="s21-block-cap">N khóa, K − 1 tham chiếu con. K ≤ N.</div>
+              <div class="s21-block-cap">N khóa, K − 1 tham chiếu con, K ≤ N ⇒ <strong>Θ(N)</strong></div>
             </div>
 
             <div class="s21-block" data-zone="temp">
@@ -1189,22 +1369,19 @@ const slide21: SlideDef = {
             </div>
           </div>
 
-          <!-- Right Column: Bộ nhớ phụ tìm kiếm đệ quy (top) + Summary Card (bottom) -->
           <div class="s21-right-col">
             <div class="s21-block" data-zone="stack">
               <h2 class="s21-block-title">Bộ nhớ phụ khi tìm kiếm đệ quy</h2>
               <div class="s21-svg-box s21-svg-box--tall" data-role="tree-stack"></div>
               <div class="s21-block-cap">
-                Tối đa h + 1 khung gọi, mỗi khung O(1).<br/>
-                Mỗi khung giữ tham chiếu, không sao chép cây con.
+                Tối đa h + 1 khung gọi, mỗi khung chỉ giữ tham chiếu O(1), không sao chép cây con.
               </div>
             </div>
 
             <div class="s21-summary-card" data-role="summary-card">
-              <p data-sum="1"><strong>Lưu cây — Θ(N):</strong> N khóa được lưu một lần. K node cần K − 1 tham chiếu con và O(K) bộ nhớ quản lý. Vì K ≤ N nên tổng là Θ(N).</p>
-              <p data-sum="2"><strong>Tìm kiếm đệ quy — O(h + 1):</strong> Mỗi mức chỉ đi xuống một node con, tạo tối đa h + 1 khung gọi. Mỗi khung giữ vài biến và tham chiếu, tốn O(1).</p>
-              <p data-sum="3"><strong>Chèn — O(h + M + 1):</strong> Ngăn xếp chiếm O(h + 1), cộng O(M) cho các danh sách tạm khi tách node.</p>
-              <p data-sum="3"><strong>Xóa — O(h + M + 1):</strong> Ngăn xếp chiếm O(h + 1), cộng O(M) khi ghép danh sách. Các mức sửa cây xử lý lần lượt khi quay lui.</p>
+              <p data-sum="1"><strong>Lưu cây — Θ(N):</strong> N khóa lưu 1 lần; K node cần K − 1 tham chiếu con và O(K) quản lý (K ≤ N).</p>
+              <p data-sum="2"><strong>Tìm kiếm đệ quy — O(h + 1):</strong> Mỗi mức đi xuống 1 con → tối đa h + 1 khung gọi O(1).</p>
+              <p data-sum="3"><strong>Chèn &amp; Xóa — O(h + M + 1):</strong> Ngăn xếp O(h + 1) + vùng tạm O(M) tách/ghép, tái sử dụng lần lượt khi quay lui.</p>
             </div>
           </div>
         </div>
@@ -1219,6 +1396,7 @@ const slide21: SlideDef = {
     const zStack = ctx.slideEl.querySelector<HTMLElement>('[data-zone="stack"]')!;
     const zTemp = ctx.slideEl.querySelector<HTMLElement>('[data-zone="temp"]')!;
     const lines = ctx.slideEl.querySelectorAll<HTMLElement>('[data-sum]');
+    const segs = ctx.slideEl.querySelectorAll<HTMLElement>('[data-seg]');
     const rm = ctx.getReducedMotion();
     const prevStep = prev ?? -1;
 
@@ -1234,6 +1412,12 @@ const slide21: SlideDef = {
       const n = Number(p.dataset.sum);
       p.classList.toggle('is-dim-line', step < n);
       p.classList.toggle('is-hl-line', step === n);
+    });
+
+    segs.forEach((s) => {
+      const n = Number(s.dataset.seg);
+      s.classList.toggle('is-on', step >= n);
+      s.classList.toggle('is-cur', step === n);
     });
   },
 };
