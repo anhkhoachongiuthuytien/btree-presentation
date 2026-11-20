@@ -28,7 +28,7 @@ export const TRANSITIONS: TransitionSpec[] = [
   { from: 19, to: 20, kind: 'connect-shape', label: 'Thời gian → Độ phức tạp trung bình', description: 'Cây quyết định 3 nhánh và giả thiết đuôi cho R.' },
   { from: 20, to: 21, kind: 'swap-example', label: 'Lý thuyết → RAM & I/O thực tế', description: 'Tách riêng số lần đọc trang đĩa và xử lý trong RAM.' },
   { from: 21, to: 22, kind: 'connect-shape', label: 'Trang đĩa → Độ phức tạp không gian', description: 'Lưu cây Θ(N), ngăn xếp đệ quy và vùng tạm O(M).' },
-  { from: 22, to: 23, kind: 'open-chapter', label: 'Phần 5 · B+ Tree & Cải tiến', description: 'Mở phần cải tiến với B+ Tree và duyệt khoảng.' },
+  { from: 22, to: 23, kind: 'open-chapter', label: 'Phần 5 · Các biến thể & ứng dụng', description: 'Mở phần biến thể và ứng dụng với B+ Tree và duyệt khoảng.' },
   { from: 23, to: 24, kind: 'swap-example', label: 'B+ duyệt khoảng → Copy-up 25', description: 'Giải thích vì sao khóa 25 xuất hiện hai lần.' },
   { from: 24, to: 25, kind: 'swap-example', label: 'B+ Tree → B* Tree phân phối lại', description: 'Tận dụng ô trống ở anh em trước khi tách.' },
   { from: 25, to: 26, kind: 'swap-example', label: 'Phân phối lại → Tách 2 thành 3', description: 'Gom 14 khóa chia đều 3 nút đạt 2/3 dung lượng.' },

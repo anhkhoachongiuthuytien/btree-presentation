@@ -23,7 +23,7 @@ const BPLUS_RECORDS: Record<number, { name: string; leafId: string }> = {
 const slide22: SlideDef = {
   number: 23,
   title: 'B+ tree và truy vấn khoảng [22, 66]',
-  chapter: '5. Các cải tiến và ứng dụng',
+  chapter: '5. Các biến thể và ứng dụng',
   chapterStart: 23,
   theme: 'white',
   stepCount: 3,
@@ -51,8 +51,8 @@ const slide22: SlideDef = {
     ctx.slideEl.innerHTML = `
       <div class="slide-frame">
         <header class="slide-header">
-          <div class="slide-chapter-head slide-chapter-head--num">5.</div>
-          <h1 class="slide-title"><span>B+</span> Tree</h1>
+          <div class="slide-chapter-head">5. Các biến thể và ứng dụng</div>
+          <h1 class="slide-title slide-title--sub"><span>B+</span> Tree</h1>
           <p class="slide-lead">Dữ liệu ở lá. Node trong giữ khóa phân cách để dẫn đường.</p>
         </header>
 
@@ -257,7 +257,7 @@ function renderSlide22Tree(slideEl: HTMLElement, step: number, focusKey: number 
 const slide23: SlideDef = {
   number: 24,
   title: 'Vì sao 25 xuất hiện hai lần?',
-  chapter: '5. Các cải tiến và ứng dụng',
+  chapter: '5. Các biến thể và ứng dụng',
   theme: 'blue',
   stepCount: 3,
   leadIn: '“Hãy theo dõi thẻ dữ liệu trong lúc tách. Khóa xuất hiện hai lần, nhưng có bao nhiêu bản ghi 25?”',
@@ -281,7 +281,7 @@ const slide23: SlideDef = {
     ctx.slideEl.innerHTML = `
       <div class="slide-frame">
         <header class="slide-header">
-          <h1 class="slide-title"><span>B+ Tree:</span> vì sao khóa 25 xuất hiện hai lần?</h1>
+          <h1 class="slide-title"><em class="hl-cobalt">B+ Tree:</em> <span>vì sao khóa 25</span> xuất hiện hai lần?</h1>
           <p class="slide-lead">Tách lá: sao chép khóa phân cách lên cha, bản ghi vẫn được giữ ở lá.</p>
         </header>
 
@@ -545,7 +545,7 @@ const slide23: SlideDef = {
 const slide24: SlideDef = {
   number: 25,
   title: 'B* tree phân phối lại trước khi tách',
-  chapter: '5. Các cải tiến và ứng dụng',
+  chapter: '5. Các biến thể và ứng dụng',
   theme: 'white',
   stepCount: 3,
   leadIn: '“Trước khi xin thêm một trang, hãy nhìn hai ô bên phải. Ta dùng được chỗ đó nếu đổi khóa nào ở cha?”',
@@ -796,7 +796,7 @@ const ALL_14_KEYS = [10, 20, 30, 35, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130]
 const slide25: SlideDef = {
   number: 26,
   title: 'B* tree tách hai nút thành ba',
-  chapter: '5. Các cải tiến và ứng dụng',
+  chapter: '5. Các biến thể và ứng dụng',
   theme: 'blue',
   stepCount: 3,
   leadIn: '“14 khóa đi đâu hết? Hai khóa ở cha, ba nhóm bốn khóa ở dưới. Cây dùng trang đầy hơn nhưng một lần cập nhật phải xét cả anh em.”',
@@ -820,7 +820,7 @@ const slide25: SlideDef = {
     ctx.slideEl.innerHTML = `
       <div class="slide-frame">
         <header class="slide-header">
-          <h1 class="slide-title"><span>B* Tree:</span> tách 2 node thành 3</h1>
+          <h1 class="slide-title"><em class="hl-cobalt">B* Tree:</em> <span>tách 2 node</span> thành 3</h1>
           <p class="slide-lead">Khi cả node tràn và anh em đều hết chỗ, cây phân chia khóa cho 3 node.</p>
         </header>
 
@@ -1159,7 +1159,7 @@ function s26BdbSvg(active: boolean): string {
 const slide26: SlideDef = {
   number: 27,
   title: 'Ba ứng dụng của các khóa có thứ tự',
-  chapter: '5. Các cải tiến và ứng dụng',
+  chapter: '5. Các biến thể và ứng dụng',
   theme: 'white',
   stepCount: 3,
   leadIn: '“Ở cả ba ví dụ, dữ liệu được sắp thứ tự. Ứng dụng quyết định khóa nào giúp trả lời câu hỏi thường gặp.”',
@@ -1254,7 +1254,7 @@ const XFS_EXTENTS: [number, number][] = [
 const slide27: SlideDef = {
   number: 28,
   title: 'XFS cần 10 block liền nhau',
-  chapter: '5. Các cải tiến và ứng dụng · XFS',
+  chapter: '5. Các biến thể và ứng dụng · XFS',
   theme: 'xfs-blue',
   stepCount: 3,
   leadIn: '“Ta biết tổng là 66. Con số nào trong sáu bản ghi mới cho biết một yêu cầu dài 10 có được đáp ứng?”',
@@ -1365,7 +1365,7 @@ const slide27: SlideDef = {
 const slide28: SlideDef = {
   number: 29,
   title: 'XFS dùng cntbt và bnobt',
-  chapter: '5. Các cải tiến và ứng dụng · XFS',
+  chapter: '5. Các biến thể và ứng dụng · XFS',
   theme: 'white',
   stepCount: 4,
   leadIn: '“Vẫn là thông tin về các vùng trống trong cùng AG. Khi xin chỗ mình biết độ dài; khi trả chỗ mình biết địa chỉ. Mỗi câu hỏi cần một thứ tự khóa.”',
@@ -1618,7 +1618,7 @@ const ADDR_400_411 = Array.from({ length: 12 }, (_, i) => 400 + i);
 const slide29: SlideDef = {
   number: 30,
   title: 'Cấp phát, thu hồi và hỏi đáp',
-  chapter: '5. Các cải tiến và ứng dụng · XFS',
+  chapter: '5. Các biến thể và ứng dụng · XFS',
   theme: 'xfs-blue',
   stepCount: 4,
   leadIn: '“Từ một khóa 17 đến một vùng trống dài 12 block, ta đều dùng thứ tự để chọn đúng nhánh. Nhóm 10 cảm ơn thầy cô và các bạn. Mọi người muốn xem lại bước nào?”',

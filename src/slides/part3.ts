@@ -181,7 +181,7 @@ const slide14: SlideDef = {
     ctx.slideEl.innerHTML = `
       <div class="slide-frame">
         <header class="slide-header">
-          <h1 class="slide-title"><span>Insert</span> và Split</h1>
+          <h1 class="slide-title"><span>Insert</span> và <span>Split</span></h1>
         </header>
 
         <div class="s14-grid">
@@ -325,7 +325,7 @@ const slide15: SlideDef = {
       <div class="slide-frame">
         <header class="slide-header slide-header--split">
           <div>
-            <h1 class="slide-title"><span>Delete</span> và Predecessor</h1>
+            <h1 class="slide-title"><span>Delete</span> và <span>Predecessor</span></h1>
           </div>
           <button type="button" class="inline-action-btn" data-role="goto-12">↩ Xem ví dụ thu gọn gốc (Trang 11)</button>
         </header>
@@ -463,7 +463,7 @@ const slide16: SlideDef = {
     ctx.slideEl.innerHTML = `
       <div class="slide-frame">
         <header class="slide-header">
-          <h1 class="slide-title"><span>Borrow</span> và Merge (_fix_underflow)</h1>
+          <h1 class="slide-title"><span>Borrow</span> và <span>Merge</span> (_fix_underflow)</h1>
         </header>
 
         <div class="s16-grid">
@@ -1097,8 +1097,7 @@ const slide17PyDemo: SlideDef = {
       <div class="slide-frame">
         <header class="slide-header slide-header--split">
           <div>
-            <div class="slide-chapter-head">3. Cài đặt Python</div>
-            <h1 class="slide-title slide-title--sub"><span>Chạy thử</span> B-tree bằng Python</h1>
+            <h1 class="slide-title">Chạy thử <span>B-tree</span> bằng <span>Python</span></h1>
           </div>
           <div class="btn-row">
             <button type="button" class="inline-action-btn" data-role="py-replay">↺ Gõ lại nhịp</button>

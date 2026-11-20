@@ -195,7 +195,7 @@ const TOC_ITEMS = [
   { num: '02', title: 'Tìm kiếm, chèn và xóa trên B-tree', target: 6, range: 'Trang 06–12' },
   { num: '03', title: 'Cài đặt Python và trực quan hóa', target: 13, range: 'Trang 13–17' },
   { num: '04', title: 'Độ phức tạp thời gian và không gian', target: 18, range: 'Trang 18–22' },
-  { num: '05', title: 'Các cải tiến và ứng dụng', target: 23, range: 'Trang 23–30', dest: 'Đích: XFS (2 cây B+)' },
+  { num: '05', title: 'Các biến thể và ứng dụng', target: 23, range: 'Trang 23–30', dest: 'Đích: XFS (2 cây B+)' },
 ];
 
 const slide02: SlideDef = {
@@ -219,7 +219,7 @@ const slide02: SlideDef = {
           '<li><strong>Tìm kiếm, chèn và xóa trên B-tree (Trang 06–12):</strong> Search(17), Insert + split dây chuyền, minh họa xóa, Borrow/Merge, thu gọn gốc và cây quyết định Delete.</li>' +
           '<li><strong>Cài đặt Python và trực quan hóa (Trang 13–17):</strong> BTreeNode, BTree, search, insert/_insert, delete/_delete, _fix_underflow và chạy thử trực tiếp bằng Python.</li>' +
           '<li><strong>Độ phức tạp thời gian và không gian (Trang 18–22):</strong> Chiều cao h, chi phí các thao tác, kỳ vọng trung bình, RAM vs I/O và bộ nhớ phụ.</li>' +
-          '<li><strong>Các cải tiến và ứng dụng (Trang 23–30):</strong> B+ Tree (duyệt khoảng, copy-up), B* Tree (phân phối lại, tách 2 thành 3), InnoDB/HFS+/Berkeley DB và bài toán XFS (cntbt, bnobt).</li>' +
+          '<li><strong>Các biến thể và ứng dụng (Trang 23–30):</strong> B+ Tree (duyệt khoảng, copy-up), B* Tree (phân phối lại, tách 2 thành 3), InnoDB/HFS+/Berkeley DB và bài toán XFS (cntbt, bnobt).</li>' +
           '</ol>',
       },
     ],
@@ -332,7 +332,7 @@ const slide03: SlideDef = {
       <div class="slide-frame">
         <header class="slide-header">
           <div class="slide-chapter-head">1. Bài toán và cơ sở lí thuyết</div>
-          <h1 class="slide-title slide-title--sub"><span>Bài toán</span> đầu vào và đầu ra</h1>
+          <h1 class="slide-title slide-title--sub">Bài toán <span>đầu vào và đầu ra</span></h1>
         </header>
 
         <div class="s03-top-stage">
@@ -742,7 +742,7 @@ const slide05: SlideDef = {
     ctx.slideEl.innerHTML = `
       <div class="slide-frame">
         <header class="slide-header">
-          <h1 class="slide-title"><span>Từ</span> M-way Search Tree <span>đến</span> B-tree</h1>
+          <h1 class="slide-title">Từ <span>M-way Search Tree</span> đến <span>B-tree</span></h1>
         </header>
 
         <div class="def-banner def-banner--dark">

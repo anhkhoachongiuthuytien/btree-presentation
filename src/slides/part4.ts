@@ -631,7 +631,7 @@ const slide19: SlideDef = {
       <div class="slide-frame">
         <header class="slide-header slide-header--split">
           <div>
-            <h1 class="slide-title"><span>B-tree:</span> độ phức tạp trung bình</h1>
+            <h1 class="slide-title"><em class="hl-cobalt">B-tree:</em> <span>độ phức tạp</span> trung bình</h1>
             <p class="slide-lead">Phải nêu phân bố truy vấn và giả thiết về số mức sửa cây.</p>
           </div>
           <label class="toggle-pill" data-role="toggle-wrap">

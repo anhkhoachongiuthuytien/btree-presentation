@@ -181,6 +181,11 @@ body {
   color: #ffffff;
 }
 
+.slide-title .hl-cobalt {
+  font-style: normal;
+  color: var(--title-blue);
+}
+
 .theme-xfs-blue .slide-title span {
   color: var(--title-blue);
 }
@@ -3332,7 +3337,7 @@ code {
 }
 
 .s26-canva-title span {
-  color: #60a5fa;
+  color: #3b82f6;
 }
 
 .s26-canva-sub {

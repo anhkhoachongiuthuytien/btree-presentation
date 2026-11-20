@@ -306,7 +306,7 @@ const slide07: SlideDef = {
     ctx.slideEl.innerHTML = `
       <div class="slide-frame">
         <header class="slide-header">
-          <h1 class="slide-title"><span>Chèn khóa:</span> Insert(k)</h1>
+          <h1 class="slide-title">Chèn khóa: <span>Insert(k)</span></h1>
         </header>
         <div class="def-banner def-banner--flush">Khác với cây nhị phân thông thường, B-tree có thể <strong>tăng chiều cao</strong> bằng cách tạo một root mới.</div>
 
@@ -510,7 +510,7 @@ const slide08: SlideDef = {
       <div class="slide-frame">
         <header class="slide-header slide-header--split">
           <div>
-            <h1 class="slide-title"><span>Chèn và split</span> dây chuyền</h1>
+            <h1 class="slide-title">Chèn và split <span>dây chuyền</span></h1>
             <p class="slide-lead">Split không chỉ xảy ra ở lá</p>
           </div>
           <div class="height-pill" data-role="h-pill">Chiều cao: <strong>h = 1</strong></div>
@@ -985,7 +985,7 @@ const slide10: SlideDef = {
     ctx.slideEl.innerHTML = `
       <div class="slide-frame">
         <header class="slide-header">
-          <h1 class="slide-title"><span>Minh họa</span> xóa khóa</h1>
+          <h1 class="slide-title">Minh họa <span>xóa khóa</span></h1>
         </header>
 
         <div class="s10-rows">
@@ -1171,7 +1171,7 @@ const slide11: SlideDef = {
     ctx.slideEl.innerHTML = `
       <div class="slide-frame">
         <header class="slide-header">
-          <h1 class="slide-title"><span>Borrow</span> và Merge</h1>
+          <h1 class="slide-title"><span>Borrow</span> và <span>Merge</span></h1>
         </header>
 
         <div class="s11-grid">
@@ -1359,7 +1359,7 @@ const slide12: SlideDef = {
       <div class="slide-frame">
         <header class="slide-header slide-header--split">
           <div>
-            <h1 class="slide-title"><span>Trace</span> Delete(k)</h1>
+            <h1 class="slide-title">Trace <span>Delete(k)</span></h1>
           </div>
           <div class="height-pill" data-role="h-pill">3 tầng · <strong>h = 2</strong></div>
         </header>
