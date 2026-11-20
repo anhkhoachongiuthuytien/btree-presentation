@@ -21,10 +21,10 @@ const BPLUS_RECORDS: Record<number, { name: string; leafId: string }> = {
 };
 
 const slide22: SlideDef = {
-  number: 22,
+  number: 23,
   title: 'B+ tree và truy vấn khoảng [22, 66]',
   chapter: '5. Các cải tiến và ứng dụng',
-  chapterStart: 22,
+  chapterStart: 23,
   theme: 'white',
   stepCount: 3,
   leadIn: '“Đường dọc đưa mình đến điểm bắt đầu. Từ đó, mình còn cần gốc bao nhiêu lần để đọc hết khoảng này?”',
@@ -255,7 +255,7 @@ function renderSlide22Tree(slideEl: HTMLElement, step: number, focusKey: number 
 // SLIDE 23 — Vì sao 25 xuất hiện hai lần? (B+ Copy-up)
 // ============================================================================
 const slide23: SlideDef = {
-  number: 23,
+  number: 24,
   title: 'Vì sao 25 xuất hiện hai lần?',
   chapter: '5. Các cải tiến và ứng dụng',
   theme: 'blue',
@@ -543,7 +543,7 @@ const slide23: SlideDef = {
 // SLIDE 24 — B* tree phân phối lại trước khi tách
 // ============================================================================
 const slide24: SlideDef = {
-  number: 24,
+  number: 25,
   title: 'B* tree phân phối lại trước khi tách',
   chapter: '5. Các cải tiến và ứng dụng',
   theme: 'white',
@@ -794,7 +794,7 @@ const slide24: SlideDef = {
 const ALL_14_KEYS = [10, 20, 30, 35, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130];
 
 const slide25: SlideDef = {
-  number: 25,
+  number: 26,
   title: 'B* tree tách hai nút thành ba',
   chapter: '5. Các cải tiến và ứng dụng',
   theme: 'blue',
@@ -1157,7 +1157,7 @@ function s26BdbSvg(active: boolean): string {
 }
 
 const slide26: SlideDef = {
-  number: 26,
+  number: 27,
   title: 'Ba ứng dụng của các khóa có thứ tự',
   chapter: '5. Các cải tiến và ứng dụng',
   theme: 'white',
@@ -1252,7 +1252,7 @@ const XFS_EXTENTS: [number, number][] = [
 ];
 
 const slide27: SlideDef = {
-  number: 27,
+  number: 28,
   title: 'XFS cần 10 block liền nhau',
   chapter: '5. Các cải tiến và ứng dụng · XFS',
   theme: 'xfs-blue',
@@ -1363,7 +1363,7 @@ const slide27: SlideDef = {
 // SLIDE 28 — XFS dùng cntbt và bnobt
 // ============================================================================
 const slide28: SlideDef = {
-  number: 28,
+  number: 29,
   title: 'XFS dùng cntbt và bnobt',
   chapter: '5. Các cải tiến và ứng dụng · XFS',
   theme: 'white',
@@ -1616,7 +1616,7 @@ function renderBnobt(slideEl: HTMLElement, step: number, reducedMotion: boolean)
 const ADDR_400_411 = Array.from({ length: 12 }, (_, i) => 400 + i);
 
 const slide29: SlideDef = {
-  number: 29,
+  number: 30,
   title: 'Cấp phát, thu hồi và hỏi đáp',
   chapter: '5. Các cải tiến và ứng dụng · XFS',
   theme: 'xfs-blue',

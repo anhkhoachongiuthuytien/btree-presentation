@@ -13,8 +13,8 @@ export const ALL_SLIDES: SlideDef[] = [
   ...PART5_SLIDES,
 ];
 
-if (ALL_SLIDES.length !== 29) {
-  throw new Error(`Expected exactly 29 slides, got ${ALL_SLIDES.length}`);
+if (ALL_SLIDES.length !== 30) {
+  throw new Error(`Expected exactly 30 slides, got ${ALL_SLIDES.length}`);
 }
 
-export const CHAPTER_STARTS = [3, 6, 13, 17, 22] as const;
+export const CHAPTER_STARTS = [3, 6, 13, 18, 23] as const;

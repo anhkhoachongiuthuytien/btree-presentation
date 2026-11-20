@@ -193,9 +193,9 @@ const slide01: SlideDef = {
 const TOC_ITEMS = [
   { num: '01', title: 'Bài toán và cơ sở lý thuyết', target: 3, range: 'Trang 03–05' },
   { num: '02', title: 'Tìm kiếm, chèn và xóa trên B-tree', target: 6, range: 'Trang 06–12' },
-  { num: '03', title: 'Cài đặt Python và trực quan hóa', target: 13, range: 'Trang 13–16' },
-  { num: '04', title: 'Độ phức tạp thời gian và không gian', target: 17, range: 'Trang 17–21' },
-  { num: '05', title: 'Các cải tiến và ứng dụng', target: 22, range: 'Trang 22–29', dest: 'Đích: XFS (2 cây B+)' },
+  { num: '03', title: 'Cài đặt Python và trực quan hóa', target: 13, range: 'Trang 13–17' },
+  { num: '04', title: 'Độ phức tạp thời gian và không gian', target: 18, range: 'Trang 18–22' },
+  { num: '05', title: 'Các cải tiến và ứng dụng', target: 23, range: 'Trang 23–30', dest: 'Đích: XFS (2 cây B+)' },
 ];
 
 const slide02: SlideDef = {
@@ -212,14 +212,14 @@ const slide02: SlideDef = {
     summary: 'Mục lục 5 phần chính của bài thuyết trình B-tree, hỗ trợ nhảy thẳng tới bất kỳ chương nào.',
     sections: [
       {
-        heading: 'Lộ trình 5 chương (Trang 03 → 29)',
+        heading: 'Lộ trình 5 chương (Trang 03 → 30)',
         bodyHtml:
           '<ol>' +
           '<li><strong>Bài toán và cơ sở lý thuyết (Trang 03–05):</strong> Động lực bộ nhớ ngoài, đầu vào/đầu ra, M-way Search Tree và định nghĩa B-tree.</li>' +
-          '<li><strong>Tìm kiếm, chèn và xóa trên B-tree (Trang 06–12):</strong> Search(17), Insert + split dây chuyền, cây quyết định Delete, Borrow/Merge và thu gọn gốc.</li>' +
-          '<li><strong>Cài đặt Python và trực quan hóa (Trang 13–16):</strong> BTreeNode, BTree, search, insert/_insert, delete/_delete và _fix_underflow.</li>' +
-          '<li><strong>Độ phức tạp thời gian và không gian (Trang 17–21):</strong> Chiều cao h, chi phí các thao tác, kỳ vọng trung bình, RAM vs I/O và bộ nhớ phụ.</li>' +
-          '<li><strong>Các cải tiến và ứng dụng (Trang 22–29):</strong> B+ Tree (duyệt khoảng, copy-up), B* Tree (phân phối lại, tách 2 thành 3), InnoDB/HFS+/Berkeley DB và bài toán XFS (cntbt, bnobt).</li>' +
+          '<li><strong>Tìm kiếm, chèn và xóa trên B-tree (Trang 06–12):</strong> Search(17), Insert + split dây chuyền, minh họa xóa, Borrow/Merge, thu gọn gốc và cây quyết định Delete.</li>' +
+          '<li><strong>Cài đặt Python và trực quan hóa (Trang 13–17):</strong> BTreeNode, BTree, search, insert/_insert, delete/_delete, _fix_underflow và chạy thử trực tiếp bằng Python.</li>' +
+          '<li><strong>Độ phức tạp thời gian và không gian (Trang 18–22):</strong> Chiều cao h, chi phí các thao tác, kỳ vọng trung bình, RAM vs I/O và bộ nhớ phụ.</li>' +
+          '<li><strong>Các cải tiến và ứng dụng (Trang 23–30):</strong> B+ Tree (duyệt khoảng, copy-up), B* Tree (phân phối lại, tách 2 thành 3), InnoDB/HFS+/Berkeley DB và bài toán XFS (cntbt, bnobt).</li>' +
           '</ol>',
       },
     ],
@@ -262,7 +262,7 @@ const slide02: SlideDef = {
       btn.addEventListener('click', (ev) => {
         ev.stopPropagation();
         const target = Number(btn.dataset.targetSlide);
-        if (target >= 1 && target <= 29) ctx.goToSlide(target);
+        if (target >= 1 && target <= 30) ctx.goToSlide(target);
       });
     });
   },

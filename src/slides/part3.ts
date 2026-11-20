@@ -1,5 +1,5 @@
 import type { SlideDef, TreeSceneSpec } from '../types';
-import { renderPythonWindow, updateCodeHighlight } from '../pythonCode';
+import { renderPythonWindow, updateCodeHighlight, highlightPythonLine } from '../pythonCode';
 import { renderTreeScene, cancelTreeAnimations } from '../svg/treeRenderer';
 
 function triggerStepPulse(el: HTMLElement, reducedMotion: boolean): void {
@@ -585,4 +585,605 @@ const slide16: SlideDef = {
   },
 };
 
-export const PART3_SLIDES: SlideDef[] = [slide13, slide14, slide15, slide16];
+// ============================================================================
+// SLIDE 17 — Chạy thử B-tree bằng Python (Hiệu ứng gõ code + Console + Cây trực tiếp)
+// ============================================================================
+interface PyDemoBlock {
+  lines: string[];
+  stdout: string[];
+  cmdBadge: string;
+  meta: string;
+  note: string;
+  scene: TreeSceneSpec;
+}
+
+const PY_DEMO_BLOCKS: PyDemoBlock[] = [
+  {
+    lines: ['# Demo chạy trực tiếp lớp BTree(M=3)', 'from btree import BTree'],
+    stdout: [],
+    cmdBadge: 'Sẵn sàng chạy demo_btree.py',
+    meta: 'M = 3 · 0 khóa · h = 0',
+    note: 'Nhấn <strong>→</strong> để gõ từng khối lệnh Python hoặc nhấn <strong>Chạy tự động</strong> để xem toàn bộ quá trình gõ và chạy.',
+    scene: {
+      viewBox: [0, 0, 560, 270],
+      nodes: [
+        {
+          id: 'py-r',
+          x: 280,
+          y: 124,
+          cellW: 96,
+          cellH: 46,
+          tag: 'self.root = BTreeNode(leaf=True)',
+          tagTone: 'cobalt',
+          keys: [{ id: 'py-empty', label: '[]', tone: 'muted' }],
+        },
+      ],
+      edges: [],
+    },
+  },
+  {
+    lines: [
+      'tree = BTree(M=3)',
+      'for k in [10, 20, 5, 6, 12]:',
+      '    tree.insert(k)',
+      'print("root:", tree.root.keys)',
+    ],
+    stdout: ['root: [10]', 'leaves: [[5, 6], [12, 20]]'],
+    cmdBadge: 'insert([10, 20, 5, 6, 12]) → Split gốc',
+    meta: 'M = 3 · 5 khóa · h = 1',
+    note: '<strong>Chèn 5 khóa đầu:</strong> khi chèn <code>5</code>, nút gốc <code>[5, 10, 20]</code> tràn (&gt; 2 khóa) → đẩy <code>10</code> lên làm gốc mới, tách thành 2 lá.',
+    scene: {
+      viewBox: [0, 0, 560, 270],
+      nodes: [
+        {
+          id: 'py-r',
+          x: 280,
+          y: 58,
+          cellW: 60,
+          cellH: 42,
+          state: 'active',
+          tag: 'root.keys = [10]',
+          tagTone: 'cobalt',
+          keys: [{ id: 'pk-10', label: '10', tone: 'active' }],
+        },
+        {
+          id: 'py-l0',
+          x: 156,
+          y: 192,
+          cellW: 54,
+          cellH: 40,
+          keys: [
+            { id: 'pk-5', label: '5', tone: 'success' },
+            { id: 'pk-6', label: '6', tone: 'success' },
+          ],
+        },
+        {
+          id: 'py-l1',
+          x: 404,
+          y: 192,
+          cellW: 54,
+          cellH: 40,
+          keys: [
+            { id: 'pk-12', label: '12', tone: 'success' },
+            { id: 'pk-20', label: '20', tone: 'success' },
+          ],
+        },
+      ],
+      edges: [
+        { id: 'pye0', fromNode: 'py-r', portIndex: 0, toNode: 'py-l0', state: 'active', arrow: true },
+        { id: 'pye1', fromNode: 'py-r', portIndex: 1, toNode: 'py-l1', state: 'active', arrow: true },
+      ],
+      baselineY: { y: 234, x1: 62, x2: 498, label: 'Mọi lá cùng độ sâu h = 1' },
+    },
+  },
+  {
+    lines: [
+      'for k in [30, 17]:',
+      '    tree.insert(k)',
+      'print("root:", tree.root.keys)',
+    ],
+    stdout: ['root: [10, 20]', 'leaves: [[5, 6], [12, 17], [30]]'],
+    cmdBadge: 'insert(30), insert(17) → Tách lá phải',
+    meta: 'M = 3 · 7 khóa · h = 1',
+    note: '<strong>Chèn 30 &amp; 17:</strong> lá <code>[12, 20, 30]</code> tràn → trả phiếu <code>(20, [30])</code> lên gốc thành <code>[10 | 20]</code>; sau đó <code>17</code> rơi vào lá giữa <code>[12 | 17]</code>.',
+    scene: {
+      viewBox: [0, 0, 560, 270],
+      nodes: [
+        {
+          id: 'py-r',
+          x: 280,
+          y: 58,
+          cellW: 60,
+          cellH: 42,
+          state: 'active',
+          tag: 'root.keys = [10, 20]',
+          tagTone: 'cobalt',
+          keys: [
+            { id: 'pk-10', label: '10' },
+            { id: 'pk-20', label: '20', tone: 'active' },
+          ],
+        },
+        {
+          id: 'py-l0',
+          x: 102,
+          y: 192,
+          cellW: 52,
+          cellH: 40,
+          keys: [
+            { id: 'pk-5', label: '5' },
+            { id: 'pk-6', label: '6' },
+          ],
+        },
+        {
+          id: 'py-l1',
+          x: 280,
+          y: 192,
+          cellW: 52,
+          cellH: 40,
+          state: 'success',
+          keys: [
+            { id: 'pk-12', label: '12' },
+            { id: 'pk-17', label: '17', tone: 'success' },
+          ],
+        },
+        {
+          id: 'py-l2',
+          x: 458,
+          y: 192,
+          cellW: 52,
+          cellH: 40,
+          state: 'success',
+          keys: [{ id: 'pk-30', label: '30', tone: 'success' }],
+        },
+      ],
+      edges: [
+        { id: 'pye0', fromNode: 'py-r', portIndex: 0, toNode: 'py-l0' },
+        { id: 'pye1', fromNode: 'py-r', portIndex: 1, toNode: 'py-l1', state: 'active', arrow: true },
+        { id: 'pye2', fromNode: 'py-r', portIndex: 2, toNode: 'py-l2', state: 'active', arrow: true },
+      ],
+      baselineY: { y: 234, x1: 42, x2: 518, label: 'Khớp đúng cây B-tree ở Trang bìa!' },
+    },
+  },
+  {
+    lines: [
+      'res = tree.search(17)',
+      'print("search(17) ->", res[0].keys, "idx =", res[1])',
+      'print("search(16) ->", tree.search(16))',
+    ],
+    stdout: ['search(17) -> [12, 17] idx = 1', 'search(16) -> None'],
+    cmdBadge: 'search(17) → (node, 1) · search(16) → None',
+    meta: 'M = 3 · 7 khóa · 2 mức duyệt',
+    note: '<strong>Tìm kiếm với <code>bisect_left</code>:</strong> <code>17</code> rẽ nhánh <code>i = 1</code> xuống <code>[12 | 17]</code> khớp chỉ số <code>1</code>; còn <code>16</code> không khớp ở lá nên trả <code>None</code>.',
+    scene: {
+      viewBox: [0, 0, 560, 270],
+      nodes: [
+        {
+          id: 'py-r',
+          x: 280,
+          y: 58,
+          cellW: 60,
+          cellH: 42,
+          state: 'active',
+          tag: 'bisect_left(17) → i = 1',
+          tagTone: 'cobalt',
+          keys: [
+            { id: 'pk-10', label: '10' },
+            { id: 'pk-20', label: '20', tone: 'active' },
+          ],
+        },
+        {
+          id: 'py-l0',
+          x: 102,
+          y: 192,
+          cellW: 52,
+          cellH: 40,
+          state: 'muted',
+          keys: [
+            { id: 'pk-5', label: '5', tone: 'muted' },
+            { id: 'pk-6', label: '6', tone: 'muted' },
+          ],
+        },
+        {
+          id: 'py-l1',
+          x: 280,
+          y: 192,
+          cellW: 54,
+          cellH: 42,
+          state: 'success',
+          tag: 'Trả (node, idx=1)',
+          tagPos: 'bottom',
+          tagTone: 'success',
+          keys: [
+            { id: 'pk-12', label: '12', sublabel: '0' },
+            { id: 'pk-17', label: '17', sublabel: '1', tone: 'success' },
+          ],
+        },
+        {
+          id: 'py-l2',
+          x: 458,
+          y: 192,
+          cellW: 52,
+          cellH: 40,
+          state: 'muted',
+          keys: [{ id: 'pk-30', label: '30', tone: 'muted' }],
+        },
+      ],
+      edges: [
+        { id: 'pye0', fromNode: 'py-r', portIndex: 0, toNode: 'py-l0', state: 'muted' },
+        { id: 'pye1', fromNode: 'py-r', portIndex: 1, toNode: 'py-l1', state: 'active', arrow: true, label: '10 < 17 < 20' },
+        { id: 'pye2', fromNode: 'py-r', portIndex: 2, toNode: 'py-l2', state: 'muted' },
+      ],
+    },
+  },
+  {
+    lines: [
+      'ok = tree.delete(30)',
+      'print("delete(30) ->", ok)',
+      'print("root:", tree.root.keys)',
+    ],
+    stdout: ['delete(30) -> True', 'root: [10, 17]  # Borrow từ anh em trái'],
+    cmdBadge: 'delete(30) → _fix_underflow (Borrow trái)',
+    meta: 'M = 3 · 6 khóa · h = 1',
+    note: '<strong>Xóa 30 kích hoạt <code>_fix_underflow</code>:</strong> lá phải rỗng, anh em trái <code>[12, 17]</code> dư khóa → đẩy <code>17 ↑</code> gốc và kéo <code>20 ↓</code> lấp lá phải.',
+    scene: {
+      viewBox: [0, 0, 560, 270],
+      nodes: [
+        {
+          id: 'py-r',
+          x: 280,
+          y: 58,
+          cellW: 60,
+          cellH: 42,
+          state: 'success',
+          tag: 'root.keys = [10, 17]',
+          tagTone: 'success',
+          keys: [
+            { id: 'pk-10', label: '10' },
+            { id: 'pk-17', label: '17', tone: 'success' },
+          ],
+        },
+        {
+          id: 'py-l0',
+          x: 102,
+          y: 192,
+          cellW: 52,
+          cellH: 40,
+          keys: [
+            { id: 'pk-5', label: '5' },
+            { id: 'pk-6', label: '6' },
+          ],
+        },
+        {
+          id: 'py-l1',
+          x: 280,
+          y: 192,
+          cellW: 52,
+          cellH: 40,
+          state: 'active',
+          tag: 'Cho mượn 17',
+          tagPos: 'bottom',
+          tagTone: 'cobalt',
+          keys: [{ id: 'pk-12', label: '12' }],
+        },
+        {
+          id: 'py-l2',
+          x: 458,
+          y: 192,
+          cellW: 52,
+          cellH: 40,
+          state: 'success',
+          tag: 'Nhận 20 từ cha',
+          tagPos: 'bottom',
+          tagTone: 'success',
+          keys: [{ id: 'pk-20', label: '20', tone: 'success' }],
+        },
+      ],
+      edges: [
+        { id: 'pye0', fromNode: 'py-r', portIndex: 0, toNode: 'py-l0' },
+        { id: 'pye1', fromNode: 'py-r', portIndex: 1, toNode: 'py-l1', state: 'active' },
+        { id: 'pye2', fromNode: 'py-r', portIndex: 2, toNode: 'py-l2', state: 'active', arrow: true },
+      ],
+      transfers: [
+        { id: 'pytr-17', fromX: 304, fromY: 168, toX: 308, toY: 80, ctrlX: 256, ctrlY: 118, label: '17 ↑', tone: 'success' },
+        { id: 'pytr-20', fromX: 334, fromY: 72, toX: 438, toY: 168, ctrlX: 422, ctrlY: 96, label: '20 ↓', tone: 'warn' },
+      ],
+    },
+  },
+];
+
+interface PyDemoRuntime {
+  timerId: number | null;
+  autoTimerId: number | null;
+  autoRunning: boolean;
+  currentStep: number;
+}
+
+const pyDemoState = new WeakMap<HTMLElement, PyDemoRuntime>();
+
+function stopPyDemoTimers(slideEl: HTMLElement): void {
+  const rt = pyDemoState.get(slideEl);
+  if (!rt) return;
+  if (rt.timerId !== null) {
+    window.clearTimeout(rt.timerId);
+    rt.timerId = null;
+  }
+  if (rt.autoTimerId !== null) {
+    window.clearTimeout(rt.autoTimerId);
+    rt.autoTimerId = null;
+  }
+  rt.autoRunning = false;
+  const autoBtn = slideEl.querySelector<HTMLButtonElement>('[data-role="py-autoplay"]');
+  if (autoBtn) {
+    autoBtn.textContent = '▶ Chạy tự động';
+    autoBtn.classList.remove('inline-action-btn--primary');
+  }
+}
+
+function renderPyEditorSnapshot(
+  editorBody: HTMLElement,
+  completedStep: number,
+  activeLines?: string[],
+  typingLineIdx?: number,
+  typedCharCount?: number,
+): void {
+  const html: string[] = [];
+  let ln = 1;
+
+  for (let s = 0; s <= completedStep; s++) {
+    for (const raw of PY_DEMO_BLOCKS[s].lines) {
+      html.push(
+        `<div class="code-line">` +
+          `<span class="code-ln">${ln}</span>` +
+          `<span class="code-txt">${highlightPythonLine(raw)}</span>` +
+        `</div>`,
+      );
+      ln++;
+    }
+  }
+
+  if (activeLines && typingLineIdx !== undefined && typedCharCount !== undefined) {
+    for (let i = 0; i <= typingLineIdx && i < activeLines.length; i++) {
+      const fullLine = activeLines[i];
+      const isCurrent = i === typingLineIdx;
+      const partial = isCurrent ? fullLine.slice(0, typedCharCount) : fullLine;
+      const rendered = partial.length > 0 ? highlightPythonLine(partial) : '';
+      html.push(
+        `<div class="code-line is-hl${isCurrent ? ' is-typing-line' : ''}">` +
+          `<span class="code-ln">${ln}</span>` +
+          `<span class="code-txt">${rendered}${isCurrent ? '<span class="py-caret" aria-hidden="true"></span>' : ''}</span>` +
+        `</div>`,
+      );
+      ln++;
+    }
+  } else {
+    // Resting blinking cursor on the last line
+    html.push(
+      `<div class="code-line is-idle-cursor">` +
+        `<span class="code-ln">${ln}</span>` +
+        `<span class="code-txt"><span class="py-caret" aria-hidden="true"></span></span>` +
+      `</div>`,
+    );
+  }
+
+  editorBody.innerHTML = html.join('');
+}
+
+function renderPyTerminal(termBody: HTMLElement, upToStep: number, statusText: string, isRunning: boolean): void {
+  const rows: string[] = [
+    `<div class="term-cmd"><span class="term-prompt">$</span> python demo_btree.py <span class="term-state${isRunning ? ' is-running' : ''}">${statusText}</span></div>`,
+  ];
+  for (let s = 1; s <= upToStep; s++) {
+    const isNewest = s === upToStep;
+    for (const out of PY_DEMO_BLOCKS[s].stdout) {
+      rows.push(
+        `<div class="term-out${isNewest ? ' is-new-out' : ''}"><span class="term-arrow">›</span> ${out}</div>`,
+      );
+    }
+  }
+  termBody.innerHTML = rows.join('');
+}
+
+function playPyDemoStep(
+  slideEl: HTMLElement,
+  step: number,
+  animateTyping: boolean,
+  reducedMotion: boolean,
+  onDone?: () => void,
+): void {
+  const rt = pyDemoState.get(slideEl);
+  if (!rt) return;
+  if (rt.timerId !== null) {
+    window.clearTimeout(rt.timerId);
+    rt.timerId = null;
+  }
+  rt.currentStep = step;
+
+  const editorBody = slideEl.querySelector<HTMLElement>('[data-role="py-editor"]')!;
+  const termBody = slideEl.querySelector<HTMLElement>('[data-role="py-term"]')!;
+  const treeBox = slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
+  const badge = slideEl.querySelector<HTMLElement>('[data-role="py-badge"]')!;
+  const meta = slideEl.querySelector<HTMLElement>('[data-role="py-meta"]')!;
+  const note = slideEl.querySelector<HTMLElement>('[data-role="py-note"]')!;
+  const block = PY_DEMO_BLOCKS[step];
+
+  const finishStep = () => {
+    renderPyEditorSnapshot(editorBody, step);
+    renderPyTerminal(termBody, step, step === 0 ? 'ready' : 'exit 0', false);
+    badge.textContent = block.cmdBadge;
+    meta.textContent = block.meta;
+    note.innerHTML = block.note;
+    renderTreeScene(treeBox, block.scene, { reducedMotion, durationMs: 480 });
+    triggerStepPulse(badge, reducedMotion);
+    onDone?.();
+  };
+
+  if (!animateTyping || reducedMotion) {
+    finishStep();
+    return;
+  }
+
+  // Show previous tree state while typing the new Python lines
+  const prevIdx = Math.max(0, step - 1);
+  if (step > 0) {
+    renderTreeScene(treeBox, PY_DEMO_BLOCKS[prevIdx].scene, { reducedMotion: true });
+  } else {
+    renderTreeScene(treeBox, block.scene, { reducedMotion: true });
+  }
+  renderPyTerminal(termBody, prevIdx, 'typing…', true);
+  badge.textContent = `Đang gõ nhịp ${step}/${PY_DEMO_BLOCKS.length - 1}…`;
+  meta.textContent = PY_DEMO_BLOCKS[prevIdx].meta;
+  note.innerHTML = block.note;
+
+  const linesToType = block.lines;
+  let lineIdx = 0;
+  let charIdx = 0;
+
+  const tick = () => {
+    renderPyEditorSnapshot(editorBody, step - 1, linesToType, lineIdx, charIdx);
+    const curLine = linesToType[lineIdx];
+    if (charIdx < curLine.length) {
+      const ch = curLine[charIdx];
+      charIdx++;
+      const delay = ch === ' ' ? 14 : 21;
+      rt.timerId = window.setTimeout(tick, delay);
+    } else if (lineIdx < linesToType.length - 1) {
+      lineIdx++;
+      charIdx = 0;
+      rt.timerId = window.setTimeout(tick, 90);
+    } else {
+      rt.timerId = window.setTimeout(() => {
+        rt.timerId = null;
+        finishStep();
+      }, 160);
+    }
+  };
+
+  tick();
+}
+
+const slide17PyDemo: SlideDef = {
+  number: 17,
+  title: 'Chạy thử B-tree bằng Python',
+  chapter: '3. Cài đặt Python và trực quan hóa',
+  theme: 'blue',
+  stepCount: 4,
+  leadIn: '“Bây giờ mình chạy trực tiếp lớp BTree(M=3) vừa cài đặt: chèn 7 khóa dựng lại đúng cây bìa, thử search(17)/search(16), rồi gọi delete(30) để thấy _fix_underflow tự mượn khóa.”',
+  fullScript:
+    'Để kiểm chứng toàn bộ mã Python vừa trình bày, ta chạy kịch bản demo_btree.py với M = 3. Nhịp 1: khởi tạo BTree(3) và chèn 10, 20, 5, 6, 12 — gốc tràn và tự tách thành [10] với hai lá [5, 6] và [12, 20]. Nhịp 2: chèn tiếp 30 và 17 — lá phải tách đẩy 20 lên gốc, thu được đúng cây bìa [10, 20] với ba lá [5, 6], [12, 17], [30]. Nhịp 3: gọi search(17) trả về nút [12, 17] tại chỉ số 1, còn search(16) trả None. Nhịp 4: gọi delete(30) làm lá phải rỗng, kích hoạt _fix_underflow mượn 17 từ anh em trái qua cha, cập nhật gốc thành [10, 17].',
+  fullView: {
+    summary: 'Mô phỏng gõ mã và chạy trực tiếp lớp BTree(M=3) bằng Python với 4 nhịp: insert + split gốc, tách lá, search(17)/search(16) và delete(30) kích hoạt Borrow.',
+    sections: [
+      {
+        heading: 'Kịch bản thực thi demo_btree.py (M = 3)',
+        bodyHtml:
+          '<ol>' +
+          '<li><code>insert([10, 20, 5, 6, 12])</code> → tách gốc thành <code>[10]</code> và 2 lá <code>[5, 6]</code>, <code>[12, 20]</code>.</li>' +
+          '<li><code>insert([30, 17])</code> → tách lá phải đẩy <code>20</code> lên gốc thành <code>[10, 20]</code>; dựng lại đúng cây bìa.</li>' +
+          '<li><code>search(17)</code> → <code>([12, 17], 1)</code>; <code>search(16)</code> → <code>None</code>.</li>' +
+          '<li><code>delete(30)</code> → <code>_fix_underflow</code> mượn <code>17 ↑</code> cha, hạ <code>20 ↓</code> lá phải → <code>root = [10, 17]</code>.</li>' +
+          '</ol>',
+      },
+    ],
+  },
+  mount(ctx) {
+    pyDemoState.set(ctx.slideEl, {
+      timerId: null,
+      autoTimerId: null,
+      autoRunning: false,
+      currentStep: 0,
+    });
+
+    ctx.slideEl.innerHTML = `
+      <div class="slide-frame">
+        <header class="slide-header slide-header--split">
+          <div>
+            <div class="slide-chapter-head">3. Cài đặt Python</div>
+            <h1 class="slide-title slide-title--sub"><span>Chạy thử</span> B-tree bằng Python</h1>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="inline-action-btn" data-role="py-replay">↺ Gõ lại nhịp</button>
+            <button type="button" class="inline-action-btn" data-role="py-autoplay">▶ Chạy tự động</button>
+          </div>
+        </header>
+
+        <div class="s17py-grid">
+          <div class="s17py-left">
+            <div class="code-window s17py-editor">
+              <div class="code-window__bar">
+                <span class="cw-dots"><i></i><i></i><i></i></span>
+                <span class="cw-title">demo_btree.py · Python 3.12</span>
+                <span class="s17py-live-pill">LIVE</span>
+              </div>
+              <div class="code-window__body s17py-editor-body" data-role="py-editor"></div>
+            </div>
+
+            <div class="s17py-terminal">
+              <div class="s17py-term-head">TERMINAL · STDOUT</div>
+              <div class="s17py-term-body" data-role="py-term"></div>
+            </div>
+          </div>
+
+          <div class="s17py-right">
+            <div class="s17py-status-strip">
+              <span class="s17py-cmd-badge" data-role="py-badge">Sẵn sàng chạy demo_btree.py</span>
+              <span class="s17py-meta-pill" data-role="py-meta">M = 3 · 0 khóa · h = 0</span>
+            </div>
+            <div class="s17py-tree" data-role="tree"></div>
+            <div class="canva-card note-strip s17py-note" data-role="py-note"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const replayBtn = ctx.slideEl.querySelector<HTMLButtonElement>('[data-role="py-replay"]')!;
+    const autoBtn = ctx.slideEl.querySelector<HTMLButtonElement>('[data-role="py-autoplay"]')!;
+
+    replayBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const rt = pyDemoState.get(ctx.slideEl);
+      if (!rt) return;
+      stopPyDemoTimers(ctx.slideEl);
+      playPyDemoStep(ctx.slideEl, rt.currentStep, true, ctx.getReducedMotion());
+    });
+
+    autoBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const rt = pyDemoState.get(ctx.slideEl);
+      if (!rt) return;
+      if (rt.autoRunning) {
+        stopPyDemoTimers(ctx.slideEl);
+        return;
+      }
+      stopPyDemoTimers(ctx.slideEl);
+      rt.autoRunning = true;
+      autoBtn.textContent = '■ Dừng tự động';
+      autoBtn.classList.add('inline-action-btn--primary');
+
+      const runSeq = (s: number) => {
+        if (!rt.autoRunning) return;
+        playPyDemoStep(ctx.slideEl, s, true, ctx.getReducedMotion(), () => {
+          if (!rt.autoRunning) return;
+          if (s < PY_DEMO_BLOCKS.length - 1) {
+            rt.autoTimerId = window.setTimeout(() => runSeq(s + 1), 1250);
+          } else {
+            stopPyDemoTimers(ctx.slideEl);
+          }
+        });
+      };
+      runSeq(1);
+    });
+  },
+  renderStep(step, prev, ctx) {
+    stopPyDemoTimers(ctx.slideEl);
+    const prevStep = prev ?? -1;
+    const shouldType = step > prevStep;
+    playPyDemoStep(ctx.slideEl, step, shouldType, ctx.getReducedMotion());
+  },
+  cancelAnimations(slideEl) {
+    stopPyDemoTimers(slideEl);
+    const t = slideEl.querySelector<HTMLElement>('[data-role="tree"]');
+    if (t) cancelTreeAnimations(t);
+  },
+};
+
+export const PART3_SLIDES: SlideDef[] = [slide13, slide14, slide15, slide16, slide17PyDemo];

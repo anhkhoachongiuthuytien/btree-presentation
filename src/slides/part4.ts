@@ -153,10 +153,10 @@ function buildS17CanvaSvg(side: 'max' | 'min', active: boolean, animate: boolean
 }
 
 const slide17: SlideDef = {
-  number: 17,
+  number: 18,
   title: 'Chiều cao h đến từ đâu?',
   chapter: '4. Độ phức tạp thời gian và không gian',
-  chapterStart: 17,
+  chapterStart: 18,
   theme: 'blue',
   stepCount: 3,
   leadIn: '“Cả hai hình đều có ba tầng. Chỉ thay mức độ lấp đầy, số khóa mà cây có thể giữ đã khác nhau thế nào?”',
@@ -370,7 +370,7 @@ function buildS18OpTree(mode: number): { title: string; caption: string; scene: 
 }
 
 const slide18: SlideDef = {
-  number: 18,
+  number: 19,
   title: 'Chi phí thời gian của ba thao tác',
   chapter: '4. Độ phức tạp thời gian và không gian',
   theme: 'white',
@@ -391,7 +391,7 @@ const slide18: SlideDef = {
           '</ul>',
       },
       {
-        heading: 'Độ phức tạp trung bình (có điều kiện — xem chi tiết Trang 19)',
+        heading: 'Độ phức tạp trung bình (có điều kiện — xem chi tiết Trang 20)',
         bodyHtml:
           '<p>Tìm thành công (phân bố đều 1/N): ' + texInline('\\Theta(\\log N)') + '. Chèn/xóa (nếu xác suất sửa sâu giảm theo cấp số nhân): ' + texInline('O(\\log N + M)') + '.</p>',
       },
@@ -452,7 +452,7 @@ const slide18: SlideDef = {
 
             <button type="button" class="s18-avg-link" data-role="goto-19">
               <span><em>Muốn nói về độ phức tạp trung bình, ta cần giả thiết gì?</em></span>
-              <strong>Xem trang riêng · Trang 19 →</strong>
+              <strong>Xem trang riêng · Trang 20 →</strong>
             </button>
           </aside>
         </div>
@@ -461,7 +461,7 @@ const slide18: SlideDef = {
 
     ctx.slideEl.querySelector<HTMLButtonElement>('[data-role="goto-19"]')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      ctx.goToSlide(19);
+      ctx.goToSlide(20);
     });
 
     ctx.slideEl.querySelectorAll<HTMLElement>('.s18-click-row').forEach((tr) => {
@@ -595,7 +595,7 @@ function buildS19ClimbTree(assumptionOn: boolean, revealed: boolean): TreeSceneS
 }
 
 const slide19: SlideDef = {
-  number: 19,
+  number: 20,
   title: 'Chi phí trung bình và giả thiết',
   chapter: '4. Độ phức tạp thời gian và không gian',
   theme: 'blue',
@@ -743,7 +743,7 @@ function updateS19Tail(slideEl: HTMLElement, assumptionOn: boolean, revealed: bo
 // SLIDE 20 — Tìm 65: RAM và I/O đếm hai việc khác nhau
 // ============================================================================
 const slide20: SlideDef = {
-  number: 20,
+  number: 21,
   title: 'Tìm 65: RAM và I/O đếm hai việc khác nhau',
   chapter: '4. Độ phức tạp thời gian và không gian',
   theme: 'white',
@@ -1144,7 +1144,7 @@ function buildS21TempBufSvg(active: boolean, animate: boolean): string {
 }
 
 const slide21: SlideDef = {
-  number: 21,
+  number: 22,
   title: 'Bộ nhớ lưu cây và bộ nhớ phụ',
   chapter: '4. Độ phức tạp thời gian và không gian',
   theme: 'blue',

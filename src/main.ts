@@ -103,7 +103,7 @@ function closeCodeZoom(): void {
 
 function openFullView(slide: SlideDef): void {
   savedFocusBeforeModal = document.activeElement as HTMLElement | null;
-  fullViewBadge.textContent = `Trang ${pad2(slide.number)}/29 · ${slide.chapter}`;
+  fullViewBadge.textContent = `Trang ${pad2(slide.number)}/${ALL_SLIDES.length} · ${slide.chapter}`;
   fullViewTitle.textContent = slide.title;
 
   const fv = slide.fullView;
@@ -162,7 +162,7 @@ function goToSlide(slideNumber: number): void {
   deck.slide(idx, 0, -1);
 }
 
-// Mount all 29 slides into the Reveal container
+// Mount all slides into the Reveal container
 for (const slide of ALL_SLIDES) {
   const sec = document.createElement('section');
   sec.className = `slide-section theme-${slide.theme}`;
@@ -190,7 +190,7 @@ for (const slide of ALL_SLIDES) {
   const notes = document.createElement('aside');
   notes.className = 'notes';
   notes.innerHTML = `
-    <p><strong>[${pad2(slide.number)}/29 · ${escapeHtml(slide.title)}]</strong></p>
+    <p><strong>[${pad2(slide.number)}/${ALL_SLIDES.length} · ${escapeHtml(slide.title)}]</strong></p>
     <p><strong>Lời dẫn:</strong> ${escapeHtml(slide.leadIn)}</p>
     <hr />
     <p>${escapeHtml(slide.fullScript)}</p>
@@ -247,6 +247,12 @@ function syncCurrentSlide(playTransitionFrom?: number, forceEntrance = false): v
   slide.cancelAnimations?.(ctx.slideEl);
 
   const isSlideChange = playTransitionFrom !== undefined && playTransitionFrom !== slide.number;
+  if (isSlideChange) {
+    const prevIdx = playTransitionFrom - 1;
+    if (prevIdx >= 0 && prevIdx < ALL_SLIDES.length) {
+      ALL_SLIDES[prevIdx].cancelAnimations?.(slideContexts[prevIdx].slideEl);
+    }
+  }
   if (isSlideChange && !deck.isOverview()) {
     const prevSec = slideSections[playTransitionFrom - 1] ?? null;
     playSlideTransition(transitionOverlay, prevSec, sec, playTransitionFrom, slide.number, getReducedMotion());
@@ -265,11 +271,11 @@ function syncCurrentSlide(playTransitionFrom?: number, forceEntrance = false): v
   // Update top kinetic progress ribbon & podium bar
   topProgressFill.style.transform = `scaleX(${slide.number / ALL_SLIDES.length})`;
   statusChapter.textContent = slide.chapter;
-  statusPage.textContent = `${pad2(slide.number)}/29`;
+  statusPage.textContent = `${pad2(slide.number)}/${ALL_SLIDES.length}`;
   statusStep.textContent = `Nhịp ${step}/${slide.stepCount}`;
 
   btnPrev.disabled = slide.number === 1 && step === 0;
-  btnNext.disabled = slide.number === 29 && step === slide.stepCount;
+  btnNext.disabled = slide.number === ALL_SLIDES.length && step === slide.stepCount;
 }
 
 // Initialize Reveal.js 5 with RevealNotes
@@ -345,7 +351,7 @@ document.getElementById('deck-root')!.addEventListener('click', (ev) => {
   const h = deck.getIndices().h ?? 0;
   const slide = ALL_SLIDES[h];
   const step = getCurrentStepForSection(slideSections[h]);
-  if (slide.number === 29 && step >= slide.stepCount) return;
+  if (slide.number === ALL_SLIDES.length && step >= slide.stepCount) return;
 
   deck.next();
 });
@@ -362,7 +368,7 @@ btnNext.addEventListener('click', (e) => {
   const h = deck.getIndices().h ?? 0;
   const slide = ALL_SLIDES[h];
   const step = getCurrentStepForSection(slideSections[h]);
-  if (slide.number === 29 && step >= slide.stepCount) return;
+  if (slide.number === ALL_SLIDES.length && step >= slide.stepCount) return;
   deck.next();
 });
 

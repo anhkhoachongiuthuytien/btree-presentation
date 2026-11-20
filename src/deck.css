@@ -4867,6 +4867,259 @@ code {
   transform: translateY(-2px);
 }
 
+/* ============================================================================
+   SLIDE 17 — LIVE PYTHON B-TREE TYPING DEMO
+   ============================================================================ */
+.s17py-grid {
+  display: grid;
+  grid-template-columns: 565px 1fr;
+  gap: 18px;
+  flex: 1;
+  min-height: 0;
+}
+
+.s17py-left,
+.s17py-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.s17py-editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #0b1529;
+  color: #f1f5f9;
+  border-radius: 3px;
+  border: 2px solid #0f1d3a;
+  box-shadow: 5px 5px 0 rgba(15, 29, 58, 0.34);
+  overflow: hidden;
+  cursor: default;
+}
+
+.s17py-editor .code-window__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  background: #132241;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.24);
+  flex-shrink: 0;
+}
+
+.s17py-editor .cw-dots {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.s17py-editor .cw-dots i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: block;
+}
+
+.s17py-editor .cw-dots i:nth-child(1) { background: #ef4444; }
+.s17py-editor .cw-dots i:nth-child(2) { background: #f59e0b; }
+.s17py-editor .cw-dots i:nth-child(3) { background: #22c55e; }
+
+.s17py-editor .cw-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: #dbeafe;
+}
+
+.s17py-live-pill {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 2px;
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(74, 222, 128, 0.5);
+  color: #86efac;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.s17py-editor-body {
+  flex: 1;
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.38;
+  color: #f1f5f9;
+  overflow: hidden;
+}
+
+.s17py-editor-body .code-ln {
+  color: #64748b;
+}
+
+.s17py-editor-body .code-line.is-typing-line {
+  background: rgba(56, 189, 248, 0.16);
+  box-shadow: inset 3px 0 0 #38bdf8;
+}
+
+.py-caret {
+  display: inline-block;
+  width: 7.5px;
+  height: 1.15em;
+  vertical-align: -0.18em;
+  margin-left: 1px;
+  background: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.85);
+  animation: py-caret-blink 780ms steps(2, start) infinite;
+}
+
+@keyframes py-caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.12; }
+}
+
+.s17py-terminal {
+  height: 212px;
+  flex-shrink: 0;
+  background: #091224;
+  border: 2px solid #0f1d3a;
+  border-radius: 3px;
+  box-shadow: 5px 5px 0 rgba(15, 29, 58, 0.32);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.s17py-term-head {
+  padding: 5px 12px;
+  background: #132241;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  color: #93c5fd;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+.s17py-term-body {
+  flex: 1;
+  padding: 7px 12px 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.44;
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.term-cmd {
+  flex-shrink: 0;
+  color: #93c5fd;
+  font-weight: 700;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.term-prompt {
+  color: #4ade80;
+  font-weight: 800;
+}
+
+.term-state {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 2px;
+  background: rgba(34, 197, 94, 0.16);
+  color: #86efac;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.term-state.is-running {
+  background: rgba(250, 204, 21, 0.2);
+  color: #fde047;
+}
+
+.term-out {
+  flex-shrink: 0;
+  line-height: 1.42;
+  color: #cbd5e1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.term-out.is-new-out {
+  color: #86efac;
+  font-weight: 700;
+  animation: term-line-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.term-arrow {
+  color: #38bdf8;
+  font-weight: 800;
+}
+
+@keyframes term-line-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.s17py-status-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #0f1d3a;
+  color: #ffffff;
+  border-radius: 2px;
+  padding: 8px 14px;
+  box-shadow: 4px 4px 0 rgba(0, 74, 173, 0.26);
+}
+
+.s17py-cmd-badge {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: #fef08a;
+}
+
+.s17py-meta-pill {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 2px;
+  background: rgba(82, 132, 255, 0.28);
+  border: 1px solid rgba(147, 197, 253, 0.45);
+  color: #dbeafe;
+  white-space: nowrap;
+}
+
+.s17py-tree {
+  flex: 1;
+  min-height: 0;
+  background: #ffffff;
+  border: 1.8px solid var(--title-blue);
+  border-radius: 3px;
+  box-shadow: 5px 5px 0 rgba(0, 74, 173, 0.24);
+  padding: 8px;
+}
+
+.s17py-note {
+  font-size: 14.5px;
+  line-height: 1.44;
+  padding: 11px 15px !important;
+}
+
 /* Reduced Motion (placed last so it cleanly disables every on-slide animation) */
 @media (prefers-reduced-motion: reduce) {
   *,
