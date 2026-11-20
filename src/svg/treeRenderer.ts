@@ -521,7 +521,7 @@ export function renderTreeScene(
   svg.innerHTML = parts.join('');
 
   Array.from(container.children).forEach((child) => {
-    if (!child.classList.contains('stage-particles-canvas')) {
+    if (!child.classList.contains('stage-decor')) {
       child.remove();
     }
   });

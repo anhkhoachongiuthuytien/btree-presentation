@@ -5121,26 +5121,217 @@ code {
 }
 
 /* ============================================================================
-   ORGANIC SOFT BOKEH PARTICLES BACKDROP FOR ALL TREE & FLOWCHART STAGES
+   5-CHAPTER ARCHITECTURAL STAGE SKINS (Crisp Blueprint DNA, 100% Tree Focus)
    ============================================================================ */
-.has-stage-particles {
+.stage-skinned {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%) !important;
 }
 
-.stage-particles-canvas {
+.stage-decor {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
   pointer-events: none;
   z-index: 1;
 }
 
-.has-stage-particles > :not(.stage-particles-canvas) {
+.stage-skinned > :not(.stage-decor) {
   position: relative;
   z-index: 2;
+}
+
+/* Shared tiny corner engineering tags */
+.sd-tag {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: rgba(0, 74, 173, 0.52);
+  pointer-events: none;
+  user-select: none;
+}
+
+.sd-tag--tl { top: 8px; left: 26px; }
+.sd-tag--tr { top: 8px; right: 26px; }
+.sd-tag--bl { bottom: 6px; left: 12px; }
+.sd-tag--br { bottom: 6px; right: 12px; }
+
+.sd-tag--cobalt {
+  color: #1d4ed8;
+  background: rgba(219, 234, 254, 0.85);
+  border: 1px solid rgba(96, 165, 250, 0.55);
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+
+.sd-tag--amber {
+  color: #b45309;
+  background: rgba(254, 243, 199, 0.88);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+
+.sd-tag--emerald {
+  color: #15803d;
+  background: rgba(220, 252, 231, 0.88);
+  border: 1px solid rgba(74, 222, 128, 0.55);
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+
+.sd-tag--live {
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: rgba(15, 29, 58, 0.65);
+}
+
+.sd-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #22c55e;
+  display: inline-block;
+  animation: sd-blink 1.8s ease-in-out infinite;
+}
+
+@keyframes sd-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.28; }
+}
+
+/* Chapter 1 (Slides 03–05): Drafting Blueprint Hairlines + Corner Crosshairs */
+.stage-skin--ch1 {
+  background:
+    linear-gradient(to right, rgba(0, 74, 173, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 74, 173, 0.055) 1px, transparent 1px),
+    #fcfdff !important;
+  background-size: 28px 28px !important;
+}
+
+.sd-cross {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  opacity: 0.5;
+}
+
+.sd-cross::before,
+.sd-cross::after {
+  content: '';
+  position: absolute;
+  background: #004aad;
+}
+
+.sd-cross::before { left: 5px; top: 0; width: 1.5px; height: 11px; }
+.sd-cross::after { top: 5px; left: 0; height: 1.5px; width: 11px; }
+
+.sd-tl { top: 8px; left: 8px; }
+.sd-tr { top: 8px; right: 8px; }
+.sd-bl { bottom: 8px; left: 8px; }
+.sd-br { bottom: 8px; right: 8px; }
+
+/* Chapter 2 (Slides 06–12): Pure Clean Operations Stage + Reactive Corner Brackets */
+.stage-skin--ch2 {
+  background: linear-gradient(180deg, #ffffff 0%, #fafcff 100%) !important;
+}
+
+.sd-brk {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  animation: sd-brk-breathe 2.6s ease-in-out infinite;
+}
+
+.sd-brk--cobalt { border-color: #2563eb; }
+.sd-brk--amber { border-color: #d97706; }
+.sd-brk--emerald { border-color: #16a34a; }
+
+.sd-brk.sd-tl { border-top: 2.4px solid; border-left: 2.4px solid; }
+.sd-brk.sd-tr { border-top: 2.4px solid; border-right: 2.4px solid; }
+.sd-brk.sd-bl { border-bottom: 2.4px solid; border-left: 2.4px solid; }
+.sd-brk.sd-br { border-bottom: 2.4px solid; border-right: 2.4px solid; }
+
+@keyframes sd-brk-breathe {
+  0%, 100% { opacity: 0.34; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.05); }
+}
+
+/* Chapter 3 (Slides 13–17): Python RAM Sync Stage (Edge Dots + Top Signal Pulse) */
+.stage-skin--ch3 {
+  background: #ffffff !important;
+}
+
+.sd-ram-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(15, 29, 58, 0.16) 1px, transparent 1px);
+  background-size: 16px 16px;
+  mask-image: radial-gradient(ellipse 68% 68% at 50% 52%, transparent 52%, #000 100%);
+  -webkit-mask-image: radial-gradient(ellipse 68% 68% at 50% 52%, transparent 52%, #000 100%);
+}
+
+.sd-top-signal {
+  position: absolute;
+  top: 0;
+  left: -34%;
+  width: 34%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #38bdf8, #004aad, transparent);
+  animation: sd-sweep-x 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes sd-sweep-x {
+  0% { left: -34%; }
+  100% { left: 106%; }
+}
+
+/* Chapter 4 (Slides 18–22): Calm Two-Tier Math Coordinate Paper */
+.stage-skin--ch4 {
+  background:
+    linear-gradient(to right, rgba(0, 74, 173, 0.085) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 74, 173, 0.085) 1px, transparent 1px),
+    linear-gradient(to right, rgba(0, 74, 173, 0.032) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 74, 173, 0.032) 1px, transparent 1px),
+    #ffffff !important;
+  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px !important;
+}
+
+/* Chapter 5 (Slides 23–30): Sequential Disk Track Hairlines + Slow Read Gliders */
+.stage-skin--ch5 {
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 23px,
+      rgba(37, 99, 235, 0.07) 23px,
+      rgba(37, 99, 235, 0.07) 24px
+    ),
+    #fcfdff !important;
+}
+
+.sd-track-pulse {
+  position: absolute;
+  left: -28%;
+  height: 2px;
+  animation: sd-sweep-x 4s linear infinite;
+}
+
+.sd-tp-1 {
+  bottom: 34px;
+  width: 26%;
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.5), transparent);
+}
+
+.sd-tp-2 {
+  bottom: 58px;
+  width: 18%;
+  background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.42), transparent);
+  animation-duration: 5.2s;
+  animation-delay: -2.2s;
 }
 
 /* Reduced Motion (placed last so it cleanly disables every on-slide animation) */
