@@ -786,7 +786,25 @@ const slide09: SlideDef = {
               </ul>
             </div>
             <div class="canva-card s09-note">
-              Các ràng buộc của B-tree tạo ra hệ quả là chuỗi phép toán <strong>Predecessor → Borrow / Merge → Kiểm tra cha</strong> khi xóa khóa.
+              <div class="callout-kicker">Hệ quả khi xóa khóa</div>
+              <p class="s09-note__sub">Để giữ đủ 3 bất biến trên, thuật toán chạy theo chuỗi:</p>
+              <div class="s09-chain" aria-label="Predecessor sang Borrow hoặc Merge sang Kiểm tra cha">
+                <div class="s09-step">
+                  <span class="s09-step__num">1</span>
+                  <span class="chain-chip">Predecessor</span>
+                  <span class="s09-step__desc">Đưa về xóa tại lá</span>
+                </div>
+                <div class="s09-step">
+                  <span class="s09-step__num">2</span>
+                  <span class="chain-chip chain-chip--cobalt">Borrow / Merge</span>
+                  <span class="s09-step__desc">Xử lý thiếu khóa</span>
+                </div>
+                <div class="s09-step">
+                  <span class="s09-step__num s09-step__num--dark">3</span>
+                  <span class="chain-chip chain-chip--dark">Kiểm tra cha</span>
+                  <span class="s09-step__desc">Lan ngược lên gốc</span>
+                </div>
+              </div>
             </div>
           </aside>
 

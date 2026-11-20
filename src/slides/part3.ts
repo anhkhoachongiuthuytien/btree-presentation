@@ -188,9 +188,11 @@ const slide14: SlideDef = {
           <div class="s14-left">
             ${renderPythonWindow({ title: 'insert(key) -> bool', startLine: 34, endLine: 44, compact: true, blockId: 's14-pub' })}
             <div class="canva-card contract-box" data-role="contract">
-              <strong>Hợp đồng trả về của <code>_insert</code>:</strong>
-              <div>• Con không tách → <code>None</code></div>
-              <div>• Con tách → <code>(middle, right)</code> (nút trái giữ nguyên tại địa chỉ cũ!)</div>
+              <h3>Hợp đồng trả về của <code>_insert</code></h3>
+              <ul>
+                <li>Con không tách → trả <code>None</code></li>
+                <li>Con tách → trả <code>(middle, right)</code> (nút trái giữ nguyên tại địa chỉ cũ)</li>
+              </ul>
             </div>
           </div>
 

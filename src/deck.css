@@ -217,11 +217,13 @@ body {
 
 code {
   font-family: var(--font-mono);
-  font-size: 0.9em;
-  background: rgba(224, 236, 255, 0.65);
-  color: #0b2e73;
-  padding: 1px 5px;
-  border-radius: 4px;
+  font-size: 0.88em;
+  font-weight: 600;
+  background: #edf4ff;
+  color: #003a8c;
+  padding: 1px 6px;
+  border-radius: 5px;
+  border: 1px solid rgba(59, 130, 246, 0.28);
 }
 
 .code-win code,
@@ -236,6 +238,7 @@ code {
 .s16-branch-pill code,
 .def-banner--dark code {
   background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.24);
   color: inherit;
 }
 
@@ -253,14 +256,15 @@ code {
   margin-right: 3px;
 }
 
-/* Canva Cards & Banners — Refined Editorial Depth */
+/* Canva Cards & Banners — Structured Editorial Surface */
 .canva-card {
-  background: var(--panel-bg);
-  border: 1.8px solid rgba(0, 74, 173, 0.88);
-  border-radius: 11px;
-  padding: 14px 17px;
+  background: #f8fbff;
+  border: 1.5px solid rgba(0, 74, 173, 0.3);
+  border-radius: 13px;
+  padding: 14px 18px;
   min-width: 0;
-  box-shadow: 0 2px 6px rgba(15, 29, 58, 0.06), 4px 4px 0 rgba(0, 74, 173, 0.14);
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(15, 29, 58, 0.08), 0 1px 3px rgba(0, 74, 173, 0.08);
   transition: opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
               transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
               border-color 220ms ease,
@@ -269,32 +273,107 @@ code {
 
 .theme-blue .canva-card,
 .theme-xfs-blue .canva-card {
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.97);
+  border-color: rgba(0, 74, 173, 0.24);
+  box-shadow: 0 8px 22px rgba(10, 30, 75, 0.12), 0 1px 2px rgba(0, 74, 173, 0.1);
 }
 
 .canva-card h3 {
   margin: 0 0 8px;
-  font-size: 17.5px;
+  font-size: 16.8px;
   letter-spacing: -0.015em;
   font-weight: 800;
   color: var(--title-blue);
 }
 
+/* Full-bleed editorial header band for direct card titles */
+.canva-card > h3 {
+  margin: -14px -18px 11px;
+  padding: 9px 16px;
+  background: linear-gradient(90deg, #dcebff 0%, #f0f6ff 100%);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.22);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.22;
+}
+
+.canva-card > h3::before {
+  content: '';
+  width: 4px;
+  height: 15px;
+  border-radius: 3px;
+  background: var(--title-blue);
+  flex-shrink: 0;
+}
+
 .canva-card p,
 .canva-card li {
   margin: 0;
-  font-size: 15.8px;
+  font-size: 15.4px;
   line-height: 1.48;
   color: var(--ink);
 }
 
-.canva-card ul,
-.canva-card ol {
-  margin: 4px 0 0;
-  padding-left: 20px;
+/* Clean custom list markers (replaces ugly raw browser bullets & plain numbers) */
+.canva-card ul:not(.s04-conds) {
+  list-style: none;
+  margin: 2px 0 0;
+  padding-left: 0;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
+}
+
+.canva-card ul:not(.s04-conds) li {
+  position: relative;
+  padding-left: 17px;
+}
+
+.canva-card ul:not(.s04-conds) li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.56em;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--cobalt);
+}
+
+.canva-card ol:not(.rule-list) {
+  list-style: none;
+  counter-reset: card-ol;
+  margin: 2px 0 0;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.canva-card ol:not(.rule-list) li {
+  position: relative;
+  padding-left: 28px;
+}
+
+.canva-card ol:not(.rule-list) li::before {
+  counter-increment: card-ol;
+  content: counter(card-ol);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: #dcebff;
+  border: 1px solid rgba(0, 74, 173, 0.22);
+  color: var(--title-blue);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  line-height: 1;
 }
 
 .is-dim {
@@ -305,7 +384,7 @@ code {
 .is-active-card {
   border-color: var(--cobalt) !important;
   transform: translateY(-1.5px);
-  box-shadow: 0 0 0 3px rgba(82, 132, 255, 0.24), 6px 6px 0 rgba(0, 74, 173, 0.2);
+  box-shadow: 0 0 0 3px rgba(82, 132, 255, 0.24), 0 10px 24px rgba(0, 74, 173, 0.18);
 }
 
 .def-banner {
@@ -331,12 +410,12 @@ code {
 
 .compact-list {
   margin: 0;
-  padding-left: 18px;
+  padding-left: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 15.5px;
-  line-height: 1.38;
+  gap: 7px;
+  font-size: 15px;
+  line-height: 1.4;
 }
 
 /* Inline buttons */
@@ -852,13 +931,16 @@ code {
 .s03-col__head {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 9px;
+  margin: -14px -18px 10px;
+  padding: 9px 14px;
+  background: linear-gradient(90deg, #dcebff 0%, #f0f6ff 100%);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.22);
 }
 
 .s03-col__head h3 {
   margin: 0;
-  font-size: 17.5px;
+  font-size: 16.5px;
 }
 
 .s03-col p,
@@ -917,9 +999,11 @@ code {
 
 .s04-conds li {
   background: #ffffff;
-  border-radius: 6px;
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  border-left: 3px solid var(--cobalt);
+  border-radius: 7px;
   padding: 4px 10px;
-  font-size: 15px;
+  font-size: 14.5px;
 }
 
 /* ============================================================================
@@ -1321,6 +1405,167 @@ code {
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+/* Slide 09: Structured invariant item tiles & visual consequence pipeline */
+.s09-stack ul {
+  gap: 9px;
+}
+
+.s09-stack ul li {
+  padding: 9px 12px !important;
+  background: #f4f8ff;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-left: 3.5px solid var(--cobalt);
+  border-radius: 8px;
+  font-size: 14.8px;
+  line-height: 1.42;
+}
+
+.s09-stack ul li::before {
+  display: none;
+}
+
+.s09-note {
+  border-left: 4.5px solid var(--title-blue) !important;
+  background: linear-gradient(145deg, #f0f6ff 0%, #ffffff 100%) !important;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.callout-kicker {
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--title-blue);
+}
+
+.s09-note__sub {
+  font-size: 14.2px !important;
+  color: var(--ink-muted) !important;
+  line-height: 1.38 !important;
+}
+
+.s09-chain {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 2px;
+  position: relative;
+}
+
+.s09-step {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  position: relative;
+}
+
+.s09-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 22px;
+  width: 2px;
+  height: 11px;
+  background: rgba(59, 130, 246, 0.35);
+}
+
+.s09-step__num {
+  width: 21px;
+  height: 21px;
+  border-radius: 6px;
+  background: #dbeafe;
+  color: var(--title-blue);
+  font-size: 11.5px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.s09-step__num--dark {
+  background: var(--title-blue);
+  color: #ffffff;
+}
+
+.s09-step__desc {
+  font-size: 12.6px;
+  color: var(--ink-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.chain-chip {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #e0ecff;
+  border: 1px solid rgba(0, 74, 173, 0.24);
+  color: var(--title-blue);
+  font-size: 12.5px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.chain-chip--cobalt {
+  background: #dbeafe;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.chain-chip--dark {
+  background: var(--title-blue);
+  border-color: var(--title-blue);
+  color: #ffffff;
+}
+
+/* Slide 11: Color-coded Borrow / Merge / Underflow card header bands */
+.s11-defs .canva-card:first-child > h3 {
+  background: linear-gradient(90deg, #fee2e2 0%, #fef2f2 100%);
+  border-bottom-color: rgba(220, 38, 38, 0.22);
+  color: #991b1b;
+}
+
+.s11-defs .canva-card:first-child > h3::before {
+  background: #dc2626;
+}
+
+.s11-card-borrow > h3 {
+  background: linear-gradient(90deg, #dcfce7 0%, #f0fdf4 100%) !important;
+  border-bottom-color: rgba(22, 163, 74, 0.24) !important;
+  color: #14532d !important;
+}
+
+.s11-card-borrow > h3::before {
+  background: #16a34a !important;
+}
+
+.s11-card-merge > h3 {
+  background: linear-gradient(90deg, #fef3c7 0%, #fffbeb 100%) !important;
+  border-bottom-color: rgba(217, 119, 6, 0.26) !important;
+  color: #92400e !important;
+}
+
+.s11-card-merge > h3::before {
+  background: #d97706 !important;
+}
+
+/* Polished callout left-accent stripe for bare note/status cards */
+.s07-bottomup,
+.note-strip,
+.contract-box,
+.var-watch,
+.s16-note {
+  border-left: 4.5px solid var(--cobalt) !important;
+}
+
+.s07-status,
+.s24-stat {
+  border-left: 4.5px solid #d97706 !important;
 }
 
 .s09-flow {
