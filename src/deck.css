@@ -256,15 +256,15 @@ code {
   margin-right: 3px;
 }
 
-/* Canva Cards & Banners — Structured Editorial Surface */
+/* Canva Cards & Banners — Sharp Architectural Surface with 3D Offset Shadow */
 .canva-card {
-  background: #f8fbff;
-  border: 1.5px solid rgba(0, 74, 173, 0.3);
-  border-radius: 13px;
+  background: #edf4ff;
+  border: 1.5px solid #4a7bd0;
+  border-radius: 3px;
   padding: 14px 18px;
   min-width: 0;
   overflow: hidden;
-  box-shadow: 0 6px 18px rgba(15, 29, 58, 0.08), 0 1px 3px rgba(0, 74, 173, 0.08);
+  box-shadow: 5px 5px 0 rgba(59, 130, 246, 0.32);
   transition: opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
               transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
               border-color 220ms ease,
@@ -273,25 +273,26 @@ code {
 
 .theme-blue .canva-card,
 .theme-xfs-blue .canva-card {
-  background: rgba(255, 255, 255, 0.97);
-  border-color: rgba(0, 74, 173, 0.24);
-  box-shadow: 0 8px 22px rgba(10, 30, 75, 0.12), 0 1px 2px rgba(0, 74, 173, 0.1);
+  background: #f8fbff;
+  border-color: #2f65c4;
+  box-shadow: 5px 5px 0 rgba(0, 74, 173, 0.28);
 }
 
 .canva-card h3 {
   margin: 0 0 8px;
-  font-size: 16.8px;
+  font-size: 16.5px;
   letter-spacing: -0.015em;
   font-weight: 800;
-  color: var(--title-blue);
+  color: var(--ink);
 }
 
-/* Full-bleed editorial header band for direct card titles */
+/* Full-bleed architectural header strip for direct card titles */
 .canva-card > h3 {
-  margin: -14px -18px 11px;
-  padding: 9px 16px;
-  background: linear-gradient(90deg, #dcebff 0%, #f0f6ff 100%);
-  border-bottom: 1px solid rgba(59, 130, 246, 0.22);
+  margin: -14px -18px 10px;
+  padding: 8px 16px;
+  background: linear-gradient(90deg, #dbeafe 0%, #eef5ff 100%);
+  border-bottom: 1.5px solid rgba(59, 130, 246, 0.28);
+  color: var(--title-blue);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -301,8 +302,8 @@ code {
 .canva-card > h3::before {
   content: '';
   width: 4px;
-  height: 15px;
-  border-radius: 3px;
+  height: 14px;
+  border-radius: 1px;
   background: var(--title-blue);
   flex-shrink: 0;
 }
@@ -382,30 +383,49 @@ code {
 }
 
 .is-active-card {
-  border-color: var(--cobalt) !important;
-  transform: translateY(-1.5px);
-  box-shadow: 0 0 0 3px rgba(82, 132, 255, 0.24), 0 10px 24px rgba(0, 74, 173, 0.18);
+  border-color: var(--title-blue) !important;
+  transform: translate(-1.5px, -1.5px);
+  box-shadow: 6px 6px 0 var(--cobalt), 0 0 0 2px rgba(82, 132, 255, 0.28);
 }
 
+/* Flush-left solid cobalt callout ribbon (Canva Slides 4, 5, 7) */
 .def-banner {
-  background: var(--panel-bg);
-  border-left: 6px solid var(--title-blue);
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 18px;
+  margin-left: -36px;
+  padding: 10px 22px 10px 36px;
+  background: #4b80f2;
+  border: none;
+  border-radius: 0;
+  font-size: 17.2px;
   line-height: 1.38;
-  color: var(--ink);
+  color: #ffffff;
+  font-weight: 600;
   flex-shrink: 0;
+  box-shadow: 4px 4px 0 rgba(0, 74, 173, 0.22);
+}
+
+.def-banner strong,
+.def-banner strong .katex {
+  color: #fef08a;
+  font-weight: 800;
+}
+
+.def-banner .katex {
+  color: #ffffff;
 }
 
 .def-banner--dark {
-  background: var(--title-blue);
+  background: #3d72e8;
   color: #ffffff;
-  border-left-color: #fef08a;
 }
 
 .def-banner--dark strong {
   color: #fef08a;
+}
+
+.def-banner--flush {
+  font-size: 16.5px;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .compact-list {
@@ -921,6 +941,7 @@ code {
   padding-top: 6px;
 }
 
+/* Slide 03: 4 Solid Bright Cobalt Vertical Pillars (Canva Slide 3) */
 .s03-cols {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -928,28 +949,66 @@ code {
   flex: 1;
 }
 
+.s03-col {
+  background: linear-gradient(180deg, #5284ff 0%, #3d72e8 100%) !important;
+  border: none !important;
+  border-radius: 2px !important;
+  box-shadow: 4px 4px 0 rgba(0, 53, 148, 0.26) !important;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.s03-col.is-active-card {
+  box-shadow: 5px 5px 0 #003594, 0 0 0 2.5px #ffffff !important;
+}
+
 .s03-col__head {
   display: flex;
   align-items: center;
-  gap: 9px;
-  margin: -14px -18px 10px;
-  padding: 9px 14px;
-  background: linear-gradient(90deg, #dcebff 0%, #f0f6ff 100%);
-  border-bottom: 1px solid rgba(59, 130, 246, 0.22);
+  gap: 10px;
+  margin: -14px -18px 11px;
+  padding: 10px 14px;
+  background: rgba(15, 29, 58, 0.16);
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.24);
+}
+
+.s03-col__head svg {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 50%;
+  padding: 4px;
+  flex-shrink: 0;
 }
 
 .s03-col__head h3 {
   margin: 0;
-  font-size: 16.5px;
+  font-size: 16px;
+  color: #ffffff !important;
+  letter-spacing: -0.01em;
 }
 
 .s03-col p,
 .s03-col li {
-  font-size: 15.5px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.96) !important;
+}
+
+.s03-col strong {
+  color: #fef08a;
+}
+
+.s03-col code {
+  background: rgba(15, 29, 58, 0.28);
+  border-color: rgba(255, 255, 255, 0.34);
+  color: #ffffff;
+}
+
+.s03-col ul:not(.s04-conds) li::before {
+  background: #fef08a;
 }
 
 /* ============================================================================
-   SLIDE 04 — M-WAY
+   SLIDE 04 — M-WAY (Ice-Blue + Solid Cobalt Paired Blocks)
    ============================================================================ */
 .s04-grid {
   display: grid;
@@ -961,8 +1020,9 @@ code {
 
 .s04-stage {
   background: #ffffff;
-  border: 2px solid var(--title-blue);
-  border-radius: 12px;
+  border: 1.8px solid var(--title-blue);
+  border-radius: 3px;
+  box-shadow: 5px 5px 0 rgba(59, 130, 246, 0.26);
   padding: 10px;
 }
 
@@ -978,7 +1038,7 @@ code {
   align-items: center;
   padding: 6px 10px;
   background: #ffffff;
-  border-radius: 6px;
+  border-radius: 2px;
   border: 1px solid #bfdbfe;
   margin-bottom: 6px;
   font-size: 15.5px;
@@ -991,28 +1051,53 @@ code {
   font-weight: 600;
 }
 
+.s04-gen {
+  background: linear-gradient(160deg, #4b80f2 0%, #366be0 100%) !important;
+  border-color: #1d4ed8 !important;
+  box-shadow: 5px 5px 0 #1e40af !important;
+  color: #ffffff;
+}
+
+.s04-gen > h3 {
+  background: rgba(15, 29, 58, 0.18) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+.s04-gen > h3::before {
+  background: #fef08a !important;
+}
+
+.s04-gen p {
+  color: rgba(255, 255, 255, 0.96) !important;
+}
+
 .s04-conds {
   list-style: none;
   padding-left: 0 !important;
-  gap: 4px !important;
+  gap: 5px !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 6px !important;
 }
 
 .s04-conds li {
-  background: #ffffff;
-  border: 1px solid rgba(59, 130, 246, 0.22);
-  border-left: 3px solid var(--cobalt);
-  border-radius: 7px;
-  padding: 4px 10px;
-  font-size: 14.5px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 3px solid #fef08a;
+  border-radius: 2px;
+  padding: 4px 9px;
+  font-size: 14px;
+  color: #ffffff !important;
 }
 
 /* ============================================================================
-   SLIDE 05 — M-WAY TO B-TREE
+   SLIDE 05 — M-WAY TO B-TREE (Borderless Editorial Rows on Grid Canvas)
    ============================================================================ */
 .s05-grid {
   display: grid;
   grid-template-columns: 440px 1fr;
-  gap: 18px;
+  gap: 20px;
   flex: 1;
   min-height: 0;
 }
@@ -1020,38 +1105,48 @@ code {
 .s05-props {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  justify-content: center;
+  gap: 6px;
 }
 
 .prop-item {
   display: flex;
-  gap: 12px;
+  gap: 13px;
   align-items: flex-start;
-  background: rgba(255, 255, 255, 0.72);
-  border: 2px solid rgba(0, 74, 173, 0.35);
-  border-radius: 10px;
-  padding: 11px 13px;
-  font-size: 15.5px;
-  line-height: 1.38;
-  opacity: 0.45;
-  transition: opacity 220ms ease, background 220ms ease, border-color 220ms ease;
+  background: transparent;
+  border: none;
+  border-left: 3.5px solid transparent;
+  border-bottom: 1.5px solid rgba(0, 74, 173, 0.16);
+  border-radius: 0;
+  padding: 11px 12px 11px 10px;
+  font-size: 15.6px;
+  line-height: 1.42;
+  color: var(--ink);
+  opacity: 0.44;
+  transition: opacity 220ms ease, background 220ms ease, border-color 220ms ease, transform 220ms ease;
+}
+
+.prop-item:last-child {
+  border-bottom: none;
 }
 
 .prop-item.is-lit {
   opacity: 1;
-  background: #ffffff;
-  border-color: var(--title-blue);
+  border-left-color: var(--title-blue);
 }
 
 .prop-item.is-current {
-  box-shadow: 0 0 0 3px rgba(82, 132, 255, 0.3);
+  background: rgba(255, 255, 255, 0.62);
+  border-left-color: var(--cobalt);
+  transform: translateX(4px);
 }
 
 .prop-icon {
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 800;
   color: var(--title-blue);
-  line-height: 1.2;
+  line-height: 1.15;
+  flex-shrink: 0;
 }
 
 .s05-right {
@@ -1063,29 +1158,32 @@ code {
 .s05-tree-box {
   flex: 1;
   background: #ffffff;
-  border: 2px solid var(--title-blue);
-  border-radius: 12px;
+  border: 1.8px solid var(--title-blue);
+  border-radius: 3px;
+  box-shadow: 5px 5px 0 rgba(0, 74, 173, 0.24);
   padding: 8px;
 }
 
 .s05-exception {
-  background: var(--panel-bg);
-  border: 2px solid var(--title-blue);
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 15.5px;
-  opacity: 0.45;
-  transition: opacity 220ms ease;
+  background: transparent;
+  border: none;
+  border-left: 4px solid var(--title-blue);
+  border-radius: 0;
+  padding: 8px 14px;
+  font-size: 15.2px;
+  color: var(--ink);
+  opacity: 0.5;
+  transition: opacity 220ms ease, background 220ms ease;
 }
 
 .s05-exception.is-lit {
   opacity: 1;
-  background: #fef9c3;
-  border-color: #ca8a04;
+  background: rgba(254, 249, 195, 0.92);
+  border-left-color: #ca8a04;
 }
 
 /* ============================================================================
-   SLIDE 06 — SEARCH(17) + TRY 16 DRAWER
+   SLIDE 06 — SEARCH(17) (Open Borderless Rules Directly on White Grid)
    ============================================================================ */
 .s06-grid {
   display: grid;
@@ -1101,10 +1199,30 @@ code {
   gap: 12px;
 }
 
+.s06-rules {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 2px 4px 4px !important;
+  overflow: visible !important;
+}
+
+.s06-rules > h3 {
+  margin: 0 0 10px !important;
+  padding: 0 0 6px !important;
+  background: transparent !important;
+  border-bottom: 2px solid var(--title-blue) !important;
+  font-size: 17.5px !important;
+}
+
+.s06-rules > h3::before {
+  display: none !important;
+}
+
 .rule-list {
   list-style: none;
   padding: 0 !important;
-  gap: 8px !important;
+  gap: 10px !important;
 }
 
 .rule-list li {
@@ -1118,13 +1236,14 @@ code {
   flex-shrink: 0;
   width: 24px;
   height: 24px;
-  border-radius: 50%;
-  background: var(--title-blue);
+  border-radius: 3px;
+  background: var(--cobalt);
   color: #ffffff;
   font-size: 13px;
   font-weight: 800;
   display: grid;
   place-items: center;
+  box-shadow: 2px 2px 0 rgba(0, 74, 173, 0.25);
 }
 
 .s06-crumbs {
@@ -1272,24 +1391,77 @@ code {
 .s07-stage {
   flex: 1;
   background: #ffffff;
-  border: 2px solid var(--title-blue);
-  border-radius: 12px;
+  border: 1.8px solid var(--title-blue);
+  border-radius: 3px;
+  box-shadow: 5px 5px 0 rgba(0, 74, 173, 0.24);
   padding: 8px;
 }
 
+/* Slide 07: Solid Bright Cobalt Sharp Blocks (Canva Slide 7) */
 .s07-bottomup {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  background: #eef7ff !important;
-  font-size: 15.5px;
+  background: linear-gradient(155deg, #4b80f2 0%, #376ce0 100%) !important;
+  border: none !important;
+  border-left: none !important;
+  border-radius: 2px !important;
+  box-shadow: 4px 4px 0 rgba(0, 53, 148, 0.28) !important;
+  color: #ffffff;
+  font-size: 15px;
+  line-height: 1.42;
+}
+
+.s07-bottomup strong {
+  color: #fef08a;
+}
+
+.s07-right .canva-card:first-child {
+  background: linear-gradient(160deg, #4e82f0 0%, #396ee2 100%) !important;
+  border: none !important;
+  border-radius: 2px !important;
+  box-shadow: 4px 4px 0 rgba(0, 53, 148, 0.28) !important;
+  color: #ffffff;
+}
+
+.s07-right .canva-card:first-child > h3 {
+  background: rgba(15, 29, 58, 0.16) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.24) !important;
+  color: #ffffff !important;
+}
+
+.s07-right .canva-card:first-child > h3::before {
+  background: #fef08a !important;
+}
+
+.s07-right .canva-card:first-child li {
+  color: rgba(255, 255, 255, 0.96) !important;
+}
+
+.s07-right .canva-card:first-child strong {
+  color: #fef08a;
+}
+
+.s07-right .canva-card:first-child code {
+  background: rgba(15, 29, 58, 0.28);
+  border-color: rgba(255, 255, 255, 0.34);
+  color: #ffffff;
+}
+
+.s07-right .canva-card:first-child ol li::before {
+  background: rgba(15, 29, 58, 0.42);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  border-radius: 2px;
 }
 
 .s07-status {
   background: #fef9c3 !important;
-  border-color: #ca8a04 !important;
-  font-size: 15.5px;
-  line-height: 1.45;
+  border: 1.5px solid #ca8a04 !important;
+  border-left: 5px solid #b45309 !important;
+  box-shadow: 4px 4px 0 rgba(180, 83, 9, 0.2) !important;
+  font-size: 15px;
+  line-height: 1.44;
 }
 
 .height-pill {
@@ -1391,61 +1563,153 @@ code {
 }
 
 /* ============================================================================
-   SLIDE 09, 10, 11, 12 — DELETE
+   DELETE SECTION: SLIDE 09 (MINH HỌA), SLIDE 10 (BORROW/MERGE), SLIDE 12 (CÂY QUYẾT ĐỊNH)
    ============================================================================ */
 .s09-grid {
   display: grid;
-  grid-template-columns: 330px 1fr;
-  gap: 16px;
+  grid-template-columns: 356px 1fr;
+  gap: 24px;
   flex: 1;
   min-height: 0;
+  align-items: center;
 }
 
 .s09-left {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  justify-content: center;
+  padding-right: 16px;
+  padding-bottom: 16px;
 }
 
-/* Slide 09: Structured invariant item tiles & visual consequence pipeline */
-.s09-stack ul {
-  gap: 9px;
+/* Iconic Canva Stacked Dark-Navy Retro OS Window (Slide 12 Decision Tree) */
+.s09-retro-win {
+  background: #0f1d3a;
+  border: 2px solid #0f1d3a;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow:
+    6px 6px 0 #ffffff,
+    6px 6px 0 1.8px #0f1d3a,
+    12px 12px 0 #dbeafe,
+    12px 12px 0 1.8px #0f1d3a,
+    18px 18px 0 #5284ff,
+    18px 18px 0 1.8px #0f1d3a;
 }
 
-.s09-stack ul li {
-  padding: 9px 12px !important;
-  background: #f4f8ff;
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  border-left: 3.5px solid var(--cobalt);
-  border-radius: 8px;
-  font-size: 14.8px;
-  line-height: 1.42;
+.retro-win__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #dbeafe;
+  border-bottom: 2px solid #0f1d3a;
 }
 
-.s09-stack ul li::before {
-  display: none;
+.retro-win__title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #0f1d3a;
 }
 
-.s09-note {
-  border-left: 4.5px solid var(--title-blue) !important;
-  background: linear-gradient(145deg, #f0f6ff 0%, #ffffff 100%) !important;
+.retro-win__ctrls {
+  display: flex;
+  gap: 5px;
+}
+
+.retro-win__ctrls span {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid #0f1d3a;
+  background: #ffffff;
+  color: #0f1d3a;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+.retro-win__ctrls span:last-child {
+  background: #5284ff;
+  color: #ffffff;
+}
+
+.retro-win__body {
+  padding: 16px 18px 18px;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.retro-win__lead {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.44;
+  color: #dbeafe;
+}
+
+.retro-win__lead strong {
+  color: #ffffff;
+}
+
+.retro-win__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.callout-kicker {
-  font-size: 11.5px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--title-blue);
+.retro-win__list li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 14.4px;
+  line-height: 1.42;
+  color: #f1f5f9;
 }
 
-.s09-note__sub {
-  font-size: 14.2px !important;
-  color: var(--ink-muted) !important;
-  line-height: 1.38 !important;
+.retro-win__list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.48em;
+  width: 6px;
+  height: 6px;
+  background: #60a5fa;
+}
+
+.retro-win__list strong {
+  color: #fef08a;
+}
+
+.retro-win__list code {
+  background: rgba(96, 165, 250, 0.22);
+  border-color: rgba(147, 197, 253, 0.45);
+  color: #ffffff;
+}
+
+.retro-win__divider {
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(147, 197, 253, 0.48) 0 6px,
+    transparent 6px 11px
+  );
+  margin: 2px 0;
+}
+
+.retro-win__kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #93c5fd;
 }
 
 .s09-chain {
@@ -1470,15 +1734,16 @@ code {
   top: 22px;
   width: 2px;
   height: 11px;
-  background: rgba(59, 130, 246, 0.35);
+  background: rgba(147, 197, 253, 0.45);
 }
 
 .s09-step__num {
   width: 21px;
   height: 21px;
-  border-radius: 6px;
-  background: #dbeafe;
-  color: var(--title-blue);
+  border-radius: 2px;
+  background: rgba(96, 165, 250, 0.24);
+  border: 1px solid rgba(147, 197, 253, 0.5);
+  color: #ffffff;
   font-size: 11.5px;
   font-weight: 800;
   display: inline-flex;
@@ -1488,13 +1753,14 @@ code {
 }
 
 .s09-step__num--dark {
-  background: var(--title-blue);
-  color: #ffffff;
+  background: #fef08a;
+  border-color: #fef08a;
+  color: #0f1d3a;
 }
 
 .s09-step__desc {
   font-size: 12.6px;
-  color: var(--ink-muted);
+  color: #cbd5e1;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -1502,60 +1768,28 @@ code {
 .chain-chip {
   display: inline-block;
   padding: 3px 8px;
-  border-radius: 6px;
-  background: #e0ecff;
-  border: 1px solid rgba(0, 74, 173, 0.24);
-  color: var(--title-blue);
-  font-size: 12.5px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(191, 219, 254, 0.42);
+  color: #ffffff;
+  font-size: 12.3px;
   font-weight: 800;
   white-space: nowrap;
 }
 
 .chain-chip--cobalt {
-  background: #dbeafe;
-  border-color: #3b82f6;
-  color: #1d4ed8;
-}
-
-.chain-chip--dark {
-  background: var(--title-blue);
-  border-color: var(--title-blue);
+  background: #3b82f6;
+  border-color: #60a5fa;
   color: #ffffff;
 }
 
-/* Slide 11: Color-coded Borrow / Merge / Underflow card header bands */
-.s11-defs .canva-card:first-child > h3 {
-  background: linear-gradient(90deg, #fee2e2 0%, #fef2f2 100%);
-  border-bottom-color: rgba(220, 38, 38, 0.22);
-  color: #991b1b;
-}
-
-.s11-defs .canva-card:first-child > h3::before {
-  background: #dc2626;
-}
-
-.s11-card-borrow > h3 {
-  background: linear-gradient(90deg, #dcfce7 0%, #f0fdf4 100%) !important;
-  border-bottom-color: rgba(22, 163, 74, 0.24) !important;
-  color: #14532d !important;
-}
-
-.s11-card-borrow > h3::before {
-  background: #16a34a !important;
-}
-
-.s11-card-merge > h3 {
-  background: linear-gradient(90deg, #fef3c7 0%, #fffbeb 100%) !important;
-  border-bottom-color: rgba(217, 119, 6, 0.26) !important;
-  color: #92400e !important;
-}
-
-.s11-card-merge > h3::before {
-  background: #d97706 !important;
+.chain-chip--dark {
+  background: #fef08a;
+  border-color: #fef08a;
+  color: #0f1d3a;
 }
 
 /* Polished callout left-accent stripe for bare note/status cards */
-.s07-bottomup,
 .note-strip,
 .contract-box,
 .var-watch,
@@ -1563,15 +1797,12 @@ code {
   border-left: 4.5px solid var(--cobalt) !important;
 }
 
-.s07-status,
-.s24-stat {
-  border-left: 4.5px solid #d97706 !important;
-}
-
 .s09-flow {
+  height: 100%;
   background: #ffffff;
-  border: 2px solid var(--title-blue);
-  border-radius: 12px;
+  border: 1.8px solid var(--title-blue);
+  border-radius: 3px;
+  box-shadow: 6px 6px 0 rgba(59, 130, 246, 0.28);
   padding: 8px;
 }
 
@@ -1588,9 +1819,10 @@ code {
   display: grid;
   grid-template-columns: 370px 1fr;
   gap: 16px;
-  background: var(--panel-bg);
-  border: 2px solid var(--title-blue);
-  border-radius: 12px;
+  background: #f8fbff;
+  border: 1.6px solid var(--title-blue);
+  border-radius: 3px;
+  box-shadow: 5px 5px 0 rgba(0, 74, 173, 0.24);
   padding: 12px 14px;
   transition: opacity 220ms ease;
 }
@@ -1598,7 +1830,7 @@ code {
 .s10-row__label {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 }
 
 .s10-row__label h3 {
@@ -1610,53 +1842,123 @@ code {
 .s10-row__label p {
   margin: 0;
   font-size: 14.8px;
-  line-height: 1.4;
+  line-height: 1.42;
 }
 
 .row-badge {
   align-self: flex-start;
   padding: 2px 10px;
-  border-radius: 999px;
+  border-radius: 2px;
   background: var(--title-blue);
   color: #ffffff;
-  font-size: 12.5px;
+  font-size: 12.2px;
   font-weight: 800;
+  letter-spacing: 0.03em;
 }
 
 .row-badge--cobalt {
   background: var(--cobalt);
 }
 
+/* Slide 09 (was 10): Solid Cobalt Predecessor Callout Box (Canva Slide 10) */
 .pred-box {
-  background: #ffffff;
-  border-left: 4px solid var(--cobalt);
-  padding: 8px 10px;
-  border-radius: 6px;
+  background: linear-gradient(155deg, #4b80f2 0%, #3469db 100%);
+  border: none;
+  border-radius: 2px;
+  box-shadow: 3px 3px 0 rgba(0, 53, 148, 0.26);
+  padding: 9px 12px;
+  color: #ffffff;
+}
+
+.pred-box strong {
+  color: #fef08a;
 }
 
 .s10-row__tree {
   background: #ffffff;
-  border-radius: 10px;
+  border-radius: 2px;
   border: 1.5px solid #bfdbfe;
   padding: 4px;
 }
 
+/* Slide 10 (was 11): Curved Organic Solid Cobalt Left Sidebar (Canva Slide 11) */
 .s11-grid {
   display: grid;
-  grid-template-columns: 380px 1fr;
-  gap: 16px;
+  grid-template-columns: 378px 1fr;
+  gap: 22px;
   flex: 1;
   min-height: 0;
 }
 
 .s11-defs {
+  margin-left: -36px;
+  padding: 18px 26px 18px 36px;
+  background: linear-gradient(168deg, #4f83f2 0%, #356add 100%);
+  border-radius: 0 56px 56px 0;
+  box-shadow: 6px 4px 0 rgba(0, 74, 173, 0.16);
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 10px;
 }
 
+.s11-defs .canva-card {
+  background: transparent !important;
+  border: none !important;
+  border-left: 3.5px solid rgba(255, 255, 255, 0.28) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 10px 12px !important;
+  overflow: visible !important;
+}
+
+.s11-defs .canva-card:last-child {
+  border-bottom: none !important;
+}
+
+.s11-defs .canva-card > h3 {
+  margin: 0 0 5px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-size: 16px !important;
+}
+
+.s11-defs .canva-card > h3::before {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: #fca5a5 !important;
+}
+
+.s11-defs .s11-card-borrow > h3::before {
+  background: #86efac !important;
+}
+
+.s11-defs .s11-card-merge > h3::before {
+  background: #fde047 !important;
+}
+
 .s11-defs .canva-card p {
-  font-size: 14.8px;
+  font-size: 14.5px;
+  line-height: 1.44;
+  color: rgba(255, 255, 255, 0.94) !important;
+}
+
+.s11-defs .canva-card code {
+  background: rgba(15, 29, 58, 0.28);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+}
+
+.s11-defs .canva-card.is-active-card {
+  background: rgba(255, 255, 255, 0.17) !important;
+  border-left: 4px solid #fef08a !important;
+  border-radius: 0 8px 8px 0 !important;
+  transform: translateX(4px);
+  box-shadow: none !important;
 }
 
 .s11-right {
@@ -2837,7 +3139,7 @@ code {
   font-size: 15px;
 }
 
-/* Slide 24 & 25 */
+/* Slide 24 & 25: Paired Ice-Blue + Solid Cobalt Blocks (Canva Slide 24) */
 .s24-grid {
   display: grid;
   grid-template-columns: 370px 1fr;
@@ -2849,12 +3151,26 @@ code {
 .s24-left {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .s24-stat {
-  background: #fef9c3 !important;
-  border-color: #ca8a04 !important;
+  background: linear-gradient(155deg, #4b80f2 0%, #3469db 100%) !important;
+  border: 1.5px solid #1d4ed8 !important;
+  box-shadow: 5px 5px 0 #1e40af !important;
+  color: #ffffff !important;
+  font-size: 15.2px;
+  line-height: 1.46;
+}
+
+.s24-stat strong {
+  color: #fef08a;
+}
+
+.s24-stat code {
+  background: rgba(15, 29, 58, 0.28);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
 }
 
 .s24-right,
@@ -2864,8 +3180,9 @@ code {
 
 .s24-tree {
   background: #ffffff;
-  border: 2px solid var(--title-blue);
-  border-radius: 12px;
+  border: 1.8px solid var(--title-blue);
+  border-radius: 3px;
+  box-shadow: 5px 5px 0 rgba(59, 130, 246, 0.24);
   padding: 8px;
 }
 
@@ -2879,22 +3196,78 @@ code {
 
 .s25-tree {
   background: #ffffff;
-  border: 2px solid var(--title-blue);
-  border-radius: 12px;
+  border: 1.8px solid var(--title-blue);
+  border-radius: 3px;
+  box-shadow: 5px 5px 0 rgba(0, 74, 173, 0.24);
   padding: 6px;
 }
 
 .s25-side {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
+}
+
+.s25-ratio {
+  background: linear-gradient(155deg, #4b80f2 0%, #3469db 100%) !important;
+  border: 1.5px solid #1d4ed8 !important;
+  box-shadow: 5px 5px 0 #1e40af !important;
+  color: #ffffff;
+}
+
+.s25-ratio p {
+  color: rgba(255, 255, 255, 0.95) !important;
 }
 
 .ratio-big {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 800;
-  color: var(--title-blue);
-  margin-bottom: 4px;
+  color: #fef08a;
+  margin-bottom: 5px;
+}
+
+.s22-right .canva-card:last-child,
+.s23-side .canva-card:last-child {
+  background: linear-gradient(155deg, #4b80f2 0%, #3469db 100%) !important;
+  border-color: #1d4ed8 !important;
+  box-shadow: 5px 5px 0 #1e40af !important;
+  color: #ffffff;
+}
+
+.s22-right .canva-card:last-child > h3,
+.s23-side .canva-card:last-child > h3 {
+  background: rgba(15, 29, 58, 0.16) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.24) !important;
+  color: #ffffff !important;
+}
+
+.s22-right .canva-card:last-child > h3::before,
+.s23-side .canva-card:last-child > h3::before {
+  background: #fef08a !important;
+}
+
+.s22-right .canva-card:last-child p,
+.s22-right .canva-card:last-child li,
+.s23-side .canva-card:last-child p,
+.s23-side .canva-card:last-child li {
+  color: rgba(255, 255, 255, 0.96) !important;
+}
+
+.s22-right .canva-card:last-child strong,
+.s23-side .canva-card:last-child strong {
+  color: #fef08a;
+}
+
+.s22-right .canva-card:last-child code,
+.s23-side .canva-card:last-child code {
+  background: rgba(15, 29, 58, 0.28);
+  border-color: rgba(255, 255, 255, 0.34);
+  color: #ffffff;
+}
+
+.s22-right .canva-card:last-child ul li::before,
+.s23-side .canva-card:last-child ul li::before {
+  background: #fef08a;
 }
 
 .s25-strip-box {

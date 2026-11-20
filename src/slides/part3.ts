@@ -313,7 +313,7 @@ const slide15: SlideDef = {
         heading: 'Vai trò hai hàm',
         bodyHtml:
           '<ul>' +
-          '<li><code>delete(key)</code>: tập trung việc thu gọn <code>self.root</code> khi gốc là nút trong rỗng (xem lại Trang 12).</li>' +
+          '<li><code>delete(key)</code>: tập trung việc thu gọn <code>self.root</code> khi gốc là nút trong rỗng (xem lại Trang 11).</li>' +
           '<li><code>_delete(node, key)</code>: biến bài toán xóa nút trong về xóa tiền nhiệm ở lá, rồi dùng cờ <code>deleted</code> khi quay lui để gọi <code>_fix_underflow</code> khi cần.</li>' +
           '</ul>',
       },
@@ -327,7 +327,7 @@ const slide15: SlideDef = {
           <div>
             <h1 class="slide-title"><span>Delete</span> và Predecessor</h1>
           </div>
-          <button type="button" class="inline-action-btn" data-role="goto-12">↩ Xem ví dụ thu gọn gốc (Trang 12)</button>
+          <button type="button" class="inline-action-btn" data-role="goto-12">↩ Xem ví dụ thu gọn gốc (Trang 11)</button>
         </header>
 
         <div class="s15-grid">
@@ -347,7 +347,7 @@ const slide15: SlideDef = {
 
     ctx.slideEl.querySelector<HTMLButtonElement>('[data-role="goto-12"]')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      ctx.goToSlide(12);
+      ctx.goToSlide(11);
     });
   },
   renderStep(step, _prev, ctx) {
@@ -373,11 +373,11 @@ const slide15: SlideDef = {
     triggerStepPulse(vars, ctx.getReducedMotion());
 
     const notes = [
-      'Cây ví dụ Trang 10 (M = 3): chuẩn bị chạy <code>delete(10)</code>.',
+      'Cây ví dụ Trang 09 (M = 3): chuẩn bị chạy <code>delete(10)</code>.',
       'Nhánh <code>if node.leaf</code> xử lý xóa trực tiếp hoặc trả <code>False</code> nếu không tìm thấy. Ở đây 10 nằm tại nút trong.',
       'Vòng <code>while not predecessor.leaf</code> đi tận cùng bên phải của nhánh trái → gặp <strong>7</strong>, gán đè lên 10 và đổi <code>key = 7</code>.',
       'Lời gọi đệ quy xóa bản <strong>7</strong> cũ ở lá trả <code>True</code>. Vì <code>len([5]) == 1 ≥ min_keys</code> nên không cần gọi <code>_fix_underflow</code>.',
-      'Dòng <code>if not self.root.keys and not self.root.leaf</code> chỉ kích hoạt khi gốc bị rỗng (như ví dụ Delete(5) ở Trang 12).',
+      'Dòng <code>if not self.root.keys and not self.root.leaf</code> chỉ kích hoạt khi gốc bị rỗng (như ví dụ Delete(5) ở Trang 11).',
     ];
     note.innerHTML = notes[step];
 
@@ -497,7 +497,7 @@ const slide16: SlideDef = {
     const branchTitles = [
       'Cấu trúc: <code>left ← child[i] → right</code> dưới cùng <code>parent</code>',
       'Nhánh 1 · Mượn từ anh em trái (<code>len(left.keys) &gt; min_keys</code>)',
-      'Nhánh 2 · Mượn từ anh em phải (ví dụ <code>10 ↓, 12 ↑</code> ở Trang 11)',
+      'Nhánh 2 · Mượn từ anh em phải (ví dụ <code>10 ↓, 12 ↑</code> ở Trang 10)',
       'Nhánh 3 · Gộp cặp liền kề &amp; trả quyền kiểm tra cha cho <code>_delete</code>',
     ];
     branch.innerHTML = branchTitles[step];

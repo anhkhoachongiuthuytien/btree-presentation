@@ -307,8 +307,8 @@ const slide07: SlideDef = {
       <div class="slide-frame">
         <header class="slide-header">
           <h1 class="slide-title"><span>Chèn khóa:</span> Insert(k)</h1>
-          <p class="slide-lead">Khác với cây nhị phân thông thường, B-tree có thể tăng chiều cao bằng cách tạo một root mới.</p>
         </header>
+        <div class="def-banner def-banner--flush">Khác với cây nhị phân thông thường, B-tree có thể <strong>tăng chiều cao</strong> bằng cách tạo một root mới.</div>
 
         <div class="s07-grid">
           <div class="s07-left">
@@ -732,15 +732,15 @@ const slide08: SlideDef = {
 };
 
 // ============================================================================
-// SLIDE 09 — Cây quyết định khi xóa
+// SLIDE 12 — Cây quyết định khi xóa (Tổng kết cuối phần xóa)
 // ============================================================================
 const slide09: SlideDef = {
-  number: 9,
+  number: 12,
   title: 'Cây quyết định khi xóa',
   chapter: '2. Các phép toán trong B-tree',
-  theme: 'blue',
+  theme: 'white',
   stepCount: 3,
-  leadIn: '“Điểm phải kiểm tra sau một lần gộp là nút cha, vì nó vừa mất một khóa phân cách.”',
+  leadIn: '“Sau khi đi qua xóa ở lá, tiền nhiệm, Borrow, Merge và thu gọn gốc, toàn bộ phép xóa gói gọn trong một cây quyết định duy nhất này.”',
   fullScript:
     'Sang thao tác Xóa khóa, ta phải đồng thời duy trì thứ tự khóa, giới hạn số khóa tối thiểu min_keys và mọi lá ở cùng độ sâu. Cây quyết định cho thấy luồng xử lý: Đầu tiên kiểm tra khóa ở lá hay nút trong. Ở lá thì xóa trực tiếp; ở nút trong thì thay bằng tiền nhiệm (predecessor) rồi xóa bản gốc ở lá. Sau khi xóa ở lá, nếu nút vẫn đủ min_keys thì kết thúc; nếu thiếu khóa, xem hai anh em liền kề cùng cha: anh em dư khóa thì mượn (Borrow) qua cha; cả hai sát ngưỡng thì gộp (Merge) lại và quay ngược lên kiểm tra nút cha. Nếu gốc rỗng còn một con duy nhất thì hạ chiều cao cây.',
   fullView: {
@@ -777,32 +777,36 @@ const slide09: SlideDef = {
 
         <div class="s09-grid">
           <aside class="s09-left">
-            <div class="canva-card s09-stack">
-              <h3>Ba bất biến bắt buộc</h3>
-              <ul>
-                <li><strong>Thứ tự khóa</strong> trong mọi nút và mọi khoảng con.</li>
-                <li><strong>Ngưỡng tối thiểu</strong> <code>min_keys</code> ở mọi nút ngoài gốc.</li>
-                <li><strong>Cùng độ sâu</strong> của tất cả các nút lá.</li>
-              </ul>
-            </div>
-            <div class="canva-card s09-note">
-              <div class="callout-kicker">Hệ quả khi xóa khóa</div>
-              <p class="s09-note__sub">Để giữ đủ 3 bất biến trên, thuật toán chạy theo chuỗi:</p>
-              <div class="s09-chain" aria-label="Predecessor sang Borrow hoặc Merge sang Kiểm tra cha">
-                <div class="s09-step">
-                  <span class="s09-step__num">1</span>
-                  <span class="chain-chip">Predecessor</span>
-                  <span class="s09-step__desc">Đưa về xóa tại lá</span>
-                </div>
-                <div class="s09-step">
-                  <span class="s09-step__num">2</span>
-                  <span class="chain-chip chain-chip--cobalt">Borrow / Merge</span>
-                  <span class="s09-step__desc">Xử lý thiếu khóa</span>
-                </div>
-                <div class="s09-step">
-                  <span class="s09-step__num s09-step__num--dark">3</span>
-                  <span class="chain-chip chain-chip--dark">Kiểm tra cha</span>
-                  <span class="s09-step__desc">Lan ngược lên gốc</span>
+            <div class="s09-retro-win">
+              <div class="retro-win__bar">
+                <span class="retro-win__title">DELETE · 3 BẤT BIẾN</span>
+                <span class="retro-win__ctrls" aria-hidden="true"><span>−</span><span>□</span><span>×</span></span>
+              </div>
+              <div class="retro-win__body">
+                <p class="retro-win__lead">Khi xóa một khóa khỏi B-tree, ta phải đồng thời duy trì <strong>3 bất biến bắt buộc</strong>:</p>
+                <ul class="retro-win__list">
+                  <li><strong>Thứ tự khóa</strong> trong mọi nút và mọi khoảng con.</li>
+                  <li><strong>Ngưỡng tối thiểu</strong> <code>min_keys</code> ở mọi nút ngoài gốc.</li>
+                  <li><strong>Cùng độ sâu</strong> của tất cả các nút lá.</li>
+                </ul>
+                <div class="retro-win__divider" aria-hidden="true"></div>
+                <div class="retro-win__kicker">HỆ QUẢ · CHUỖI PHÉP TOÁN XÓA</div>
+                <div class="s09-chain" aria-label="Predecessor sang Borrow hoặc Merge sang Kiểm tra cha">
+                  <div class="s09-step">
+                    <span class="s09-step__num">1</span>
+                    <span class="chain-chip">Predecessor</span>
+                    <span class="s09-step__desc">Đưa về xóa tại lá</span>
+                  </div>
+                  <div class="s09-step">
+                    <span class="s09-step__num">2</span>
+                    <span class="chain-chip chain-chip--cobalt">Borrow / Merge</span>
+                    <span class="s09-step__desc">Xử lý thiếu khóa</span>
+                  </div>
+                  <div class="s09-step">
+                    <span class="s09-step__num s09-step__num--dark">3</span>
+                    <span class="chain-chip chain-chip--dark">Kiểm tra cha</span>
+                    <span class="s09-step__desc">Lan ngược lên gốc</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -947,13 +951,13 @@ function renderFlowchart(
 }
 
 // ============================================================================
-// SLIDE 10 — Xóa ở lá và xóa ở nút trong
+// SLIDE 09 — Xóa ở lá và xóa ở nút trong
 // ============================================================================
 const slide10: SlideDef = {
-  number: 10,
+  number: 9,
   title: 'Xóa ở lá và xóa ở nút trong',
   chapter: '2. Các phép toán trong B-tree',
-  theme: 'white',
+  theme: 'blue',
   stepCount: 3,
   leadIn: '“Khóa lớn nhất trong cây con trái vẫn nhỏ hơn tất cả khóa của khoảng bên phải. Vì thế 7 có thể nhận vị trí của 10.”',
   fullScript:
@@ -1133,13 +1137,13 @@ const slide10: SlideDef = {
 };
 
 // ============================================================================
-// SLIDE 11 — Mượn qua cha hay gộp? (Borrow & Merge)
+// SLIDE 10 — Mượn qua cha hay gộp? (Borrow & Merge)
 // ============================================================================
 const slide11: SlideDef = {
-  number: 11,
+  number: 10,
   title: 'Mượn qua cha hay gộp?',
   chapter: '2. Các phép toán trong B-tree',
-  theme: 'blue',
+  theme: 'white',
   stepCount: 4,
   leadIn: '“Cả hai lượt đều xóa cùng một khóa. Hãy nhìn lá giữa trước khi quyết định mượn hay gộp.”',
   fullScript:
@@ -1321,10 +1325,10 @@ const S12_STEPS = [
 ];
 
 const slide12: SlideDef = {
-  number: 12,
+  number: 11,
   title: 'Trace Delete(5) và thu gọn gốc',
   chapter: '2. Các phép toán trong B-tree',
-  theme: 'white',
+  theme: 'blue',
   stepCount: 5,
   leadIn: '“Nếu dừng ở bước 2, lá đã hợp lệ nhưng cây vẫn chưa hợp lệ. Ai vừa mất khóa duy nhất của mình?”',
   fullScript:
@@ -1528,4 +1532,4 @@ function renderSlide12State(step: number, slideEl: HTMLElement, reducedMotion: b
   footer.innerHTML = notes[step];
 }
 
-export const PART2_SLIDES: SlideDef[] = [slide06, slide07, slide08, slide09, slide10, slide11, slide12];
+export const PART2_SLIDES: SlideDef[] = [slide06, slide07, slide08, slide10, slide11, slide12, slide09];
