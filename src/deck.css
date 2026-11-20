@@ -4064,6 +4064,191 @@ code {
   to { opacity: 1; transform: scale(1); }
 }
 
+/* ============================================================================
+   SLIDE-TO-SLIDE TRANSITIONS & UNIVERSAL STAGGERED ENTRANCE CHOREOGRAPHY
+   ============================================================================ */
+.top-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3.5px;
+  background: rgba(15, 29, 58, 0.25);
+  z-index: 140;
+  pointer-events: none;
+}
+
+.top-progress__fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 55%, #fef08a 100%);
+  transform-origin: left center;
+  transform: scaleX(0.034);
+  transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.65);
+}
+
+/* Keep outgoing slide pinned cleanly behind incoming slide during WAAPI transition */
+.reveal .slides > section.is-leaving-slide {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.reveal .slides > section.is-entering-slide {
+  z-index: 3 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.reveal .slides > section.is-leaving-slide .slide-stage,
+.reveal .slides > section.is-entering-slide .slide-stage {
+  border-radius: 10px;
+  box-shadow: 0 20px 55px rgba(8, 18, 48, 0.42);
+  will-change: transform, opacity, clip-path, filter;
+}
+
+/* Glowing drafting scanline for open-chapter blueprint shutter transitions */
+.tr-scanline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 5px;
+  background: linear-gradient(180deg, rgba(147, 197, 253, 0.1) 0%, #60a5fa 22%, #fef08a 50%, #60a5fa 78%, rgba(147, 197, 253, 0.1) 100%);
+  box-shadow: 0 0 24px 6px rgba(82, 132, 255, 0.65), 0 0 8px 2px rgba(254, 240, 138, 0.7);
+  will-change: transform, opacity;
+}
+
+/* Universal Staggered Slide-Entrance Choreography (.slide-entering) */
+@keyframes ent-rise {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ent-card {
+  from { opacity: 0; transform: translateY(20px) scale(0.982); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes ent-shift-only {
+  from { transform: translateY(16px) scale(0.985); }
+  to { transform: translateY(0) scale(1); }
+}
+
+.slide-entering .slide-header,
+.slide-entering .s17-header,
+.slide-entering .s21-canva-head,
+.slide-entering .s26-canva-head,
+.slide-entering .cover-title-block,
+.slide-entering .toc-heading {
+  animation: ent-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) 70ms backwards;
+}
+
+.slide-entering .def-banner,
+.slide-entering .s08-sidebar,
+.slide-entering .s12-bar {
+  animation: ent-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) 130ms backwards;
+}
+
+/* Active (non-dimmed) cards, visual stages, and code windows stagger smoothly */
+.slide-entering .canva-card:not(.is-dim),
+.slide-entering .s26-card:not(.is-dim),
+.slide-entering .toc-bar,
+.slide-entering .prop-item,
+.slide-entering .code-win,
+.slide-entering .s17-col,
+.slide-entering .s21-block:not(.is-dim-block),
+.slide-entering .s21-summary-card,
+.slide-entering .cover-tree-stage,
+.slide-entering .s06-tree-wrap,
+.slide-entering .s07-stage,
+.slide-entering .s08-tree,
+.slide-entering .s09-flow,
+.slide-entering .s10-row:not(.is-dim),
+.slide-entering .s11-tree,
+.slide-entering .s12-tree,
+.slide-entering .s20-tree,
+.slide-entering .s22-tree,
+.slide-entering .s23-stage,
+.slide-entering .s24-tree,
+.slide-entering .s25-tree {
+  animation: ent-card 460ms cubic-bezier(0.22, 1, 0.36, 1) 140ms backwards;
+}
+
+/* Dimmed cards glide spatially without overriding their dimmed opacity */
+.slide-entering .canva-card.is-dim,
+.slide-entering .s26-card.is-dim,
+.slide-entering .s21-block.is-dim-block,
+.slide-entering .s10-row.is-dim {
+  animation: ent-shift-only 460ms cubic-bezier(0.22, 1, 0.36, 1) 160ms backwards;
+}
+
+/* Staggered sibling cadence */
+.slide-entering .toc-bar:nth-child(2),
+.slide-entering .s03-col:nth-child(2),
+.slide-entering .s26-card:nth-child(2),
+.slide-entering .prop-item:nth-child(2),
+.slide-entering .s17-col:nth-child(2) { animation-delay: 195ms; }
+
+.slide-entering .toc-bar:nth-child(3),
+.slide-entering .s03-col:nth-child(3),
+.slide-entering .s26-card:nth-child(3),
+.slide-entering .prop-item:nth-child(3) { animation-delay: 250ms; }
+
+.slide-entering .toc-bar:nth-child(4),
+.slide-entering .s03-col:nth-child(4),
+.slide-entering .prop-item:nth-child(4) { animation-delay: 305ms; }
+
+.slide-entering .toc-bar:nth-child(5) { animation-delay: 360ms; }
+.slide-entering .toc-bar:nth-child(6) { animation-delay: 415ms; }
+
+/* Footer strips frame the bottom of the slide last */
+.slide-entering .s19-bottom-strip,
+.slide-entering .s20-conclusion,
+.slide-entering .s22-footer,
+.slide-entering .s26-canva-footer,
+.slide-entering .s28-bottom,
+.slide-entering .xfs-conclusion-strip,
+.slide-entering .cover-caption {
+  animation: ent-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) 240ms backwards;
+}
+
+/* Ambient Cover Motion & Interactive Polish */
+.cover-illus svg {
+  animation: cover-hw-float 5.2s ease-in-out infinite;
+}
+
+@keyframes cover-hw-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.code-line {
+  transition: background 220ms ease, border-left-color 220ms ease, color 200ms ease;
+}
+
+.code-line.is-hl {
+  box-shadow: inset 3px 0 0 #60a5fa;
+}
+
+.ext-card,
+.rec-pill,
+.step-chip {
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.ext-card:hover,
+.rec-pill:hover,
+.step-chip:hover {
+  transform: translateY(-2px);
+}
+
 /* Reduced Motion (placed last so it cleanly disables every on-slide animation) */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -4075,7 +4260,8 @@ code {
   }
   .s17-pulse-dot,
   .s21-search-bead,
-  .s26-bead {
+  .s26-bead,
+  .tr-edge-bead {
     display: none !important;
   }
 }

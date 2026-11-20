@@ -217,9 +217,17 @@ export function renderTreeScene(
       : '';
     const midY = (start.y + end.y) / 2;
     const d = `M ${start.x.toFixed(1)} ${start.y.toFixed(1)} C ${start.x.toFixed(1)} ${midY.toFixed(1)}, ${end.x.toFixed(1)} ${midY.toFixed(1)}, ${end.x.toFixed(1)} ${end.y.toFixed(1)}`;
+    const edgePathId = `${markerPrefix}-ep-${escapeXml(e.id)}`;
     parts.push(
-      `<path class="tr-edge${isActive ? ' is-active' : ''}" data-edge-id="${escapeXml(e.id)}" d="${d}" fill="none" stroke="${stroke}" stroke-width="${strokeW}"${dash ? ` stroke-dasharray="${dash}"` : ''} opacity="${opacity}"${marker} />`,
+      `<path id="${edgePathId}" class="tr-edge${isActive ? ' is-active' : ''}" data-edge-id="${escapeXml(e.id)}" d="${d}" fill="none" stroke="${stroke}" stroke-width="${strokeW}"${dash ? ` stroke-dasharray="${dash}"` : ''} opacity="${opacity}"${marker} />`,
     );
+    if (isActive && e.arrow && !opts?.reducedMotion) {
+      parts.push(
+        `<circle class="tr-edge-bead" r="3.8" fill="#FEF08A" stroke="#1D4ED8" stroke-width="1.5">` +
+          `<animateMotion dur="1.75s" repeatCount="indefinite"><mpath href="#${edgePathId}" /></animateMotion>` +
+          `</circle>`,
+      );
+    }
     if (e.label) {
       const lx = (start.x + end.x) / 2;
       const ly = midY - 4;
@@ -248,9 +256,18 @@ export function renderTreeScene(
       const color = lk.active ? '#16A34A' : '#5284FF';
       const sw = lk.active ? 3.5 : 2.2;
       const mId = lk.active ? `${markerPrefix}-arrow-success` : `${markerPrefix}-arrow-active`;
+      const lkPathId = `${markerPrefix}-lk-${escapeXml(lk.id)}`;
       parts.push(
         `<line class="tr-leaf-link${lk.active ? ' is-active' : ''}" data-link-id="${escapeXml(lk.id)}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${sw}" stroke-dasharray="${lk.active ? '' : '5 3'}" marker-end="url(#${mId})" />`,
       );
+      if (lk.active && !opts?.reducedMotion) {
+        parts.push(
+          `<path id="${lkPathId}" d="M ${x1} ${y1} L ${x2} ${y2}" fill="none" stroke="none" />` +
+            `<circle class="tr-edge-bead" r="3.6" fill="#BBF7D0" stroke="#15803D" stroke-width="1.5">` +
+            `<animateMotion dur="1.45s" repeatCount="indefinite"><mpath href="#${lkPathId}" /></animateMotion>` +
+            `</circle>`,
+        );
+      }
       if (lk.label) {
         parts.push(
           `<text x="${(x1 + x2) / 2}" y="${y1 - 8}" text-anchor="middle" fill="${color}" font-size="11" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">${escapeXml(lk.label)}</text>`,
@@ -650,35 +667,45 @@ export function renderTreeScene(
       }
     });
 
-    // Draw active edges like ink cascading top-to-bottom
+    // Draw active edges like ink cascading top-to-bottom (with explicit px units & guaranteed cleanup)
     svg.querySelectorAll<SVGPathElement>('.tr-edge.is-active').forEach((path, idx) => {
       try {
-        const len = path.getTotalLength();
-        path.style.strokeDasharray = `${len}`;
-        anims.push(
-          path.animate(
-            [{ strokeDashoffset: `${len}` }, { strokeDashoffset: '0' }],
-            { duration: 300, delay: Math.min(idx * 85, 255), fill: 'backwards', easing },
-          ),
+        const len = Math.ceil(path.getTotalLength());
+        if (len <= 0) return;
+        path.style.strokeDasharray = `${len}px`;
+        const anim = path.animate(
+          [{ strokeDashoffset: `${len}px` }, { strokeDashoffset: '0px' }],
+          { duration: 320, delay: Math.min(idx * 85, 255), fill: 'backwards', easing },
         );
+        const clearDash = () => {
+          path.style.strokeDasharray = '';
+        };
+        anim.onfinish = clearDash;
+        anim.oncancel = clearDash;
+        anims.push(anim);
       } catch {
-        // ignore if hidden
+        path.style.strokeDasharray = '';
       }
     });
 
     // Draw active horizontal leaf links sequentially left-to-right (B+ range scan)
     svg.querySelectorAll<SVGLineElement>('.tr-leaf-link.is-active').forEach((ln, idx) => {
       try {
-        const len = ln.getTotalLength();
-        ln.style.strokeDasharray = `${len}`;
-        anims.push(
-          ln.animate(
-            [{ strokeDashoffset: `${len}` }, { strokeDashoffset: '0' }],
-            { duration: 280, delay: idx * 120, fill: 'backwards', easing },
-          ),
+        const len = Math.ceil(ln.getTotalLength());
+        if (len <= 0) return;
+        ln.style.strokeDasharray = `${len}px`;
+        const anim = ln.animate(
+          [{ strokeDashoffset: `${len}px` }, { strokeDashoffset: '0px' }],
+          { duration: 280, delay: idx * 110, fill: 'backwards', easing },
         );
+        const clearDash = () => {
+          ln.style.strokeDasharray = '';
+        };
+        anim.onfinish = clearDash;
+        anim.oncancel = clearDash;
+        anims.push(anim);
       } catch {
-        // ignore
+        ln.style.strokeDasharray = '';
       }
     });
 

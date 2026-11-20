@@ -19,7 +19,7 @@ import RevealNotes from 'reveal.js/plugin/notes/notes.esm.js';
 import { ALL_SLIDES } from './slides';
 import { texBlock } from './math';
 import { renderPythonWindow } from './pythonCode';
-import { playSlideTransition, cancelSlideTransition } from './transitions';
+import { playSlideTransition, cancelSlideTransition, triggerSlideEntrance } from './transitions';
 import type { SlideContext, SlideDef } from './types';
 
 function pad2(n: number): string {
@@ -35,6 +35,7 @@ const getReducedMotion = () => reducedMotionQuery.matches;
 
 const slidesContainer = document.getElementById('slides-container')!;
 const transitionOverlay = document.getElementById('transition-overlay')!;
+const topProgressFill = document.getElementById('top-progress-fill')!;
 const laserLayer = document.getElementById('laser-layer')!;
 const laserDot = document.getElementById('laser-dot')!;
 
@@ -233,7 +234,7 @@ function getCurrentStepForSection(sec: HTMLElement): number {
   return sec.querySelectorAll('.step-marker.visible').length;
 }
 
-function syncCurrentSlide(playTransitionFrom?: number): void {
+function syncCurrentSlide(playTransitionFrom?: number, forceEntrance = false): void {
   if (!deck) return;
   const indices = deck.getIndices();
   const h = Math.min(Math.max(indices.h ?? 0, 0), ALL_SLIDES.length - 1);
@@ -245,8 +246,15 @@ function syncCurrentSlide(playTransitionFrom?: number): void {
   cancelSlideTransition(transitionOverlay);
   slide.cancelAnimations?.(ctx.slideEl);
 
-  if (playTransitionFrom !== undefined && playTransitionFrom !== slide.number && !deck.isOverview()) {
-    playSlideTransition(transitionOverlay, playTransitionFrom, slide.number, getReducedMotion());
+  const isSlideChange = playTransitionFrom !== undefined && playTransitionFrom !== slide.number;
+  if (isSlideChange && !deck.isOverview()) {
+    const prevSec = slideSections[playTransitionFrom - 1] ?? null;
+    playSlideTransition(transitionOverlay, prevSec, sec, playTransitionFrom, slide.number, getReducedMotion());
+    triggerSlideEntrance(sec, getReducedMotion());
+  } else if (forceEntrance && !deck.isOverview()) {
+    triggerSlideEntrance(sec, getReducedMotion());
+  } else {
+    sec.classList.remove('slide-entering');
   }
 
   const prevStep = lastRenderedStep.get(slide.number) ?? null;
@@ -254,7 +262,8 @@ function syncCurrentSlide(playTransitionFrom?: number): void {
   lastRenderedStep.set(slide.number, step);
   currentSlideNumber = slide.number;
 
-  // Update podium bar
+  // Update top kinetic progress ribbon & podium bar
+  topProgressFill.style.transform = `scaleX(${slide.number / ALL_SLIDES.length})`;
   statusChapter.textContent = slide.chapter;
   statusPage.textContent = `${pad2(slide.number)}/29`;
   statusStep.textContent = `Nhịp ${step}/${slide.stepCount}`;
@@ -290,7 +299,7 @@ deck.initialize().then(() => {
     s.renderStep(0, null, slideContexts[idx]);
     lastRenderedStep.set(s.number, 0);
   });
-  syncCurrentSlide();
+  syncCurrentSlide(undefined, true);
 });
 
 deck.on('slidechanged', (event: unknown) => {
