@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>B-tree, các cải tiến và ứng dụng — Nhóm 10</title>
+  </head>
+  <body>
+    <div class="reveal" id="deck-root">
+      <div class="slides" id="slides-container"></div>
+    </div>
+
+    <!-- Dedicated transition overlay layer (separated from algorithm SVGs) -->
+    <div id="transition-overlay" class="transition-overlay" aria-hidden="true"></div>
+
+    <!-- Dedicated pointer-events:none laser pointer layer -->
+    <div id="laser-layer" class="laser-layer" aria-hidden="true">
+      <div id="laser-dot" class="laser-dot"></div>
+    </div>
+
+    <!-- Clean, minimal podium control bar -->
+    <nav id="podium-bar" class="podium-bar" aria-label="Điều khiển bài thuyết trình">
+      <div class="podium-group">
+        <button id="btn-prev" class="podium-btn" type="button" title="Lùi một nhịp (←)">
+          <svg class="ui-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 3.5 6 8l4.5 4.5"/></svg>
+          <span>Lùi</span>
+        </button>
+        <button id="btn-next" class="podium-btn podium-btn--primary" type="button" title="Tiến một nhịp (→ / Space)">
+          <span>Tiến</span>
+          <svg class="ui-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 3.5 10 8l-4.5 4.5"/></svg>
+        </button>
+        <button id="btn-reset" class="podium-btn" type="button" title="Về nhịp 0 của trang hiện tại">
+          <svg class="ui-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.2 8a4.8 4.8 0 1 0 1.4-3.4L2.8 6.4"/><path d="M2.8 3.2v3.2H6"/></svg>
+          <span>Làm lại ví dụ</span>
+        </button>
+      </div>
+
+      <div class="podium-status">
+        <button id="btn-toc" class="podium-pill podium-pill--link" type="button" title="Quay về Mục lục (Trang 02)">
+          <svg class="ui-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M2.5 4h11M2.5 8h11M2.5 12h7"/></svg>
+          <span>Mục lục</span>
+        </button>
+        <span id="status-chapter" class="podium-chapter">Bìa</span>
+        <span id="status-page" class="podium-counter">01/29</span>
+        <span id="status-step" class="podium-step">Nhịp 0/2</span>
+      </div>
+
+      <div class="podium-group">
+        <button id="btn-fullview" class="podium-btn podium-btn--accent" type="button" title="Mở bảng đọc đầy đủ của trang hiện tại">
+          <svg class="ui-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h4.2a1.8 1.8 0 0 1 1.3.6 1.8 1.8 0 0 1 1.3-.6h4.2v9H9.3a1.6 1.6 0 0 0-1.3.6 1.6 1.6 0 0 0-1.3-.6H2.5z"/><path d="M8 4.1v8.8"/></svg>
+          <span>Xem đầy đủ</span>
+        </button>
+        <button id="btn-laser" class="podium-btn" type="button" aria-pressed="false" title="Bật/tắt chấm laser (L)">
+          <svg class="ui-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="8" cy="8" r="2.6" fill="currentColor"/><circle cx="8" cy="8" r="5.6" stroke-dasharray="2.2 2"/></svg>
+          <span>Laser</span>
+        </button>
+        <button id="btn-overview" class="podium-btn" type="button" title="Mở/đóng tổng quan (O / Esc)">
+          <svg class="ui-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="2.2" y="2.2" width="4.6" height="4.6" rx="1"/><rect x="9.2" y="2.2" width="4.6" height="4.6" rx="1"/><rect x="2.2" y="9.2" width="4.6" height="4.6" rx="1"/><rect x="9.2" y="9.2" width="4.6" height="4.6" rx="1"/></svg>
+          <span>Tổng quan</span>
+        </button>
+        <button id="btn-notes" class="podium-btn" type="button" title="Cửa sổ người nói (S)">
+          <svg class="ui-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="2.2" width="11" height="11.6" rx="1.6"/><path d="M5.2 5.6h5.6M5.2 8.4h5.6M5.2 11.2h3.4"/></svg>
+          <span>Ghi chú</span>
+        </button>
+        <button id="btn-fullscreen" class="podium-btn podium-btn--icon" type="button" title="Toàn màn hình (F)" aria-label="Toàn màn hình">
+          <svg class="ui-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- In-stage Full View Reading Modal -->
+    <div id="fullview-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="fullview-title" hidden>
+      <div class="modal-dialog modal-dialog--fullview">
+        <header class="modal-header">
+          <div>
+            <span id="fullview-badge" class="modal-badge">Trang 01/29</span>
+            <h2 id="fullview-title" class="modal-title">Tiêu đề</h2>
+          </div>
+          <button id="fullview-close" class="modal-close" type="button" aria-label="Đóng bảng xem đầy đủ">Đóng (Esc)</button>
+        </header>
+        <div id="fullview-body" class="modal-body" tabindex="0"></div>
+      </div>
+    </div>
+
+    <!-- Code Zoom Modal for Python blocks (Slides 13–16) -->
+    <div id="codezoom-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="codezoom-title" hidden>
+      <div class="modal-dialog modal-dialog--code">
+        <header class="modal-header">
+          <div>
+            <span class="modal-badge">Python 3 · Mã nguồn tham chiếu</span>
+            <h2 id="codezoom-title" class="modal-title">Mã nguồn</h2>
+          </div>
+          <button id="codezoom-close" class="modal-close" type="button" aria-label="Đóng cửa sổ mã">Đóng (Esc)</button>
+        </header>
+        <div id="codezoom-body" class="modal-body modal-body--code" tabindex="0"></div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
