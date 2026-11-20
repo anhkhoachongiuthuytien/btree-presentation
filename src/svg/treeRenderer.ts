@@ -520,7 +520,11 @@ export function renderTreeScene(
   svg.setAttribute('role', 'img');
   svg.innerHTML = parts.join('');
 
-  container.innerHTML = '';
+  Array.from(container.children).forEach((child) => {
+    if (!child.classList.contains('stage-particles-canvas')) {
+      child.remove();
+    }
+  });
   container.appendChild(svg);
 
   // Animate persistent IDs from prevPos -> nextPos via Web Animations API

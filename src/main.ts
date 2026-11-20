@@ -20,6 +20,7 @@ import { ALL_SLIDES } from './slides';
 import { texBlock } from './math';
 import { renderPythonWindow } from './pythonCode';
 import { playSlideTransition, cancelSlideTransition, triggerSlideEntrance } from './transitions';
+import { initStageParticles } from './stageParticles';
 import type { SlideContext, SlideDef } from './types';
 
 function pad2(n: number): string {
@@ -305,6 +306,7 @@ deck.initialize().then(() => {
     s.renderStep(0, null, slideContexts[idx]);
     lastRenderedStep.set(s.number, 0);
   });
+  initStageParticles(getReducedMotion);
   syncCurrentSlide(undefined, true);
 });
 

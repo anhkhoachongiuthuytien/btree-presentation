@@ -853,6 +853,7 @@ function renderFlowchart(
   const show3 = step >= 3;
   const lvlCls = (lvl: number) => (animLevel === lvl ? 'class="flow-level-in"' : '');
 
+  const existingCanvas = container.querySelector<HTMLCanvasElement>('.stage-particles-canvas');
   container.innerHTML = `
   <svg class="flow-svg" viewBox="0 0 820 470" role="img" aria-label="Lưu đồ quyết định khi xóa khóa trong B-tree">
     <defs>
@@ -948,6 +949,9 @@ function renderFlowchart(
     ` : ''}
   </svg>
   `;
+  if (existingCanvas) {
+    container.prepend(existingCanvas);
+  }
 }
 
 // ============================================================================

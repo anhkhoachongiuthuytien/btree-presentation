@@ -5120,6 +5120,29 @@ code {
   padding: 11px 15px !important;
 }
 
+/* ============================================================================
+   ORGANIC SOFT BOKEH PARTICLES BACKDROP FOR ALL TREE & FLOWCHART STAGES
+   ============================================================================ */
+.has-stage-particles {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%) !important;
+}
+
+.stage-particles-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.has-stage-particles > :not(.stage-particles-canvas) {
+  position: relative;
+  z-index: 2;
+}
+
 /* Reduced Motion (placed last so it cleanly disables every on-slide animation) */
 @media (prefers-reduced-motion: reduce) {
   *,
