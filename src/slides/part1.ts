@@ -335,53 +335,71 @@ const slide03: SlideDef = {
           <h1 class="slide-title slide-title--sub">Bài toán <span>đầu vào và đầu ra</span></h1>
         </header>
 
-        <div class="s03-top-stage">
-          <div class="s03-visual" data-role="visual"></div>
-          <div class="s03-demo" data-role="demo">
-            <div class="s03-demo__head">
-              <span>Kiểm chứng nhanh trên cây bìa</span>
-              <span class="s03-demo__hint">Nhấn để thử</span>
-            </div>
-            <div class="s03-call-list" data-role="calls">
-              <button type="button" class="s03-call" data-call="0"><code>search(17)</code> → <span class="badge-ok">(lá [12|17], 1)</span></button>
-              <button type="button" class="s03-call" data-call="1"><code>insert(17)</code> → <span class="badge-warn">False (đã tồn tại)</span></button>
-              <button type="button" class="s03-call" data-call="2"><code>delete(99)</code> → <span class="badge-err">False (không có khóa)</span></button>
-            </div>
-            <div class="s03-demo__note" data-role="contract">
-              Tìm hụt → <code>None</code> · Thêm/xóa hợp lệ → <code>True</code>
+        <div class="s03-layout">
+          <div class="s03-left">
+            <div class="s03-visual" data-role="visual"></div>
+            <div class="s03-demo" data-role="demo">
+              <div class="s03-demo__head">
+                <span>Kiểm chứng nhanh trên cây bìa</span>
+                <span class="s03-demo__hint">Nhấn để thử trực tiếp</span>
+              </div>
+              <div class="s03-call-list" data-role="calls">
+                <button type="button" class="s03-call" data-call="0">
+                  <code>search(17)</code>
+                  <span class="badge-ok">(lá [12|17], 1)</span>
+                </button>
+                <button type="button" class="s03-call" data-call="1">
+                  <code>insert(17)</code>
+                  <span class="badge-warn">False · đã có</span>
+                </button>
+                <button type="button" class="s03-call" data-call="2">
+                  <code>delete(99)</code>
+                  <span class="badge-err">False · không có</span>
+                </button>
+              </div>
+              <div class="s03-demo__note" data-role="contract">
+                Quy ước: tìm hụt → <code>None</code> · thêm mới hoặc xóa khóa có thật → <code>True</code>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="s03-cols">
-          <article class="canva-card s03-col" data-col="0">
-            <div class="s03-col__head">${iconSvg('tree')}<h3>Phát biểu bài toán</h3></div>
-            <p>Quản lý tập khóa nguyên có thứ tự với 3 thao tác <strong>Search, Insert, Delete</strong> hiệu quả trên dữ liệu lớn và luôn giữ cây <strong>cân bằng</strong>.</p>
-            <div class="s03-col__foot">3 thao tác · Tự cân bằng</div>
-          </article>
-          <article class="canva-card s03-col" data-col="1">
-            <div class="s03-col__head">${iconSvg('disk')}<h3>Mục tiêu</h3></div>
-            <p>Tối ưu bộ nhớ ngoài (HDD, SSD): gom nhiều khóa vào <strong>1 nút = 1 trang đĩa</strong> để giảm chiều cao cây, giữ tốc độ ${texInline('O(\\log N)')}.</p>
-            <div class="s03-col__foot">1 nút = 1 trang (4–16 KB)</div>
-          </article>
-          <article class="canva-card s03-col" data-col="2">
-            <div class="s03-col__head">${iconSvg('input')}<h3>Input</h3></div>
-            <ul>
-              <li>Bậc nguyên <strong>${texInline('M \\ge 3')}</strong> (${texInline('M')} nhánh, ${texInline('M-1')} khóa)</li>
-              <li>Tập khóa nguyên phân biệt</li>
-              <li>Chuỗi <code>search/insert/delete(k)</code></li>
-            </ul>
-            <div class="s03-col__foot">M ≥ 3 · Khóa phân biệt</div>
-          </article>
-          <article class="canva-card s03-col" data-col="3">
-            <div class="s03-col__head">${iconSvg('output')}<h3>Output</h3></div>
-            <ul>
-              <li><code>search(k)</code>: vị trí / <code>None</code></li>
-              <li><code>insert(k)</code>: <code>True</code> / <code>False</code></li>
-              <li><code>delete(k)</code>: <code>True</code> / <code>False</code></li>
-            </ul>
-            <div class="s03-col__foot">(node, i) / None · True / False</div>
-          </article>
+          <div class="s03-cols">
+            <article class="s03-card" data-col="0">
+              <div class="s03-card__head">${iconSvg('tree')}<h3>01. Phát biểu bài toán</h3></div>
+              <div class="s03-card__body">
+                <p>Xây dựng cấu trúc quản lý tập khóa nguyên có thứ tự, hỗ trợ 3 thao tác cơ bản hiệu quả trên dữ liệu lớn và luôn tự <strong>cân bằng</strong>.</p>
+                <div class="s03-chip-row"><span>Search</span><span>Insert</span><span>Delete</span></div>
+              </div>
+            </article>
+
+            <article class="s03-card" data-col="1">
+              <div class="s03-card__head">${iconSvg('disk')}<h3>02. Mục tiêu bộ nhớ ngoài</h3></div>
+              <div class="s03-card__body">
+                <p>Tối ưu đọc/ghi trên <strong>HDD / SSD</strong>: gom nhiều khóa vào cùng <strong>1 nút = 1 trang đĩa</strong> để nén chiều cao cây, giảm số lần đọc trang.</p>
+                <div class="s03-metric-pill">1 nút = 1 trang (4–16 KB) · ${texInline('O(\\log N)')}</div>
+              </div>
+            </article>
+
+            <article class="s03-card" data-col="2">
+              <div class="s03-card__head">${iconSvg('input')}<h3>03. Đầu vào (Input)</h3></div>
+              <div class="s03-card__body">
+                <ul class="s03-list">
+                  <li>Bậc nguyên <strong>${texInline('M \\ge 3')}</strong> (tối đa ${texInline('M')} con, ${texInline('M-1')} khóa)</li>
+                  <li>Tập khóa nguyên phân biệt có thứ tự</li>
+                  <li>Chuỗi <code>search</code> / <code>insert</code> / <code>delete(k)</code></li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="s03-card s03-card--dark" data-col="3">
+              <div class="s03-card__head">${iconSvg('output')}<h3>04. Đầu ra (Output)</h3></div>
+              <div class="s03-card__body">
+                <div class="s03-out-row"><code>search(k)</code><span>(node, i) / <strong>None</strong></span></div>
+                <div class="s03-out-row"><code>insert(k)</code><span><strong>True</strong> / False</span></div>
+                <div class="s03-out-row"><code>delete(k)</code><span><strong>True</strong> / False</span></div>
+              </div>
+            </article>
+          </div>
         </div>
       </div>
     `;
@@ -396,7 +414,7 @@ const slide03: SlideDef = {
   renderStep(step, _prev, ctx) {
     const visual = ctx.slideEl.querySelector<HTMLElement>('[data-role="visual"]')!;
     const demo = ctx.slideEl.querySelector<HTMLElement>('[data-role="demo"]')!;
-    const cols = ctx.slideEl.querySelectorAll<HTMLElement>('.s03-col');
+    const cols = ctx.slideEl.querySelectorAll<HTMLElement>('.s03-card');
 
     cols.forEach((c, idx) => {
       const visible =
@@ -421,12 +439,12 @@ const slide03: SlideDef = {
     const scene: TreeSceneSpec =
       step === 0
         ? {
-            viewBox: [0, 0, 760, 210],
+            viewBox: [0, 0, 620, 270],
             nodes: [
-              { id: 'bst1', x: 185, y: 36, cellW: 48, cellH: 36, keys: [{ id: 'b1', label: '20' }] },
-              { id: 'bst2', x: 130, y: 102, cellW: 48, cellH: 36, keys: [{ id: 'b2', label: '10' }] },
-              { id: 'bst3', x: 240, y: 102, cellW: 48, cellH: 36, keys: [{ id: 'b3', label: '30', tone: 'muted' }], state: 'muted' },
-              { id: 'bst4', x: 180, y: 168, cellW: 48, cellH: 36, keys: [{ id: 'b4', label: '17' }] },
+              { id: 'bst1', x: 155, y: 46, cellW: 50, cellH: 38, keys: [{ id: 'b1', label: '20' }] },
+              { id: 'bst2', x: 100, y: 128, cellW: 50, cellH: 38, keys: [{ id: 'b2', label: '10' }] },
+              { id: 'bst3', x: 210, y: 128, cellW: 50, cellH: 38, keys: [{ id: 'b3', label: '30', tone: 'muted' }], state: 'muted' },
+              { id: 'bst4', x: 155, y: 212, cellW: 50, cellH: 38, keys: [{ id: 'b4', label: '17' }] },
             ],
             edges: [
               { id: 'be1', fromNode: 'bst1', portIndex: 0, toNode: 'bst2' },
@@ -434,32 +452,32 @@ const slide03: SlideDef = {
               { id: 'be3', fromNode: 'bst2', portIndex: 1, toNode: 'bst4' },
             ],
             overlaySvg: `
-              <g transform="translate(390, 24)">
-                <rect x="0" y="0" width="340" height="156" rx="6" fill="#EEF7FF" stroke="#004AAD" stroke-width="2" stroke-dasharray="6 4"/>
-                <text x="170" y="42" text-anchor="middle" fill="#004AAD" font-size="17" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Trang đĩa (4 KB – 16 KB)</text>
-                <text x="170" y="74" text-anchor="middle" fill="#334155" font-size="14" font-family="'Be Vietnam Pro', sans-serif">BST chỉ đặt 1 khóa / nút → cây cao,</text>
-                <text x="170" y="96" text-anchor="middle" fill="#334155" font-size="14" font-family="'Be Vietnam Pro', sans-serif">mỗi tầng có thể tốn thêm 1 lần đọc đĩa.</text>
-                <rect x="65" y="114" width="210" height="28" rx="4" fill="#FEF08A" stroke="#B45309" stroke-width="1.6"/>
-                <text x="170" y="133" text-anchor="middle" fill="#0F1D3A" font-size="13" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Nhồi nhiều khóa vào 1 nút?</text>
+              <g transform="translate(290, 46)">
+                <rect x="0" y="0" width="308" height="176" rx="6" fill="#EEF7FF" stroke="#004AAD" stroke-width="2" stroke-dasharray="6 4"/>
+                <text x="154" y="42" text-anchor="middle" fill="#004AAD" font-size="16.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Trang đĩa (4 KB – 16 KB)</text>
+                <text x="154" y="78" text-anchor="middle" fill="#334155" font-size="13.8" font-family="'Be Vietnam Pro', sans-serif">BST chỉ đặt 1 khóa / nút → cây cao,</text>
+                <text x="154" y="102" text-anchor="middle" fill="#334155" font-size="13.8" font-family="'Be Vietnam Pro', sans-serif">mỗi tầng có thể tốn thêm 1 lần đọc đĩa.</text>
+                <rect x="44" y="124" width="220" height="32" rx="4" fill="#FEF08A" stroke="#B45309" stroke-width="1.6"/>
+                <text x="154" y="145" text-anchor="middle" fill="#0F1D3A" font-size="13.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Nhồi nhiều khóa vào 1 nút?</text>
               </g>
             `,
           }
         : step === 1
           ? {
-              viewBox: [0, 0, 760, 210],
+              viewBox: [0, 0, 620, 270],
               nodes: [
-                { id: 'bst1', x: 135, y: 36, cellW: 44, cellH: 34, state: 'active', keys: [{ id: 'b1', label: '20', tone: 'active' }] },
-                { id: 'bst2', x: 92, y: 102, cellW: 44, cellH: 34, state: 'active', keys: [{ id: 'b2', label: '10', tone: 'active' }] },
-                { id: 'bst4', x: 140, y: 168, cellW: 44, cellH: 34, state: 'active', tag: '3 tầng đọc đĩa', tagPos: 'right', tagTone: 'error', keys: [{ id: 'b4', label: '17', tone: 'active' }] },
+                { id: 'bst1', x: 112, y: 46, cellW: 44, cellH: 36, state: 'active', keys: [{ id: 'b1', label: '20', tone: 'active' }] },
+                { id: 'bst2', x: 70, y: 128, cellW: 44, cellH: 36, state: 'active', keys: [{ id: 'b2', label: '10', tone: 'active' }] },
+                { id: 'bst4', x: 116, y: 212, cellW: 44, cellH: 36, state: 'active', tag: '3 tầng đọc đĩa', tagPos: 'right', tagTone: 'error', keys: [{ id: 'b4', label: '17', tone: 'active' }] },
                 {
                   id: 'page-node',
-                  x: 540,
-                  y: 106,
-                  cellW: 54,
+                  x: 452,
+                  y: 136,
+                  cellW: 48,
                   cellH: 46,
                   state: 'success',
                   showPorts: true,
-                  tag: 'Một nút vừa một trang · Giảm số tầng',
+                  tag: '1 nút = 1 trang · Giảm số tầng',
                   tagPos: 'top',
                   tagTone: 'success',
                   keys: [
@@ -476,18 +494,18 @@ const slide03: SlideDef = {
                 { id: 'be3', fromNode: 'bst2', portIndex: 1, toNode: 'bst4', state: 'active', arrow: true },
               ],
               transfers: [
-                { id: 'tr-pack', fromX: 255, fromY: 106, toX: 385, toY: 106, ctrlX: 320, ctrlY: 76, label: 'Gom vào 1 trang', tone: 'cobalt' },
+                { id: 'tr-pack', fromX: 205, fromY: 136, toX: 318, toY: 136, ctrlX: 262, ctrlY: 102, label: 'Gom vào 1 trang', tone: 'cobalt' },
               ],
             }
           : {
-              viewBox: [0, 0, 760, 210],
+              viewBox: [0, 0, 620, 270],
               nodes: [
                 {
                   id: 'm-root',
-                  x: 380,
-                  y: 66,
-                  cellW: 62,
-                  cellH: 44,
+                  x: 310,
+                  y: 80,
+                  cellW: 66,
+                  cellH: 46,
                   showPorts: true,
                   tag: 'Tối đa M − 1 khóa (ở đây M = 3 → 2 khóa)',
                   tagTone: 'cobalt',
@@ -496,9 +514,9 @@ const slide03: SlideDef = {
                     { id: 'k20', label: '20', tone: 'active' },
                   ],
                 },
-                { id: 'ml0', x: 165, y: 164, cellW: 52, cellH: 40, keys: [{ id: 'k5', label: '5' }, { id: 'k6', label: '6' }] },
-                { id: 'ml1', x: 380, y: 164, cellW: 52, cellH: 40, keys: [{ id: 'k12', label: '12' }, { id: 'k17', label: '17' }] },
-                { id: 'ml2', x: 595, y: 164, cellW: 52, cellH: 40, keys: [{ id: 'k30', label: '30' }] },
+                { id: 'ml0', x: 112, y: 206, cellW: 54, cellH: 42, keys: [{ id: 'k5', label: '5' }, { id: 'k6', label: '6' }] },
+                { id: 'ml1', x: 310, y: 206, cellW: 54, cellH: 42, keys: [{ id: 'k12', label: '12' }, { id: 'k17', label: '17' }] },
+                { id: 'ml2', x: 508, y: 206, cellW: 54, cellH: 42, keys: [{ id: 'k30', label: '30' }] },
               ],
               edges: [
                 { id: 'me0', fromNode: 'm-root', portIndex: 0, toNode: 'ml0', label: 'nhánh 1' },
@@ -526,20 +544,20 @@ function renderS03Probe(slideEl: HTMLElement, callIdx: number, reducedMotion: bo
   const isMiss = callIdx === 2;
 
   const scene: TreeSceneSpec = {
-    viewBox: [0, 0, 760, 210],
+    viewBox: [0, 0, 620, 270],
     nodes: [
       {
         id: 'm-root',
-        x: 380,
-        y: 66,
-        cellW: 62,
-        cellH: 44,
+        x: 310,
+        y: 80,
+        cellW: 66,
+        cellH: 46,
         showPorts: true,
         state: 'active',
         tag: isSearch
           ? 'search(17) → gặp tại (lá [12|17], chỉ số 1)'
           : isDup
-            ? 'insert(17) → 17 đã có trong cây ⇒ False'
+            ? 'insert(17) → 17 đã tồn tại trong cây ⇒ False'
             : 'delete(99) → 99 > 20, đi nhánh phải ⇒ không có!',
         tagTone: isSearch ? 'success' : isDup ? 'warn' : 'error',
         keys: [
@@ -547,13 +565,13 @@ function renderS03Probe(slideEl: HTMLElement, callIdx: number, reducedMotion: bo
           { id: 'k20', label: '20', tone: 'active' },
         ],
       },
-      { id: 'ml0', x: 165, y: 164, cellW: 52, cellH: 40, state: 'muted', keys: [{ id: 'k5', label: '5', tone: 'muted' }, { id: 'k6', label: '6', tone: 'muted' }] },
+      { id: 'ml0', x: 112, y: 206, cellW: 54, cellH: 42, state: 'muted', keys: [{ id: 'k5', label: '5', tone: 'muted' }, { id: 'k6', label: '6', tone: 'muted' }] },
       {
         id: 'ml1',
-        x: 380,
-        y: 164,
-        cellW: 52,
-        cellH: 40,
+        x: 310,
+        y: 206,
+        cellW: 54,
+        cellH: 42,
         state: isSearch ? 'success' : isDup ? 'highlight-box' : 'muted',
         keys: [
           { id: 'k12', label: '12', tone: isMiss ? 'muted' : 'default' },
@@ -562,10 +580,10 @@ function renderS03Probe(slideEl: HTMLElement, callIdx: number, reducedMotion: bo
       },
       {
         id: 'ml2',
-        x: 595,
-        y: 164,
-        cellW: 52,
-        cellH: 40,
+        x: 508,
+        y: 206,
+        cellW: 54,
+        cellH: 42,
         state: isMiss ? 'overflow' : 'muted',
         tag: isMiss ? 'Không thấy 99 → False' : undefined,
         tagPos: 'bottom',
