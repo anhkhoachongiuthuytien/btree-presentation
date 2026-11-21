@@ -269,11 +269,9 @@ const slide17: SlideDef = {
 // ============================================================================
 // SLIDE 19 — Chi phí thời gian của ba thao tác (Bảng gọn + Mô phỏng chạy thật Thuận lợi vs Xấu nhất)
 // ============================================================================
-interface S18PhaseFrame {
-  bestPhase: string;
-  bestScene: TreeSceneSpec;
-  worstPhase: string;
-  worstScene: TreeSceneSpec;
+interface S18SinglePhase {
+  label: string;
+  scene: TreeSceneSpec;
 }
 
 interface S18CompareSpec {
@@ -282,30 +280,33 @@ interface S18CompareSpec {
   bestCost: string;
   worstTitle: string;
   worstCost: string;
-  phases: S18PhaseFrame[];
+  bestPhases: S18SinglePhase[];
+  worstPhases: S18SinglePhase[];
 }
 
 function buildS18Compare(opIdx: number): S18CompareSpec {
   if (opIdx === 2) {
-    // INSERT: 4-phase one-shot animation — runs smoothly to a valid B-tree and stops
+    // INSERT (M = 3: 1..2 khóa/nút, tràn ở 3 khóa)
+    // Best: 2 bước (1/2 -> 2/2) · Worst: 4 bước (1/4 -> 4/4, 15 nút hợp lệ hoàn toàn ở h = 3!)
     return {
       opName: 'Insert',
-      bestTitle: 'Thuận lợi · Chèn cuối lá còn chỗ',
+      bestTitle: 'Thuận lợi · Chèn cuối lá còn chỗ (M = 3)',
       bestCost: 'O(log N)',
-      worstTitle: 'Xấu nhất · Split dây chuyền lên gốc',
+      worstTitle: 'Xấu nhất · Split dây chuyền lên gốc (M = 3)',
       worstCost: 'O(M(h + 1))',
-      phases: [
+      bestPhases: [
         {
-          bestPhase: '1/4 · Tìm xuống lá [25 | 30 | _]',
-          bestScene: {
+          label: '1/2 · Tìm xuống lá [25 | _] còn chỗ',
+          scene: {
             viewBox: [0, 0, 520, 206],
             nodes: [
-              { id: 'ib-r', x: 260, y: 34, cellW: 44, cellH: 28, state: 'active', keys: [{ id: 'ib-40', label: '40', tone: 'active' }] },
-              { id: 'ib-i0', x: 148, y: 94, cellW: 40, cellH: 26, state: 'active', keys: [{ id: 'ib-20', label: '20', tone: 'active' }] },
-              { id: 'ib-i1', x: 388, y: 94, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
-              { id: 'ib-l0', x: 66, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-5', label: '5', tone: 'muted' }] },
-              { id: 'ib-l1', x: 230, y: 152, capacity: 3, cellW: 40, cellH: 26, tag: 'Còn 1 ô trống cuối lá', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-30', label: '30' }] },
-              { id: 'ib-l2', x: 432, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
+              { id: 'ib-r', x: 260, y: 32, cellW: 44, cellH: 26, state: 'active', keys: [{ id: 'ib-40', label: '40', tone: 'active' }] },
+              { id: 'ib-i0', x: 145, y: 92, cellW: 40, cellH: 25, state: 'active', keys: [{ id: 'ib-20', label: '20', tone: 'active' }] },
+              { id: 'ib-i1', x: 375, y: 92, cellW: 40, cellH: 25, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
+              { id: 'ib-l0', x: 74, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'ib-10', label: '10', tone: 'muted' }] },
+              { id: 'ib-l1', x: 205, y: 152, capacity: 2, cellW: 40, cellH: 25, tag: 'Còn 1 ô trống cuối lá', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'ib-25', label: '25' }] },
+              { id: 'ib-l2', x: 325, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'ib-55', label: '55', tone: 'muted' }] },
+              { id: 'ib-l3', x: 435, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
             ],
             edges: [
               { id: 'ibe0', fromNode: 'ib-r', portIndex: 0, toNode: 'ib-i0', state: 'active', arrow: true },
@@ -313,36 +314,23 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'ibe2', fromNode: 'ib-i0', portIndex: 0, toNode: 'ib-l0', state: 'muted' },
               { id: 'ibe3', fromNode: 'ib-i0', portIndex: 1, toNode: 'ib-l1', state: 'active', arrow: true },
               { id: 'ibe4', fromNode: 'ib-i1', portIndex: 0, toNode: 'ib-l2', state: 'muted' },
+              { id: 'ibe5', fromNode: 'ib-i1', portIndex: 1, toNode: 'ib-l3', state: 'muted' },
             ],
-            chips: [{ id: 'ib-ch', x: 345, y: 36, text: 'Chèn 35', tone: 'active' }],
-          },
-          worstPhase: '1/4 · Chèn 22 → Lá tràn (> M−1)',
-          worstScene: {
-            viewBox: [0, 0, 520, 206],
-            nodes: [
-              { id: 'iw-r', x: 250, y: 34, cellW: 40, cellH: 28, keys: [{ id: 'iw-30', label: '30' }, { id: 'iw-50', label: '50' }, { id: 'iw-75', label: '75' }] },
-              { id: 'iw-i0', x: 148, y: 94, cellW: 38, cellH: 26, keys: [{ id: 'iw-15', label: '15' }, { id: 'iw-25', label: '25' }] },
-              { id: 'iw-i1', x: 425, y: 94, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'iw-85', label: '85', tone: 'muted' }] },
-              { id: 'iw-l1', x: 170, y: 156, cellW: 38, cellH: 26, state: 'overflow', tag: 'Lá tràn · dịch O(M)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-18', label: '18' }, { id: 'iw-22', label: '22', tone: 'active' }, { id: 'iw-28', label: '28' }] },
-            ],
-            edges: [
-              { id: 'iwe0', fromNode: 'iw-r', portIndex: 0, toNode: 'iw-i0', state: 'active', arrow: true },
-              { id: 'iwe1', fromNode: 'iw-r', portIndex: 1, toNode: 'iw-i1', state: 'muted' },
-              { id: 'iwe2', fromNode: 'iw-i0', portIndex: 1, toNode: 'iw-l1', state: 'error', arrow: true },
-            ],
+            chips: [{ id: 'ib-ch', x: 350, y: 34, text: 'Chèn 35', tone: 'active' }],
           },
         },
         {
-          bestPhase: '2/4 · Đặt 35 vào ô cuối (0 dịch mảng)',
-          bestScene: {
+          label: '2/2 · Đặt 35 cuối lá → Hợp lệ ngay!',
+          scene: {
             viewBox: [0, 0, 520, 206],
             nodes: [
-              { id: 'ib-r', x: 260, y: 34, cellW: 44, cellH: 28, keys: [{ id: 'ib-40', label: '40' }] },
-              { id: 'ib-i0', x: 148, y: 94, cellW: 40, cellH: 26, keys: [{ id: 'ib-20', label: '20' }] },
-              { id: 'ib-i1', x: 388, y: 94, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
-              { id: 'ib-l0', x: 66, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-5', label: '5', tone: 'muted' }] },
-              { id: 'ib-l1', x: 230, y: 152, capacity: 3, cellW: 40, cellH: 26, state: 'active', tag: 'Gắn 35 ngay cuối lá', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-30', label: '30' }, { id: 'ib-35', label: '35', tone: 'active' }] },
-              { id: 'ib-l2', x: 432, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
+              { id: 'ib-r', x: 260, y: 32, cellW: 44, cellH: 26, keys: [{ id: 'ib-40', label: '40' }] },
+              { id: 'ib-i0', x: 145, y: 92, cellW: 40, cellH: 25, keys: [{ id: 'ib-20', label: '20' }] },
+              { id: 'ib-i1', x: 375, y: 92, cellW: 40, cellH: 25, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
+              { id: 'ib-l0', x: 74, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'ib-10', label: '10', tone: 'muted' }] },
+              { id: 'ib-l1', x: 205, y: 152, capacity: 2, cellW: 40, cellH: 25, state: 'success', tag: '0 dịch mảng · 0 split · Hợp lệ', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-35', label: '35', tone: 'success' }] },
+              { id: 'ib-l2', x: 325, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'ib-55', label: '55', tone: 'muted' }] },
+              { id: 'ib-l3', x: 435, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
             ],
             edges: [
               { id: 'ibe0', fromNode: 'ib-r', portIndex: 0, toNode: 'ib-i0' },
@@ -350,113 +338,147 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'ibe2', fromNode: 'ib-i0', portIndex: 0, toNode: 'ib-l0', state: 'muted' },
               { id: 'ibe3', fromNode: 'ib-i0', portIndex: 1, toNode: 'ib-l1', state: 'active' },
               { id: 'ibe4', fromNode: 'ib-i1', portIndex: 0, toNode: 'ib-l2', state: 'muted' },
+              { id: 'ibe5', fromNode: 'ib-i1', portIndex: 1, toNode: 'ib-l3', state: 'muted' },
             ],
           },
-          worstPhase: '2/4 · Split lá ↑ làm Cha [15|22|25] tràn!',
-          worstScene: {
-            viewBox: [0, 0, 520, 206],
+        },
+      ],
+      worstPhases: [
+        {
+          label: '1/4 · Chèn 24 → Lá [20|22|24] tràn (> 2 khóa)',
+          scene: {
+            viewBox: [0, 0, 520, 212],
             nodes: [
-              { id: 'iw-r', x: 250, y: 34, cellW: 40, cellH: 28, keys: [{ id: 'iw-30', label: '30' }, { id: 'iw-50', label: '50' }, { id: 'iw-75', label: '75' }] },
-              { id: 'iw-i0', x: 165, y: 94, cellW: 38, cellH: 26, state: 'overflow', tag: 'Mức 1 tràn · Split O(M)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-15', label: '15' }, { id: 'iw-22', label: '22', tone: 'active' }, { id: 'iw-25', label: '25' }] },
-              { id: 'iw-i1', x: 448, y: 94, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'iw-85', label: '85', tone: 'muted' }] },
-              { id: 'iw-l1a', x: 112, y: 158, cellW: 36, cellH: 26, state: 'success', keys: [{ id: 'iw-18', label: '18' }] },
-              { id: 'iw-l1b', x: 222, y: 158, cellW: 36, cellH: 26, state: 'success', keys: [{ id: 'iw-28', label: '28' }] },
+              { id: 'iw-r', x: 280, y: 30, cellW: 38, cellH: 26, keys: [{ id: 'iw-30', label: '30' }, { id: 'iw-60', label: '60' }] },
+              { id: 'iw-i0', x: 132, y: 92, cellW: 36, cellH: 24, keys: [{ id: 'iw-15', label: '15' }, { id: 'iw-25', label: '25' }] },
+              { id: 'iw-i1', x: 318, y: 92, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'iw-45', label: '45', tone: 'muted' }] },
+              { id: 'iw-i2', x: 448, y: 92, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'iw-75', label: '75', tone: 'muted' }] },
+              { id: 'iw-l0', x: 36, y: 158, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-10', label: '10', tone: 'muted' }] },
+              { id: 'iw-l1', x: 134, y: 158, cellW: 32, cellH: 24, state: 'overflow', tag: 'Tràn lá · đẩy 22 ↑', tagPos: 'bottom', tagTone: 'error', keys: [{ id: 'iw-20', label: '20' }, { id: 'iw-22', label: '22', tone: 'active' }, { id: 'iw-24', label: '24', tone: 'active' }] },
+              { id: 'iw-l2', x: 232, y: 158, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-28', label: '28', tone: 'muted' }] },
+              { id: 'iw-l3', x: 290, y: 158, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-40', label: '40', tone: 'muted' }] },
+              { id: 'iw-l4', x: 346, y: 158, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-50', label: '50', tone: 'muted' }] },
+              { id: 'iw-l5', x: 420, y: 158, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-70', label: '70', tone: 'muted' }] },
+              { id: 'iw-l6', x: 478, y: 158, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-80', label: '80', tone: 'muted' }] },
             ],
             edges: [
-              { id: 'iwe0', fromNode: 'iw-r', portIndex: 0, toNode: 'iw-i0', state: 'error' },
-              { id: 'iwe1', fromNode: 'iw-r', portIndex: 1, toNode: 'iw-i1', state: 'muted' },
-              { id: 'iwe2a', fromNode: 'iw-i0', portIndex: 1, toNode: 'iw-l1a', state: 'active' },
-              { id: 'iwe2b', fromNode: 'iw-i0', portIndex: 2, toNode: 'iw-l1b', state: 'active' },
-            ],
-            transfers: [
-              { id: 'iw-u1', fromX: 168, fromY: 148, toX: 165, toY: 108, ctrlX: 115, ctrlY: 128, label: '22 ↑', tone: 'error' },
+              { id: 'iwe-r0', fromNode: 'iw-r', portIndex: 0, toNode: 'iw-i0', state: 'active', arrow: true },
+              { id: 'iwe-r1', fromNode: 'iw-r', portIndex: 1, toNode: 'iw-i1', state: 'muted' },
+              { id: 'iwe-r2', fromNode: 'iw-r', portIndex: 2, toNode: 'iw-i2', state: 'muted' },
+              { id: 'iwe-00', fromNode: 'iw-i0', portIndex: 0, toNode: 'iw-l0', state: 'muted' },
+              { id: 'iwe-01', fromNode: 'iw-i0', portIndex: 1, toNode: 'iw-l1', state: 'error', arrow: true },
+              { id: 'iwe-02', fromNode: 'iw-i0', portIndex: 2, toNode: 'iw-l2', state: 'muted' },
+              { id: 'iwe-10', fromNode: 'iw-i1', portIndex: 0, toNode: 'iw-l3', state: 'muted' },
+              { id: 'iwe-11', fromNode: 'iw-i1', portIndex: 1, toNode: 'iw-l4', state: 'muted' },
+              { id: 'iwe-20', fromNode: 'iw-i2', portIndex: 0, toNode: 'iw-l5', state: 'muted' },
+              { id: 'iwe-21', fromNode: 'iw-i2', portIndex: 1, toNode: 'iw-l6', state: 'muted' },
             ],
           },
         },
         {
-          bestPhase: '3/4 · 0 split · Cây hợp lệ ngay',
-          bestScene: {
-            viewBox: [0, 0, 520, 206],
+          label: '2/4 · Tách lá, đẩy 22 ↑ → Cha [15|22|25] tràn!',
+          scene: {
+            viewBox: [0, 0, 520, 212],
             nodes: [
-              { id: 'ib-r', x: 260, y: 34, cellW: 44, cellH: 28, keys: [{ id: 'ib-40', label: '40' }] },
-              { id: 'ib-i0', x: 148, y: 94, cellW: 40, cellH: 26, keys: [{ id: 'ib-20', label: '20' }] },
-              { id: 'ib-i1', x: 388, y: 94, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
-              { id: 'ib-l0', x: 66, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-5', label: '5', tone: 'muted' }] },
-              { id: 'ib-l1', x: 230, y: 152, capacity: 3, cellW: 40, cellH: 26, state: 'success', tag: '0 split · giữ nguyên chiều cao', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-30', label: '30' }, { id: 'ib-35', label: '35', tone: 'success' }] },
-              { id: 'ib-l2', x: 432, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
+              { id: 'iw-r', x: 280, y: 30, cellW: 38, cellH: 26, keys: [{ id: 'iw-30', label: '30' }, { id: 'iw-60', label: '60' }] },
+              { id: 'iw-i0', x: 132, y: 92, cellW: 34, cellH: 24, state: 'overflow', tag: 'Tràn mức 1 · đẩy 22 ↑', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-15', label: '15' }, { id: 'iw-22', label: '22', tone: 'active' }, { id: 'iw-25', label: '25' }] },
+              { id: 'iw-i1', x: 356, y: 92, cellW: 32, cellH: 24, state: 'muted', keys: [{ id: 'iw-45', label: '45', tone: 'muted' }] },
+              { id: 'iw-i2', x: 458, y: 92, cellW: 32, cellH: 24, state: 'muted', keys: [{ id: 'iw-75', label: '75', tone: 'muted' }] },
+              { id: 'iw-l0', x: 36, y: 162, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-10', label: '10', tone: 'muted' }] },
+              { id: 'iw-l1a', x: 100, y: 162, cellW: 30, cellH: 22, state: 'success', keys: [{ id: 'iw-20', label: '20' }] },
+              { id: 'iw-l1b', x: 164, y: 162, cellW: 30, cellH: 22, state: 'success', keys: [{ id: 'iw-24', label: '24' }] },
+              { id: 'iw-l2', x: 228, y: 162, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-28', label: '28', tone: 'muted' }] },
+              { id: 'iw-l3', x: 328, y: 162, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-40', label: '40', tone: 'muted' }] },
+              { id: 'iw-l4', x: 382, y: 162, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-50', label: '50', tone: 'muted' }] },
+              { id: 'iw-l5', x: 434, y: 162, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-70', label: '70', tone: 'muted' }] },
+              { id: 'iw-l6', x: 486, y: 162, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-80', label: '80', tone: 'muted' }] },
             ],
             edges: [
-              { id: 'ibe0', fromNode: 'ib-r', portIndex: 0, toNode: 'ib-i0' },
-              { id: 'ibe1', fromNode: 'ib-r', portIndex: 1, toNode: 'ib-i1', state: 'muted' },
-              { id: 'ibe2', fromNode: 'ib-i0', portIndex: 0, toNode: 'ib-l0', state: 'muted' },
-              { id: 'ibe3', fromNode: 'ib-i0', portIndex: 1, toNode: 'ib-l1', state: 'active' },
-              { id: 'ibe4', fromNode: 'ib-i1', portIndex: 0, toNode: 'ib-l2', state: 'muted' },
-            ],
-          },
-          worstPhase: '3/4 · Split lan tới Gốc [22|30|50|75] tràn!',
-          worstScene: {
-            viewBox: [0, 0, 520, 206],
-            nodes: [
-              { id: 'iw-r', x: 225, y: 34, cellW: 38, cellH: 26, state: 'overflow', tag: 'Gốc tràn · đẩy 50 ↑', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-22', label: '22' }, { id: 'iw-30', label: '30' }, { id: 'iw-50', label: '50', tone: 'active' }, { id: 'iw-75', label: '75' }] },
-              { id: 'iw-i0a', x: 105, y: 98, cellW: 36, cellH: 26, state: 'success', keys: [{ id: 'iw-15', label: '15' }] },
-              { id: 'iw-i0b', x: 220, y: 98, cellW: 36, cellH: 26, state: 'success', keys: [{ id: 'iw-25', label: '25' }] },
-              { id: 'iw-i1', x: 432, y: 98, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'iw-85', label: '85', tone: 'muted' }] },
-              { id: 'iw-l1a', x: 105, y: 162, cellW: 36, cellH: 24, keys: [{ id: 'iw-18', label: '18' }] },
-              { id: 'iw-l1b', x: 220, y: 162, cellW: 36, cellH: 24, keys: [{ id: 'iw-28', label: '28' }] },
-            ],
-            edges: [
-              { id: 'iwe0a', fromNode: 'iw-r', portIndex: 0, toNode: 'iw-i0a', state: 'error' },
-              { id: 'iwe0b', fromNode: 'iw-r', portIndex: 1, toNode: 'iw-i0b', state: 'error' },
-              { id: 'iwe1', fromNode: 'iw-r', portIndex: 3, toNode: 'iw-i1', state: 'muted' },
-              { id: 'iwe2a', fromNode: 'iw-i0a', portIndex: 1, toNode: 'iw-l1a' },
-              { id: 'iwe2b', fromNode: 'iw-i0b', portIndex: 1, toNode: 'iw-l1b' },
-            ],
-            transfers: [
-              { id: 'iw-u2', fromX: 162, fromY: 88, toX: 185, toY: 46, ctrlX: 120, ctrlY: 58, label: '22 ↑ gốc', tone: 'error' },
+              { id: 'iwe-r0', fromNode: 'iw-r', portIndex: 0, toNode: 'iw-i0', state: 'error' },
+              { id: 'iwe-r1', fromNode: 'iw-r', portIndex: 1, toNode: 'iw-i1', state: 'muted' },
+              { id: 'iwe-r2', fromNode: 'iw-r', portIndex: 2, toNode: 'iw-i2', state: 'muted' },
+              { id: 'iwe-00', fromNode: 'iw-i0', portIndex: 0, toNode: 'iw-l0', state: 'muted' },
+              { id: 'iwe-01a', fromNode: 'iw-i0', portIndex: 1, toNode: 'iw-l1a', state: 'active' },
+              { id: 'iwe-01b', fromNode: 'iw-i0', portIndex: 2, toNode: 'iw-l1b', state: 'active' },
+              { id: 'iwe-02', fromNode: 'iw-i0', portIndex: 3, toNode: 'iw-l2', state: 'muted' },
+              { id: 'iwe-10', fromNode: 'iw-i1', portIndex: 0, toNode: 'iw-l3', state: 'muted' },
+              { id: 'iwe-11', fromNode: 'iw-i1', portIndex: 1, toNode: 'iw-l4', state: 'muted' },
+              { id: 'iwe-20', fromNode: 'iw-i2', portIndex: 0, toNode: 'iw-l5', state: 'muted' },
+              { id: 'iwe-21', fromNode: 'iw-i2', portIndex: 1, toNode: 'iw-l6', state: 'muted' },
             ],
           },
         },
         {
-          bestPhase: '4/4 · Hoàn tất · Cây hợp lệ O(log N)',
-          bestScene: {
-            viewBox: [0, 0, 520, 206],
+          label: '3/4 · Tách Cha, đẩy 22 ↑ → Gốc [22|30|60] tràn!',
+          scene: {
+            viewBox: [0, 0, 520, 212],
             nodes: [
-              { id: 'ib-r', x: 260, y: 34, cellW: 44, cellH: 28, keys: [{ id: 'ib-40', label: '40' }] },
-              { id: 'ib-i0', x: 148, y: 94, cellW: 40, cellH: 26, keys: [{ id: 'ib-20', label: '20' }] },
-              { id: 'ib-i1', x: 388, y: 94, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
-              { id: 'ib-l0', x: 66, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-5', label: '5', tone: 'muted' }] },
-              { id: 'ib-l1', x: 230, y: 152, capacity: 3, cellW: 40, cellH: 26, state: 'success', tag: 'Cây hợp lệ · 0 split', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-30', label: '30' }, { id: 'ib-35', label: '35', tone: 'success' }] },
-              { id: 'ib-l2', x: 432, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
+              { id: 'iw-r', x: 256, y: 30, cellW: 36, cellH: 25, state: 'overflow', tag: 'Gốc tràn · đẩy 30 ↑', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-22', label: '22', tone: 'active' }, { id: 'iw-30', label: '30', tone: 'active' }, { id: 'iw-60', label: '60' }] },
+              { id: 'iw-i0a', x: 66, y: 98, cellW: 34, cellH: 23, state: 'success', keys: [{ id: 'iw-15', label: '15' }] },
+              { id: 'iw-i0b', x: 194, y: 98, cellW: 34, cellH: 23, state: 'success', keys: [{ id: 'iw-25', label: '25' }] },
+              { id: 'iw-i1', x: 326, y: 98, cellW: 34, cellH: 23, state: 'muted', keys: [{ id: 'iw-45', label: '45', tone: 'muted' }] },
+              { id: 'iw-i2', x: 454, y: 98, cellW: 34, cellH: 23, state: 'muted', keys: [{ id: 'iw-75', label: '75', tone: 'muted' }] },
+              { id: 'iw-l0', x: 34, y: 164, cellW: 30, cellH: 22, keys: [{ id: 'iw-10', label: '10' }] },
+              { id: 'iw-l1a', x: 98, y: 164, cellW: 30, cellH: 22, keys: [{ id: 'iw-20', label: '20' }] },
+              { id: 'iw-l1b', x: 162, y: 164, cellW: 30, cellH: 22, keys: [{ id: 'iw-24', label: '24' }] },
+              { id: 'iw-l2', x: 226, y: 164, cellW: 30, cellH: 22, keys: [{ id: 'iw-28', label: '28' }] },
+              { id: 'iw-l3', x: 294, y: 164, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-40', label: '40', tone: 'muted' }] },
+              { id: 'iw-l4', x: 358, y: 164, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-50', label: '50', tone: 'muted' }] },
+              { id: 'iw-l5', x: 422, y: 164, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-70', label: '70', tone: 'muted' }] },
+              { id: 'iw-l6', x: 486, y: 164, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-80', label: '80', tone: 'muted' }] },
             ],
             edges: [
-              { id: 'ibe0', fromNode: 'ib-r', portIndex: 0, toNode: 'ib-i0' },
-              { id: 'ibe1', fromNode: 'ib-r', portIndex: 1, toNode: 'ib-i1', state: 'muted' },
-              { id: 'ibe2', fromNode: 'ib-i0', portIndex: 0, toNode: 'ib-l0', state: 'muted' },
-              { id: 'ibe3', fromNode: 'ib-i0', portIndex: 1, toNode: 'ib-l1', state: 'active' },
-              { id: 'ibe4', fromNode: 'ib-i1', portIndex: 0, toNode: 'ib-l2', state: 'muted' },
+              { id: 'iwe-r0a', fromNode: 'iw-r', portIndex: 0, toNode: 'iw-i0a', state: 'error' },
+              { id: 'iwe-r0b', fromNode: 'iw-r', portIndex: 1, toNode: 'iw-i0b', state: 'error' },
+              { id: 'iwe-r1', fromNode: 'iw-r', portIndex: 2, toNode: 'iw-i1', state: 'muted' },
+              { id: 'iwe-r2', fromNode: 'iw-r', portIndex: 3, toNode: 'iw-i2', state: 'muted' },
+              { id: 'iwe-00', fromNode: 'iw-i0a', portIndex: 0, toNode: 'iw-l0' },
+              { id: 'iwe-01a', fromNode: 'iw-i0a', portIndex: 1, toNode: 'iw-l1a' },
+              { id: 'iwe-01b', fromNode: 'iw-i0b', portIndex: 0, toNode: 'iw-l1b' },
+              { id: 'iwe-02', fromNode: 'iw-i0b', portIndex: 1, toNode: 'iw-l2' },
+              { id: 'iwe-10', fromNode: 'iw-i1', portIndex: 0, toNode: 'iw-l3', state: 'muted' },
+              { id: 'iwe-11', fromNode: 'iw-i1', portIndex: 1, toNode: 'iw-l4', state: 'muted' },
+              { id: 'iwe-20', fromNode: 'iw-i2', portIndex: 0, toNode: 'iw-l5', state: 'muted' },
+              { id: 'iwe-21', fromNode: 'iw-i2', portIndex: 1, toNode: 'iw-l6', state: 'muted' },
             ],
           },
-          worstPhase: '4/4 · Tách gốc → Cây hợp lệ (h + 1)',
-          worstScene: {
-            viewBox: [0, 0, 520, 206],
+        },
+        {
+          label: '4/4 · Tách Gốc → Gốc mới [30] · Cây hợp lệ (h + 1)',
+          scene: {
+            viewBox: [0, 0, 520, 212],
             nodes: [
-              { id: 'iw-root-new', x: 260, y: 22, cellW: 40, cellH: 24, state: 'success', tag: 'Gốc mới · h tăng +1', tagPos: 'right', tagTone: 'success', keys: [{ id: 'iw-50', label: '50', tone: 'success' }] },
-              { id: 'iw-rL', x: 165, y: 74, cellW: 36, cellH: 24, state: 'success', keys: [{ id: 'iw-22', label: '22', tone: 'success' }, { id: 'iw-30', label: '30' }] },
-              { id: 'iw-rR', x: 375, y: 74, cellW: 36, cellH: 24, state: 'success', keys: [{ id: 'iw-75', label: '75' }] },
-              { id: 'iw-i0a', x: 95, y: 128, cellW: 34, cellH: 22, keys: [{ id: 'iw-15', label: '15' }] },
-              { id: 'iw-i0b', x: 205, y: 128, cellW: 34, cellH: 22, keys: [{ id: 'iw-25', label: '25' }] },
-              { id: 'iw-i1', x: 422, y: 128, cellW: 34, cellH: 22, state: 'muted', keys: [{ id: 'iw-85', label: '85', tone: 'muted' }] },
-              { id: 'iw-l1a', x: 95, y: 180, cellW: 34, cellH: 22, keys: [{ id: 'iw-18', label: '18' }] },
-              { id: 'iw-l1b', x: 205, y: 180, cellW: 34, cellH: 22, keys: [{ id: 'iw-28', label: '28' }] },
+              { id: 'iw-root-new', x: 260, y: 22, cellW: 40, cellH: 24, state: 'success', tag: 'Gốc mới · h = 3', tagPos: 'right', tagTone: 'success', keys: [{ id: 'iw-30', label: '30', tone: 'success' }] },
+              { id: 'iw-rL', x: 130, y: 74, cellW: 38, cellH: 23, state: 'success', keys: [{ id: 'iw-22', label: '22', tone: 'success' }] },
+              { id: 'iw-rR', x: 390, y: 74, cellW: 38, cellH: 23, state: 'success', keys: [{ id: 'iw-60', label: '60', tone: 'success' }] },
+              { id: 'iw-i0a', x: 66, y: 128, cellW: 34, cellH: 22, keys: [{ id: 'iw-15', label: '15' }] },
+              { id: 'iw-i0b', x: 194, y: 128, cellW: 34, cellH: 22, keys: [{ id: 'iw-25', label: '25' }] },
+              { id: 'iw-i1', x: 326, y: 128, cellW: 34, cellH: 22, keys: [{ id: 'iw-45', label: '45' }] },
+              { id: 'iw-i2', x: 454, y: 128, cellW: 34, cellH: 22, keys: [{ id: 'iw-75', label: '75' }] },
+              { id: 'iw-l0', x: 34, y: 182, cellW: 30, cellH: 21, keys: [{ id: 'iw-10', label: '10' }] },
+              { id: 'iw-l1a', x: 98, y: 182, cellW: 30, cellH: 21, keys: [{ id: 'iw-20', label: '20' }] },
+              { id: 'iw-l1b', x: 162, y: 182, cellW: 30, cellH: 21, keys: [{ id: 'iw-24', label: '24' }] },
+              { id: 'iw-l2', x: 226, y: 182, cellW: 30, cellH: 21, keys: [{ id: 'iw-28', label: '28' }] },
+              { id: 'iw-l3', x: 294, y: 182, cellW: 30, cellH: 21, keys: [{ id: 'iw-40', label: '40' }] },
+              { id: 'iw-l4', x: 358, y: 182, cellW: 30, cellH: 21, keys: [{ id: 'iw-50', label: '50' }] },
+              { id: 'iw-l5', x: 422, y: 182, cellW: 30, cellH: 21, keys: [{ id: 'iw-70', label: '70' }] },
+              { id: 'iw-l6', x: 486, y: 182, cellW: 30, cellH: 21, keys: [{ id: 'iw-80', label: '80' }] },
             ],
             edges: [
               { id: 'iwe-nr0', fromNode: 'iw-root-new', portIndex: 0, toNode: 'iw-rL', state: 'active' },
               { id: 'iwe-nr1', fromNode: 'iw-root-new', portIndex: 1, toNode: 'iw-rR', state: 'active' },
-              { id: 'iwe0a', fromNode: 'iw-rL', portIndex: 0, toNode: 'iw-i0a' },
-              { id: 'iwe0b', fromNode: 'iw-rL', portIndex: 1, toNode: 'iw-i0b' },
-              { id: 'iwe1', fromNode: 'iw-rR', portIndex: 1, toNode: 'iw-i1', state: 'muted' },
-              { id: 'iwe2a', fromNode: 'iw-i0a', portIndex: 1, toNode: 'iw-l1a' },
-              { id: 'iwe2b', fromNode: 'iw-i0b', portIndex: 1, toNode: 'iw-l1b' },
+              { id: 'iwe-r0a', fromNode: 'iw-rL', portIndex: 0, toNode: 'iw-i0a' },
+              { id: 'iwe-r0b', fromNode: 'iw-rL', portIndex: 1, toNode: 'iw-i0b' },
+              { id: 'iwe-r1', fromNode: 'iw-rR', portIndex: 0, toNode: 'iw-i1' },
+              { id: 'iwe-r2', fromNode: 'iw-rR', portIndex: 1, toNode: 'iw-i2' },
+              { id: 'iwe-00', fromNode: 'iw-i0a', portIndex: 0, toNode: 'iw-l0' },
+              { id: 'iwe-01a', fromNode: 'iw-i0a', portIndex: 1, toNode: 'iw-l1a' },
+              { id: 'iwe-01b', fromNode: 'iw-i0b', portIndex: 0, toNode: 'iw-l1b' },
+              { id: 'iwe-02', fromNode: 'iw-i0b', portIndex: 1, toNode: 'iw-l2' },
+              { id: 'iwe-10', fromNode: 'iw-i1', portIndex: 0, toNode: 'iw-l3' },
+              { id: 'iwe-11', fromNode: 'iw-i1', portIndex: 1, toNode: 'iw-l4' },
+              { id: 'iwe-20', fromNode: 'iw-i2', portIndex: 0, toNode: 'iw-l5' },
+              { id: 'iwe-21', fromNode: 'iw-i2', portIndex: 1, toNode: 'iw-l6' },
             ],
           },
         },
@@ -465,25 +487,27 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
   }
 
   if (opIdx === 3) {
-    // DELETE: 4-phase one-shot animation — runs smoothly to a valid B-tree and stops
+    // DELETE (M = 3: 1..2 khóa/nút, thiếu khóa ở 0 khóa)
+    // Best: 2 bước (1/2 -> 2/2) · Worst: 4 bước (1/4 -> 4/4, gộp lan lên gốc -> hạ tầng h = 1 hợp lệ!)
     return {
       opName: 'Delete',
-      bestTitle: 'Thuận lợi · Xóa cuối lá còn đủ khóa',
+      bestTitle: 'Thuận lợi · Xóa cuối lá còn đủ khóa (M = 3)',
       bestCost: 'O(log N)',
-      worstTitle: 'Xấu nhất · Tiền nhiệm + Merge lan lên gốc',
+      worstTitle: 'Xấu nhất · Tiền nhiệm + Merge lan lên gốc (M = 3)',
       worstCost: 'O(M(h + 1))',
-      phases: [
+      bestPhases: [
         {
-          bestPhase: '1/4 · Tìm xuống lá [25 | 30]',
-          bestScene: {
-            viewBox: [0, 0, 520, 194],
+          label: '1/2 · Tìm xuống lá [25 | 30] (có 2 khóa)',
+          scene: {
+            viewBox: [0, 0, 520, 206],
             nodes: [
-              { id: 'db-r', x: 260, y: 30, cellW: 44, cellH: 28, state: 'active', keys: [{ id: 'db-40', label: '40', tone: 'active' }] },
-              { id: 'db-i0', x: 148, y: 88, cellW: 40, cellH: 26, state: 'active', keys: [{ id: 'db-20', label: '20', tone: 'active' }] },
-              { id: 'db-i1', x: 388, y: 88, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'db-70', label: '70', tone: 'muted' }] },
-              { id: 'db-l0', x: 66, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-5', label: '5', tone: 'muted' }] },
-              { id: 'db-l1', x: 230, y: 146, cellW: 42, cellH: 26, tag: 'Chuẩn bị xóa 30', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'db-25', label: '25' }, { id: 'db-30', label: '30', tone: 'error' }] },
-              { id: 'db-l2', x: 432, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-80', label: '80', tone: 'muted' }] },
+              { id: 'db-r', x: 260, y: 32, cellW: 44, cellH: 26, state: 'active', keys: [{ id: 'db-40', label: '40', tone: 'active' }] },
+              { id: 'db-i0', x: 145, y: 92, cellW: 40, cellH: 25, state: 'active', keys: [{ id: 'db-20', label: '20', tone: 'active' }] },
+              { id: 'db-i1', x: 375, y: 92, cellW: 40, cellH: 25, state: 'muted', keys: [{ id: 'db-70', label: '70', tone: 'muted' }] },
+              { id: 'db-l0', x: 74, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'db-10', label: '10', tone: 'muted' }] },
+              { id: 'db-l1', x: 205, y: 152, cellW: 40, cellH: 25, tag: 'Chuẩn bị xóa 30 cuối lá', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'db-25', label: '25' }, { id: 'db-30', label: '30', tone: 'error' }] },
+              { id: 'db-l2', x: 325, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'db-55', label: '55', tone: 'muted' }] },
+              { id: 'db-l3', x: 435, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'db-80', label: '80', tone: 'muted' }] },
             ],
             edges: [
               { id: 'dbe0', fromNode: 'db-r', portIndex: 0, toNode: 'db-i0', state: 'active', arrow: true },
@@ -491,132 +515,115 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'dbe2', fromNode: 'db-i0', portIndex: 0, toNode: 'db-l0', state: 'muted' },
               { id: 'dbe3', fromNode: 'db-i0', portIndex: 1, toNode: 'db-l1', state: 'active', arrow: true },
               { id: 'dbe4', fromNode: 'db-i1', portIndex: 0, toNode: 'db-l2', state: 'muted' },
+              { id: 'dbe5', fromNode: 'db-i1', portIndex: 1, toNode: 'db-l3', state: 'muted' },
             ],
           },
-          worstPhase: '1/4 · Xóa 40 ở gốc → đi tìm tiền nhiệm 38',
-          worstScene: {
-            viewBox: [0, 0, 520, 194],
+        },
+        {
+          label: '2/2 · Xóa 30 cuối lá → Hợp lệ ngay!',
+          scene: {
+            viewBox: [0, 0, 520, 206],
             nodes: [
-              { id: 'dw-r', x: 245, y: 30, cellW: 44, cellH: 28, state: 'active', tag: 'Xóa 40 ở nút trong', tagPos: 'right', tagTone: 'warn', keys: [{ id: 'dw-40', label: '40', tone: 'error' }] },
-              { id: 'dw-i0', x: 145, y: 88, cellW: 40, cellH: 26, state: 'active', keys: [{ id: 'dw-20', label: '20' }] },
-              { id: 'dw-i1', x: 430, y: 88, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'dw-70', label: '70', tone: 'muted' }] },
-              { id: 'dw-l0', x: 64, y: 148, cellW: 34, cellH: 26, state: 'muted', keys: [{ id: 'dw-10', label: '10', tone: 'muted' }] },
-              { id: 'dw-l1', x: 185, y: 148, cellW: 40, cellH: 26, state: 'active', tag: 'Predecessor = 38', tagPos: 'right', tagTone: 'warn', keys: [{ id: 'dw-38', label: '38', tone: 'active' }] },
+              { id: 'db-r', x: 260, y: 32, cellW: 44, cellH: 26, keys: [{ id: 'db-40', label: '40' }] },
+              { id: 'db-i0', x: 145, y: 92, cellW: 40, cellH: 25, keys: [{ id: 'db-20', label: '20' }] },
+              { id: 'db-i1', x: 375, y: 92, cellW: 40, cellH: 25, state: 'muted', keys: [{ id: 'db-70', label: '70', tone: 'muted' }] },
+              { id: 'db-l0', x: 74, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'db-10', label: '10', tone: 'muted' }] },
+              { id: 'db-l1', x: 205, y: 152, cellW: 42, cellH: 25, state: 'success', tag: 'Còn [25] ≥ min · 0 mượn/gộp', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'db-25', label: '25', tone: 'success' }] },
+              { id: 'db-l2', x: 325, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'db-55', label: '55', tone: 'muted' }] },
+              { id: 'db-l3', x: 435, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'db-80', label: '80', tone: 'muted' }] },
+            ],
+            edges: [
+              { id: 'dbe0', fromNode: 'db-r', portIndex: 0, toNode: 'db-i0' },
+              { id: 'dbe1', fromNode: 'db-r', portIndex: 1, toNode: 'db-i1', state: 'muted' },
+              { id: 'dbe2', fromNode: 'db-i0', portIndex: 0, toNode: 'db-l0', state: 'muted' },
+              { id: 'dbe3', fromNode: 'db-i0', portIndex: 1, toNode: 'db-l1', state: 'active' },
+              { id: 'dbe4', fromNode: 'db-i1', portIndex: 0, toNode: 'db-l2', state: 'muted' },
+              { id: 'dbe5', fromNode: 'db-i1', portIndex: 1, toNode: 'db-l3', state: 'muted' },
+            ],
+          },
+        },
+      ],
+      worstPhases: [
+        {
+          label: '1/4 · Xóa 40 ở gốc → tìm tiền nhiệm 30',
+          scene: {
+            viewBox: [0, 0, 520, 206],
+            nodes: [
+              { id: 'dw-r', x: 260, y: 32, cellW: 44, cellH: 26, state: 'active', tag: 'Xóa 40 ở gốc', tagPos: 'right', tagTone: 'warn', keys: [{ id: 'dw-40', label: '40', tone: 'error' }] },
+              { id: 'dw-i0', x: 145, y: 92, cellW: 40, cellH: 25, state: 'active', keys: [{ id: 'dw-20', label: '20' }] },
+              { id: 'dw-i1', x: 375, y: 92, cellW: 40, cellH: 25, state: 'muted', keys: [{ id: 'dw-70', label: '70', tone: 'muted' }] },
+              { id: 'dw-l0', x: 74, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'dw-10', label: '10', tone: 'muted' }] },
+              { id: 'dw-l1', x: 205, y: 152, cellW: 40, cellH: 25, state: 'active', tag: 'Tiền nhiệm = 30', tagPos: 'bottom', tagTone: 'warn', keys: [{ id: 'dw-30', label: '30', tone: 'active' }] },
+              { id: 'dw-l2', x: 325, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'dw-55', label: '55', tone: 'muted' }] },
+              { id: 'dw-l3', x: 435, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'dw-85', label: '85', tone: 'muted' }] },
             ],
             edges: [
               { id: 'dwe0', fromNode: 'dw-r', portIndex: 0, toNode: 'dw-i0', state: 'active', arrow: true },
               { id: 'dwe1', fromNode: 'dw-r', portIndex: 1, toNode: 'dw-i1', state: 'muted' },
               { id: 'dwe2', fromNode: 'dw-i0', portIndex: 0, toNode: 'dw-l0', state: 'muted' },
               { id: 'dwe3', fromNode: 'dw-i0', portIndex: 1, toNode: 'dw-l1', state: 'active', arrow: true },
+              { id: 'dwe4', fromNode: 'dw-i1', portIndex: 0, toNode: 'dw-l2', state: 'muted' },
+              { id: 'dwe5', fromNode: 'dw-i1', portIndex: 1, toNode: 'dw-l3', state: 'muted' },
             ],
           },
         },
         {
-          bestPhase: '2/4 · Pop 30 cuối lá (0 dịch đuôi)',
-          bestScene: {
-            viewBox: [0, 0, 520, 194],
+          label: '2/4 · Đổi 30 ↑ gốc → Lá rỗng, gộp [10|20]',
+          scene: {
+            viewBox: [0, 0, 520, 206],
             nodes: [
-              { id: 'db-r', x: 260, y: 30, cellW: 44, cellH: 28, keys: [{ id: 'db-40', label: '40' }] },
-              { id: 'db-i0', x: 148, y: 88, cellW: 40, cellH: 26, keys: [{ id: 'db-20', label: '20' }] },
-              { id: 'db-i1', x: 388, y: 88, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'db-70', label: '70', tone: 'muted' }] },
-              { id: 'db-l0', x: 66, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-5', label: '5', tone: 'muted' }] },
-              { id: 'db-l1', x: 230, y: 146, cellW: 44, cellH: 26, state: 'success', tag: 'Còn [25] ≥ min_keys', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'db-25', label: '25', tone: 'success' }] },
-              { id: 'db-l2', x: 432, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-80', label: '80', tone: 'muted' }] },
-            ],
-            edges: [
-              { id: 'dbe0', fromNode: 'db-r', portIndex: 0, toNode: 'db-i0' },
-              { id: 'dbe1', fromNode: 'db-r', portIndex: 1, toNode: 'db-i1', state: 'muted' },
-              { id: 'dbe2', fromNode: 'db-i0', portIndex: 0, toNode: 'db-l0', state: 'muted' },
-              { id: 'dbe3', fromNode: 'db-i0', portIndex: 1, toNode: 'db-l1', state: 'active' },
-              { id: 'dbe4', fromNode: 'db-i1', portIndex: 0, toNode: 'db-l2', state: 'muted' },
-            ],
-          },
-          worstPhase: '2/4 · Đổi 38 ↑ gốc → Lá rỗng, Gộp O(M)',
-          worstScene: {
-            viewBox: [0, 0, 520, 194],
-            nodes: [
-              { id: 'dw-r', x: 245, y: 30, cellW: 44, cellH: 28, state: 'active', tag: 'Gốc nhận 38', tagPos: 'right', tagTone: 'warn', keys: [{ id: 'dw-38', label: '38', tone: 'active' }] },
-              { id: 'dw-i0', x: 145, y: 88, cellW: 40, cellH: 26, state: 'underflow', tag: 'Cha mất 20 → thiếu!', tagPos: 'right', tagTone: 'error', keys: [{ id: 'dw-20', label: '20', tone: 'active' }] },
-              { id: 'dw-i1', x: 430, y: 88, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'dw-70', label: '70', tone: 'muted' }] },
-              { id: 'dw-l0', x: 118, y: 150, cellW: 42, cellH: 26, state: 'underflow', tag: 'Gộp [10|20] O(M)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'dw-10', label: '10' }, { id: 'dw-20b', label: '20', tone: 'active' }] },
+              { id: 'dw-r', x: 260, y: 32, cellW: 44, cellH: 26, state: 'active', tag: 'Gốc nhận 30', tagPos: 'right', tagTone: 'warn', keys: [{ id: 'dw-30', label: '30', tone: 'active' }] },
+              { id: 'dw-i0', x: 145, y: 94, cellW: 44, cellH: 25, state: 'underflow', tag: 'Cha rỗng (0 khóa)!', tagPos: 'right', tagTone: 'error', keys: [] },
+              { id: 'dw-i1', x: 385, y: 94, cellW: 40, cellH: 25, state: 'muted', keys: [{ id: 'dw-70', label: '70', tone: 'muted' }] },
+              { id: 'dw-l0', x: 145, y: 154, cellW: 40, cellH: 25, state: 'underflow', tag: 'Gộp [10|20] O(M)', tagPos: 'bottom', tagTone: 'error', keys: [{ id: 'dw-10', label: '10' }, { id: 'dw-20', label: '20', tone: 'active' }] },
+              { id: 'dw-l2', x: 330, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'dw-55', label: '55', tone: 'muted' }] },
+              { id: 'dw-l3', x: 440, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'dw-85', label: '85', tone: 'muted' }] },
             ],
             edges: [
               { id: 'dwe0', fromNode: 'dw-r', portIndex: 0, toNode: 'dw-i0', state: 'error' },
               { id: 'dwe1', fromNode: 'dw-r', portIndex: 1, toNode: 'dw-i1', state: 'muted' },
               { id: 'dwe2', fromNode: 'dw-i0', portIndex: 0, toNode: 'dw-l0', state: 'error' },
+              { id: 'dwe4', fromNode: 'dw-i1', portIndex: 0, toNode: 'dw-l2', state: 'muted' },
+              { id: 'dwe5', fromNode: 'dw-i1', portIndex: 1, toNode: 'dw-l3', state: 'muted' },
             ],
             transfers: [
-              { id: 'dw-pr', fromX: 162, fromY: 142, toX: 220, toY: 32, ctrlX: 36, ctrlY: 56, label: '38 ↑', tone: 'warn' },
+              { id: 'dw-pr', fromX: 192, fromY: 140, toX: 235, toY: 34, ctrlX: 52, ctrlY: 56, label: '30 ↑', tone: 'warn' },
             ],
           },
         },
         {
-          bestPhase: '3/4 · 0 mượn/gộp · Cây hợp lệ ngay',
-          bestScene: {
-            viewBox: [0, 0, 520, 194],
+          label: '3/4 · Cha rỗng → Gộp [30|70] → Gốc rỗng!',
+          scene: {
+            viewBox: [0, 0, 520, 206],
             nodes: [
-              { id: 'db-r', x: 260, y: 30, cellW: 44, cellH: 28, keys: [{ id: 'db-40', label: '40' }] },
-              { id: 'db-i0', x: 148, y: 88, cellW: 40, cellH: 26, keys: [{ id: 'db-20', label: '20' }] },
-              { id: 'db-i1', x: 388, y: 88, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'db-70', label: '70', tone: 'muted' }] },
-              { id: 'db-l0', x: 66, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-5', label: '5', tone: 'muted' }] },
-              { id: 'db-l1', x: 230, y: 146, cellW: 44, cellH: 26, state: 'success', tag: '0 borrow, 0 merge', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'db-25', label: '25', tone: 'success' }] },
-              { id: 'db-l2', x: 432, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-80', label: '80', tone: 'muted' }] },
+              { id: 'dw-r', x: 260, y: 30, cellW: 44, cellH: 25, state: 'overflow', tag: 'Gốc rỗng → hạ tầng!', tagPos: 'right', tagTone: 'error', keys: [] },
+              { id: 'dw-i1', x: 260, y: 94, cellW: 44, cellH: 26, state: 'overflow', tag: 'Gộp [30|70] · 3 con', tagPos: 'right', tagTone: 'error', keys: [{ id: 'dw-30', label: '30', tone: 'active' }, { id: 'dw-70', label: '70', tone: 'active' }] },
+              { id: 'dw-l0', x: 118, y: 158, cellW: 40, cellH: 25, keys: [{ id: 'dw-10', label: '10' }, { id: 'dw-20', label: '20' }] },
+              { id: 'dw-l2', x: 260, y: 158, cellW: 38, cellH: 25, keys: [{ id: 'dw-55', label: '55' }] },
+              { id: 'dw-l3', x: 392, y: 158, cellW: 38, cellH: 25, keys: [{ id: 'dw-85', label: '85' }] },
             ],
             edges: [
-              { id: 'dbe0', fromNode: 'db-r', portIndex: 0, toNode: 'db-i0' },
-              { id: 'dbe1', fromNode: 'db-r', portIndex: 1, toNode: 'db-i1', state: 'muted' },
-              { id: 'dbe2', fromNode: 'db-i0', portIndex: 0, toNode: 'db-l0', state: 'muted' },
-              { id: 'dbe3', fromNode: 'db-i0', portIndex: 1, toNode: 'db-l1', state: 'active' },
-              { id: 'dbe4', fromNode: 'db-i1', portIndex: 0, toNode: 'db-l2', state: 'muted' },
-            ],
-          },
-          worstPhase: '3/4 · Gộp lan tới Gốc → Gốc rỗng!',
-          worstScene: {
-            viewBox: [0, 0, 520, 194],
-            nodes: [
-              { id: 'dw-r', x: 245, y: 30, cellW: 44, cellH: 28, state: 'overflow', tag: 'Mức 0 · Gốc rỗng → hạ tầng!', tagPos: 'right', tagTone: 'error', keys: [] },
-              { id: 'dw-i0', x: 245, y: 92, cellW: 44, cellH: 26, state: 'overflow', tag: 'Gộp [38|70] O(M)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'dw-38', label: '38', tone: 'active' }, { id: 'dw-70', label: '70', tone: 'active' }] },
-              { id: 'dw-l0', x: 140, y: 152, cellW: 40, cellH: 26, keys: [{ id: 'dw-10', label: '10' }, { id: 'dw-20b', label: '20' }] },
-              { id: 'dw-l2', x: 350, y: 152, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'dw-80', label: '80', tone: 'muted' }] },
-            ],
-            edges: [
-              { id: 'dwe0', fromNode: 'dw-r', portIndex: 0, toNode: 'dw-i0', state: 'error' },
-              { id: 'dwe2', fromNode: 'dw-i0', portIndex: 0, toNode: 'dw-l0', state: 'active' },
-              { id: 'dwe3', fromNode: 'dw-i0', portIndex: 2, toNode: 'dw-l2', state: 'muted' },
+              { id: 'dwe1', fromNode: 'dw-r', portIndex: 0, toNode: 'dw-i1', state: 'error' },
+              { id: 'dwe2', fromNode: 'dw-i1', portIndex: 0, toNode: 'dw-l0', state: 'active' },
+              { id: 'dwe4', fromNode: 'dw-i1', portIndex: 1, toNode: 'dw-l2', state: 'active' },
+              { id: 'dwe5', fromNode: 'dw-i1', portIndex: 2, toNode: 'dw-l3', state: 'active' },
             ],
           },
         },
         {
-          bestPhase: '4/4 · Hoàn tất · Cây hợp lệ O(log N)',
-          bestScene: {
-            viewBox: [0, 0, 520, 194],
+          label: '4/4 · Xóa gốc rỗng → Cây hợp lệ (h − 1)',
+          scene: {
+            viewBox: [0, 0, 520, 206],
             nodes: [
-              { id: 'db-r', x: 260, y: 30, cellW: 44, cellH: 28, keys: [{ id: 'db-40', label: '40' }] },
-              { id: 'db-i0', x: 148, y: 88, cellW: 40, cellH: 26, keys: [{ id: 'db-20', label: '20' }] },
-              { id: 'db-i1', x: 388, y: 88, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'db-70', label: '70', tone: 'muted' }] },
-              { id: 'db-l0', x: 66, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-5', label: '5', tone: 'muted' }] },
-              { id: 'db-l1', x: 230, y: 146, cellW: 44, cellH: 26, state: 'success', tag: 'Cây hợp lệ · 0 mượn/gộp', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'db-25', label: '25', tone: 'success' }] },
-              { id: 'db-l2', x: 432, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-80', label: '80', tone: 'muted' }] },
+              { id: 'dw-i1', x: 240, y: 54, cellW: 46, cellH: 28, state: 'success', tag: 'Gốc mới · h = 1 (3 con)', tagPos: 'right', tagTone: 'success', keys: [{ id: 'dw-30', label: '30', tone: 'success' }, { id: 'dw-70', label: '70', tone: 'success' }] },
+              { id: 'dw-l0', x: 112, y: 140, cellW: 42, cellH: 26, state: 'success', keys: [{ id: 'dw-10', label: '10' }, { id: 'dw-20', label: '20' }] },
+              { id: 'dw-l2', x: 240, y: 140, cellW: 40, cellH: 26, state: 'success', keys: [{ id: 'dw-55', label: '55' }] },
+              { id: 'dw-l3', x: 368, y: 140, cellW: 40, cellH: 26, state: 'success', keys: [{ id: 'dw-85', label: '85' }] },
             ],
             edges: [
-              { id: 'dbe0', fromNode: 'db-r', portIndex: 0, toNode: 'db-i0' },
-              { id: 'dbe1', fromNode: 'db-r', portIndex: 1, toNode: 'db-i1', state: 'muted' },
-              { id: 'dbe2', fromNode: 'db-i0', portIndex: 0, toNode: 'db-l0', state: 'muted' },
-              { id: 'dbe3', fromNode: 'db-i0', portIndex: 1, toNode: 'db-l1', state: 'active' },
-              { id: 'dbe4', fromNode: 'db-i1', portIndex: 0, toNode: 'db-l2', state: 'muted' },
-            ],
-          },
-          worstPhase: '4/4 · Hạ tầng gốc → Cây hợp lệ (h − 1)',
-          worstScene: {
-            viewBox: [0, 0, 520, 194],
-            nodes: [
-              { id: 'dw-i0', x: 245, y: 50, cellW: 46, cellH: 28, state: 'success', tag: 'Gốc mới · h giảm −1', tagPos: 'right', tagTone: 'success', keys: [{ id: 'dw-38', label: '38', tone: 'success' }, { id: 'dw-70', label: '70', tone: 'success' }] },
-              { id: 'dw-l0', x: 135, y: 132, cellW: 42, cellH: 26, state: 'success', keys: [{ id: 'dw-10', label: '10' }, { id: 'dw-20b', label: '20' }] },
-              { id: 'dw-l2', x: 355, y: 132, cellW: 42, cellH: 26, keys: [{ id: 'dw-80', label: '80' }] },
-            ],
-            edges: [
-              { id: 'dwe2', fromNode: 'dw-i0', portIndex: 0, toNode: 'dw-l0', state: 'active' },
-              { id: 'dwe3', fromNode: 'dw-i0', portIndex: 2, toNode: 'dw-l2' },
+              { id: 'dwe2', fromNode: 'dw-i1', portIndex: 0, toNode: 'dw-l0', state: 'active' },
+              { id: 'dwe4', fromNode: 'dw-i1', portIndex: 1, toNode: 'dw-l2', state: 'active' },
+              { id: 'dwe5', fromNode: 'dw-i1', portIndex: 2, toNode: 'dw-l3', state: 'active' },
             ],
           },
         },
@@ -624,25 +631,27 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
     };
   }
 
-  // SEARCH: Real 3-phase animated loop — Best O(1) at root vs Worst O(log N) down h + 1 levels
+  // SEARCH (M = 3, cùng cây hợp lệ 7 nút, h = 2)
+  // Best: 2 bước (1/2 -> 2/2, dừng ngay tại gốc) · Worst: 3 bước (1/3 -> 3/3, đi trọn xuống lá)
   return {
     opName: 'Search',
-    bestTitle: 'Thuận lợi · Gặp ngay tại gốc',
+    bestTitle: 'Thuận lợi · Gặp ngay tại gốc (M = 3)',
     bestCost: 'O(1)',
-    worstTitle: 'Xấu nhất · Đi trọn h + 1 mức xuống lá',
+    worstTitle: 'Xấu nhất · Đi trọn h + 1 mức xuống lá (M = 3)',
     worstCost: 'O(log N)',
-    phases: [
+    bestPhases: [
       {
-        bestPhase: '1/3 · So sánh k = 40 tại gốc',
-        bestScene: {
-          viewBox: [0, 0, 520, 194],
+        label: '1/2 · So sánh k = 40 tại gốc',
+        scene: {
+          viewBox: [0, 0, 520, 206],
           nodes: [
-            { id: 'sb-r', x: 260, y: 36, cellW: 48, cellH: 30, state: 'active', tag: 'Đang xét k = 40', tagPos: 'right', tagTone: 'cobalt', keys: [{ id: 'sb-40', label: '40', tone: 'active' }] },
-            { id: 'sb-i0', x: 150, y: 98, cellW: 38, cellH: 26, state: 'muted', keys: [{ id: 'sb-20', label: '20', tone: 'muted' }] },
-            { id: 'sb-i1', x: 370, y: 98, cellW: 38, cellH: 26, state: 'muted', keys: [{ id: 'sb-70', label: '70', tone: 'muted' }] },
-            { id: 'sb-l0', x: 85, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sb-5', label: '5', tone: 'muted' }] },
-            { id: 'sb-l1', x: 215, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sb-25', label: '25', tone: 'muted' }, { id: 'sb-30', label: '30', tone: 'muted' }] },
-            { id: 'sb-l2', x: 370, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sb-80', label: '80', tone: 'muted' }] },
+            { id: 'sb-r', x: 260, y: 34, cellW: 46, cellH: 28, state: 'active', tag: 'Xét k = 40', tagPos: 'right', tagTone: 'cobalt', keys: [{ id: 'sb-40', label: '40', tone: 'active' }] },
+            { id: 'sb-i0', x: 145, y: 94, cellW: 38, cellH: 25, state: 'muted', keys: [{ id: 'sb-20', label: '20', tone: 'muted' }] },
+            { id: 'sb-i1', x: 375, y: 94, cellW: 38, cellH: 25, state: 'muted', keys: [{ id: 'sb-70', label: '70', tone: 'muted' }] },
+            { id: 'sb-l0', x: 74, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sb-10', label: '10', tone: 'muted' }] },
+            { id: 'sb-l1', x: 195, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sb-25', label: '25', tone: 'muted' }, { id: 'sb-30', label: '30', tone: 'muted' }] },
+            { id: 'sb-l2', x: 325, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sb-55', label: '55', tone: 'muted' }] },
+            { id: 'sb-l3', x: 440, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sb-80', label: '80', tone: 'muted' }, { id: 'sb-90', label: '90', tone: 'muted' }] },
           ],
           edges: [
             { id: 'sbe0', fromNode: 'sb-r', portIndex: 0, toNode: 'sb-i0', state: 'muted' },
@@ -650,18 +659,47 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
             { id: 'sbe2', fromNode: 'sb-i0', portIndex: 0, toNode: 'sb-l0', state: 'muted' },
             { id: 'sbe3', fromNode: 'sb-i0', portIndex: 1, toNode: 'sb-l1', state: 'muted' },
             { id: 'sbe4', fromNode: 'sb-i1', portIndex: 0, toNode: 'sb-l2', state: 'muted' },
+            { id: 'sbe5', fromNode: 'sb-i1', portIndex: 1, toNode: 'sb-l3', state: 'muted' },
           ],
         },
-        worstPhase: '1/3 · Mức 0: 30 < 40 → rẽ trái',
-        worstScene: {
-          viewBox: [0, 0, 520, 194],
+      },
+      {
+        label: '2/2 · Khớp ngay 40 tại gốc → Dừng O(1)!',
+        scene: {
+          viewBox: [0, 0, 520, 206],
           nodes: [
-            { id: 'sw-r', x: 250, y: 34, cellW: 44, cellH: 28, state: 'active', tag: 'bisect O(log M)', tagPos: 'right', tagTone: 'cobalt', keys: [{ id: 'sw-40', label: '40', tone: 'active' }] },
-            { id: 'sw-i0', x: 148, y: 94, cellW: 40, cellH: 26, keys: [{ id: 'sw-20', label: '20' }] },
-            { id: 'sw-i1', x: 380, y: 94, cellW: 38, cellH: 26, state: 'muted', keys: [{ id: 'sw-70', label: '70', tone: 'muted' }] },
-            { id: 'sw-l0', x: 64, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sw-5', label: '5', tone: 'muted' }] },
-            { id: 'sw-l1', x: 215, y: 154, cellW: 40, cellH: 26, keys: [{ id: 'sw-25', label: '25' }, { id: 'sw-30', label: '30' }] },
-            { id: 'sw-l2', x: 425, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sw-80', label: '80', tone: 'muted' }] },
+            { id: 'sb-r', x: 260, y: 34, cellW: 46, cellH: 28, state: 'success', tag: 'Trả (root, 0) · Dừng ngay!', tagPos: 'right', tagTone: 'success', keys: [{ id: 'sb-40', label: '40', tone: 'success' }] },
+            { id: 'sb-i0', x: 145, y: 94, cellW: 38, cellH: 25, state: 'muted', keys: [{ id: 'sb-20', label: '20', tone: 'muted' }] },
+            { id: 'sb-i1', x: 375, y: 94, cellW: 38, cellH: 25, state: 'muted', keys: [{ id: 'sb-70', label: '70', tone: 'muted' }] },
+            { id: 'sb-l0', x: 74, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sb-10', label: '10', tone: 'muted' }] },
+            { id: 'sb-l1', x: 195, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sb-25', label: '25', tone: 'muted' }, { id: 'sb-30', label: '30', tone: 'muted' }] },
+            { id: 'sb-l2', x: 325, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sb-55', label: '55', tone: 'muted' }] },
+            { id: 'sb-l3', x: 440, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sb-80', label: '80', tone: 'muted' }, { id: 'sb-90', label: '90', tone: 'muted' }] },
+          ],
+          edges: [
+            { id: 'sbe0', fromNode: 'sb-r', portIndex: 0, toNode: 'sb-i0', state: 'muted' },
+            { id: 'sbe1', fromNode: 'sb-r', portIndex: 1, toNode: 'sb-i1', state: 'muted' },
+            { id: 'sbe2', fromNode: 'sb-i0', portIndex: 0, toNode: 'sb-l0', state: 'muted' },
+            { id: 'sbe3', fromNode: 'sb-i0', portIndex: 1, toNode: 'sb-l1', state: 'muted' },
+            { id: 'sbe4', fromNode: 'sb-i1', portIndex: 0, toNode: 'sb-l2', state: 'muted' },
+            { id: 'sbe5', fromNode: 'sb-i1', portIndex: 1, toNode: 'sb-l3', state: 'muted' },
+          ],
+        },
+      },
+    ],
+    worstPhases: [
+      {
+        label: '1/3 · Mức 0: 30 < 40 → rẽ trái',
+        scene: {
+          viewBox: [0, 0, 520, 206],
+          nodes: [
+            { id: 'sw-r', x: 260, y: 34, cellW: 44, cellH: 26, state: 'active', tag: 'Mức 0 · bisect', tagPos: 'right', tagTone: 'cobalt', keys: [{ id: 'sw-40', label: '40', tone: 'active' }] },
+            { id: 'sw-i0', x: 145, y: 94, cellW: 38, cellH: 25, keys: [{ id: 'sw-20', label: '20' }] },
+            { id: 'sw-i1', x: 375, y: 94, cellW: 38, cellH: 25, state: 'muted', keys: [{ id: 'sw-70', label: '70', tone: 'muted' }] },
+            { id: 'sw-l0', x: 74, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sw-10', label: '10', tone: 'muted' }] },
+            { id: 'sw-l1', x: 195, y: 154, cellW: 36, cellH: 25, keys: [{ id: 'sw-25', label: '25' }, { id: 'sw-30', label: '30' }] },
+            { id: 'sw-l2', x: 325, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sw-55', label: '55', tone: 'muted' }] },
+            { id: 'sw-l3', x: 440, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sw-80', label: '80', tone: 'muted' }, { id: 'sw-90', label: '90', tone: 'muted' }] },
           ],
           edges: [
             { id: 'swe0', fromNode: 'sw-r', portIndex: 0, toNode: 'sw-i0', state: 'active', arrow: true },
@@ -669,39 +707,22 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
             { id: 'swe2', fromNode: 'sw-i0', portIndex: 0, toNode: 'sw-l0', state: 'muted' },
             { id: 'swe3', fromNode: 'sw-i0', portIndex: 1, toNode: 'sw-l1' },
             { id: 'swe4', fromNode: 'sw-i1', portIndex: 0, toNode: 'sw-l2', state: 'muted' },
+            { id: 'swe5', fromNode: 'sw-i1', portIndex: 1, toNode: 'sw-l3', state: 'muted' },
           ],
         },
       },
       {
-        bestPhase: '2/3 · Khớp ngay 40 ở mức 0!',
-        bestScene: {
-          viewBox: [0, 0, 520, 194],
+        label: '2/3 · Mức 1: 30 > 20 → rẽ phải xuống lá',
+        scene: {
+          viewBox: [0, 0, 520, 206],
           nodes: [
-            { id: 'sb-r', x: 260, y: 36, cellW: 48, cellH: 30, state: 'success', tag: 'Khớp ngay! Không đi xuống', tagPos: 'right', tagTone: 'success', keys: [{ id: 'sb-40', label: '40', tone: 'success' }] },
-            { id: 'sb-i0', x: 150, y: 98, cellW: 38, cellH: 26, state: 'muted', keys: [{ id: 'sb-20', label: '20', tone: 'muted' }] },
-            { id: 'sb-i1', x: 370, y: 98, cellW: 38, cellH: 26, state: 'muted', keys: [{ id: 'sb-70', label: '70', tone: 'muted' }] },
-            { id: 'sb-l0', x: 85, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sb-5', label: '5', tone: 'muted' }] },
-            { id: 'sb-l1', x: 215, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sb-25', label: '25', tone: 'muted' }, { id: 'sb-30', label: '30', tone: 'muted' }] },
-            { id: 'sb-l2', x: 370, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sb-80', label: '80', tone: 'muted' }] },
-          ],
-          edges: [
-            { id: 'sbe0', fromNode: 'sb-r', portIndex: 0, toNode: 'sb-i0', state: 'muted' },
-            { id: 'sbe1', fromNode: 'sb-r', portIndex: 1, toNode: 'sb-i1', state: 'muted' },
-            { id: 'sbe2', fromNode: 'sb-i0', portIndex: 0, toNode: 'sb-l0', state: 'muted' },
-            { id: 'sbe3', fromNode: 'sb-i0', portIndex: 1, toNode: 'sb-l1', state: 'muted' },
-            { id: 'sbe4', fromNode: 'sb-i1', portIndex: 0, toNode: 'sb-l2', state: 'muted' },
-          ],
-        },
-        worstPhase: '2/3 · Mức 1: 30 > 20 → rẽ phải xuống lá',
-        worstScene: {
-          viewBox: [0, 0, 520, 194],
-          nodes: [
-            { id: 'sw-r', x: 250, y: 34, cellW: 44, cellH: 28, state: 'active', keys: [{ id: 'sw-40', label: '40' }] },
-            { id: 'sw-i0', x: 148, y: 94, cellW: 40, cellH: 26, state: 'active', tag: 'Mức 1 · bisect', tagPos: 'left', tagTone: 'cobalt', keys: [{ id: 'sw-20', label: '20', tone: 'active' }] },
-            { id: 'sw-i1', x: 380, y: 94, cellW: 38, cellH: 26, state: 'muted', keys: [{ id: 'sw-70', label: '70', tone: 'muted' }] },
-            { id: 'sw-l0', x: 64, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sw-5', label: '5', tone: 'muted' }] },
-            { id: 'sw-l1', x: 215, y: 154, cellW: 40, cellH: 26, state: 'active', keys: [{ id: 'sw-25', label: '25' }, { id: 'sw-30', label: '30', tone: 'active' }] },
-            { id: 'sw-l2', x: 425, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sw-80', label: '80', tone: 'muted' }] },
+            { id: 'sw-r', x: 260, y: 34, cellW: 44, cellH: 26, state: 'active', keys: [{ id: 'sw-40', label: '40' }] },
+            { id: 'sw-i0', x: 145, y: 94, cellW: 38, cellH: 25, state: 'active', tag: 'Mức 1 · bisect', tagPos: 'left', tagTone: 'cobalt', keys: [{ id: 'sw-20', label: '20', tone: 'active' }] },
+            { id: 'sw-i1', x: 375, y: 94, cellW: 38, cellH: 25, state: 'muted', keys: [{ id: 'sw-70', label: '70', tone: 'muted' }] },
+            { id: 'sw-l0', x: 74, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sw-10', label: '10', tone: 'muted' }] },
+            { id: 'sw-l1', x: 195, y: 154, cellW: 36, cellH: 25, state: 'active', keys: [{ id: 'sw-25', label: '25' }, { id: 'sw-30', label: '30', tone: 'active' }] },
+            { id: 'sw-l2', x: 325, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sw-55', label: '55', tone: 'muted' }] },
+            { id: 'sw-l3', x: 440, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sw-80', label: '80', tone: 'muted' }, { id: 'sw-90', label: '90', tone: 'muted' }] },
           ],
           edges: [
             { id: 'swe0', fromNode: 'sw-r', portIndex: 0, toNode: 'sw-i0', state: 'active', arrow: true },
@@ -709,39 +730,22 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
             { id: 'swe2', fromNode: 'sw-i0', portIndex: 0, toNode: 'sw-l0', state: 'muted' },
             { id: 'swe3', fromNode: 'sw-i0', portIndex: 1, toNode: 'sw-l1', state: 'active', arrow: true },
             { id: 'swe4', fromNode: 'sw-i1', portIndex: 0, toNode: 'sw-l2', state: 'muted' },
+            { id: 'swe5', fromNode: 'sw-i1', portIndex: 1, toNode: 'sw-l3', state: 'muted' },
           ],
         },
       },
       {
-        bestPhase: '3/3 · Dừng ngay · O(1)',
-        bestScene: {
-          viewBox: [0, 0, 520, 194],
+        label: '3/3 · Mức 2 (lá): Thấy 30 · O(log N)',
+        scene: {
+          viewBox: [0, 0, 520, 206],
           nodes: [
-            { id: 'sb-r', x: 260, y: 36, cellW: 48, cellH: 30, state: 'success', tag: 'Trả (root, 0) · O(1)', tagPos: 'right', tagTone: 'success', keys: [{ id: 'sb-40', label: '40', tone: 'success' }] },
-            { id: 'sb-i0', x: 150, y: 98, cellW: 38, cellH: 26, state: 'muted', keys: [{ id: 'sb-20', label: '20', tone: 'muted' }] },
-            { id: 'sb-i1', x: 370, y: 98, cellW: 38, cellH: 26, state: 'muted', keys: [{ id: 'sb-70', label: '70', tone: 'muted' }] },
-            { id: 'sb-l0', x: 85, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sb-5', label: '5', tone: 'muted' }] },
-            { id: 'sb-l1', x: 215, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sb-25', label: '25', tone: 'muted' }, { id: 'sb-30', label: '30', tone: 'muted' }] },
-            { id: 'sb-l2', x: 370, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sb-80', label: '80', tone: 'muted' }] },
-          ],
-          edges: [
-            { id: 'sbe0', fromNode: 'sb-r', portIndex: 0, toNode: 'sb-i0', state: 'muted' },
-            { id: 'sbe1', fromNode: 'sb-r', portIndex: 1, toNode: 'sb-i1', state: 'muted' },
-            { id: 'sbe2', fromNode: 'sb-i0', portIndex: 0, toNode: 'sb-l0', state: 'muted' },
-            { id: 'sbe3', fromNode: 'sb-i0', portIndex: 1, toNode: 'sb-l1', state: 'muted' },
-            { id: 'sbe4', fromNode: 'sb-i1', portIndex: 0, toNode: 'sb-l2', state: 'muted' },
-          ],
-        },
-        worstPhase: '3/3 · Mức h: Thấy 30 · O(log N)',
-        worstScene: {
-          viewBox: [0, 0, 520, 194],
-          nodes: [
-            { id: 'sw-r', x: 250, y: 34, cellW: 44, cellH: 28, state: 'active', keys: [{ id: 'sw-40', label: '40' }] },
-            { id: 'sw-i0', x: 148, y: 94, cellW: 40, cellH: 26, state: 'active', keys: [{ id: 'sw-20', label: '20' }] },
-            { id: 'sw-i1', x: 380, y: 94, cellW: 38, cellH: 26, state: 'muted', keys: [{ id: 'sw-70', label: '70', tone: 'muted' }] },
-            { id: 'sw-l0', x: 64, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sw-5', label: '5', tone: 'muted' }] },
-            { id: 'sw-l1', x: 215, y: 154, cellW: 40, cellH: 26, state: 'success', tag: 'Mức h · (h+1) log M', tagPos: 'right', tagTone: 'success', keys: [{ id: 'sw-25', label: '25' }, { id: 'sw-30', label: '30', tone: 'success' }] },
-            { id: 'sw-l2', x: 425, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'sw-80', label: '80', tone: 'muted' }] },
+            { id: 'sw-r', x: 260, y: 34, cellW: 44, cellH: 26, state: 'active', keys: [{ id: 'sw-40', label: '40' }] },
+            { id: 'sw-i0', x: 145, y: 94, cellW: 38, cellH: 25, state: 'active', keys: [{ id: 'sw-20', label: '20' }] },
+            { id: 'sw-i1', x: 375, y: 94, cellW: 38, cellH: 25, state: 'muted', keys: [{ id: 'sw-70', label: '70', tone: 'muted' }] },
+            { id: 'sw-l0', x: 74, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sw-10', label: '10', tone: 'muted' }] },
+            { id: 'sw-l1', x: 195, y: 154, cellW: 36, cellH: 25, state: 'success', tag: 'Mức h · (h+1) log M', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'sw-25', label: '25' }, { id: 'sw-30', label: '30', tone: 'success' }] },
+            { id: 'sw-l2', x: 325, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sw-55', label: '55', tone: 'muted' }] },
+            { id: 'sw-l3', x: 440, y: 154, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'sw-80', label: '80', tone: 'muted' }, { id: 'sw-90', label: '90', tone: 'muted' }] },
           ],
           edges: [
             { id: 'swe0', fromNode: 'sw-r', portIndex: 0, toNode: 'sw-i0', state: 'active', arrow: true },
@@ -749,6 +753,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
             { id: 'swe2', fromNode: 'sw-i0', portIndex: 0, toNode: 'sw-l0', state: 'muted' },
             { id: 'swe3', fromNode: 'sw-i0', portIndex: 1, toNode: 'sw-l1', state: 'active', arrow: true },
             { id: 'swe4', fromNode: 'sw-i1', portIndex: 0, toNode: 'sw-l2', state: 'muted' },
+            { id: 'swe5', fromNode: 'sw-i1', portIndex: 1, toNode: 'sw-l3', state: 'muted' },
           ],
         },
       },
@@ -953,25 +958,33 @@ function startS18CompareLoop(slideEl: HTMLElement, opIdx: number, reducedMotion:
   const bestTree = slideEl.querySelector<HTMLElement>('[data-role="best-tree"]')!;
   const worstTree = slideEl.querySelector<HTMLElement>('[data-role="worst-tree"]')!;
 
-  const lastIdx = spec.phases.length - 1;
-  const renderPhase = (pIdx: number) => {
-    const frame = spec.phases[pIdx];
-    bestPhaseEl.textContent = frame.bestPhase;
-    worstPhaseEl.textContent = frame.worstPhase;
-    worstPhaseEl.classList.toggle('is-done-ok', pIdx === lastIdx);
-    renderTreeScene(bestTree, frame.bestScene, { reducedMotion, durationMs: 420 });
-    renderTreeScene(worstTree, frame.worstScene, { reducedMotion, durationMs: 420 });
+  const bestLast = spec.bestPhases.length - 1;
+  const worstLast = spec.worstPhases.length - 1;
+  const maxLast = Math.max(bestLast, worstLast);
+
+  const renderBest = (idx: number) => {
+    const f = spec.bestPhases[idx];
+    bestPhaseEl.textContent = f.label;
+    renderTreeScene(bestTree, f.scene, { reducedMotion, durationMs: 420 });
+  };
+  const renderWorst = (idx: number) => {
+    const f = spec.worstPhases[idx];
+    worstPhaseEl.textContent = f.label;
+    worstPhaseEl.classList.toggle('is-done-ok', idx === worstLast);
+    renderTreeScene(worstTree, f.scene, { reducedMotion, durationMs: 420 });
   };
 
   if (reducedMotion) {
-    renderPhase(lastIdx);
+    renderBest(bestLast);
+    renderWorst(worstLast);
     return;
   }
 
-  let phase = 0;
-  renderPhase(0);
+  let tick = 0;
+  renderBest(0);
+  renderWorst(0);
   const scheduleNext = () => {
-    if (phase >= lastIdx) {
+    if (tick >= maxLast) {
       stopS18Loop(slideEl);
       return;
     }
@@ -988,8 +1001,9 @@ function startS18CompareLoop(slideEl: HTMLElement, opIdx: number, reducedMotion:
           stopS18Loop(slideEl);
           return;
         }
-        phase += 1;
-        renderPhase(phase);
+        tick += 1;
+        if (tick <= bestLast) renderBest(tick);
+        if (tick <= worstLast) renderWorst(tick);
         scheduleNext();
       }, 1350),
     );
