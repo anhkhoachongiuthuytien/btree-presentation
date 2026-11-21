@@ -96,21 +96,49 @@ const slide13: SlideDef = {
     } else if (step === 2) {
       updateCodeHighlight(cInit, [14, 15, 16, 17, 18, 19, 20, 21]);
       updateCodeHighlight(cSearch, []);
-      vis.innerHTML = `
-        <div class="obj-stage">
-          <h3>Tính sẵn các ngưỡng khi khởi tạo <code>BTree(M)</code></h3>
-          <table class="mini-kv-table">
-            <thead><tr><th>Thuộc tính</th><th>Công thức</th><th>M = 3</th><th>M = 4</th></tr></thead>
-            <tbody>
-              <tr><td><code>max_keys</code></td><td><code>M - 1</code></td><td>2</td><td>3</td></tr>
-              <tr><td><code>min_children</code></td><td><code>(M + 1) // 2</code></td><td>2</td><td>2</td></tr>
-              <tr><td><code>min_keys</code></td><td><code>min_children - 1</code></td><td>1</td><td>1</td></tr>
-              <tr><td><code>self.root</code></td><td><code>BTreeNode()</code></td><td colspan="2">Lá rỗng <code>[]</code></td></tr>
-            </tbody>
-          </table>
-        </div>
-      `;
-      note.innerHTML = '<strong>BTree.__init__(M):</strong> Kiểm tra <code>M &ge; 3</code>, lưu hằng số dùng chung và trỏ <code>self.root</code> tới lá rỗng.';
+      const renderMTable = (activeM: number) => {
+        const maxK = activeM - 1;
+        const minC = Math.floor((activeM + 1) / 2);
+        const minK = minC - 1;
+        const slotsHtml = Array.from({ length: maxK }, (_, idx) => {
+          const isMin = idx < minK;
+          return `<span class="s13-cap-slot${isMin ? ' is-min' : ''}" style="animation-delay:${idx * 55}ms">${isMin ? `min #${idx + 1}` : `ô #${idx + 1}`}</span>`;
+        }).join('');
+        vis.innerHTML = `
+          <div class="obj-stage">
+            <div class="s13-m-row">
+              <h3>Khởi tạo ngưỡng <code>BTree(M)</code></h3>
+              <div class="s13-m-tabs">
+                ${[3, 4, 5, 6].map((m) => `<button type="button" class="s13-m-btn${m === activeM ? ' is-active' : ''}" data-mval="${m}">M=${m}</button>`).join('')}
+              </div>
+            </div>
+            <table class="mini-kv-table">
+              <thead><tr><th>Thuộc tính</th><th>Công thức</th><th>M = ${activeM}</th></tr></thead>
+              <tbody>
+                <tr><td><code>max_keys</code></td><td><code>M - 1</code></td><td><strong>${maxK}</strong> khóa</td></tr>
+                <tr><td><code>min_children</code></td><td><code>(M + 1) // 2</code></td><td><strong>${minC}</strong> nhánh</td></tr>
+                <tr><td><code>min_keys</code></td><td><code>min_children - 1</code></td><td><strong>${minK}</strong> khóa</td></tr>
+                <tr><td><code>self.root</code></td><td><code>BTreeNode()</code></td><td>Lá rỗng <code>[]</code></td></tr>
+              </tbody>
+            </table>
+            <div class="s13-cap-preview">
+              <div class="s13-cap-slots">${slotsHtml}</div>
+              <div class="s13-cap-caption">
+                <span>Vàng: tối thiểu <strong>${minK}</strong> khóa/nút</span>
+                <span>Tối đa <strong>${maxK}</strong> khóa · <strong>${activeM}</strong> nhánh con</span>
+              </div>
+            </div>
+          </div>
+        `;
+        vis.querySelectorAll<HTMLButtonElement>('[data-mval]').forEach((b) => {
+          b.addEventListener('click', (e) => {
+            e.stopPropagation();
+            renderMTable(Number(b.dataset.mval));
+          });
+        });
+      };
+      renderMTable(4);
+      note.innerHTML = '<strong>BTree.__init__(M):</strong> Kiểm tra <code>M &ge; 3</code>, tính sẵn ngưỡng dùng chung (nhấn <code>M=3..6</code> để xem cấu trúc nút).';
     } else {
       updateCodeHighlight(cInit, []);
       updateCodeHighlight(cSearch, [23, 24, 25, 26, 27, 28, 29, 30, 31]);
@@ -118,34 +146,52 @@ const slide13: SlideDef = {
         <div class="s13-search-sync">
           <div class="s13-mini-tree" data-role="s13-tree"></div>
           <div class="stack-panel">
-            <div class="stack-title">Call Stack · <code>search(17)</code></div>
-            <div class="stack-frame is-stagger" style="--fi:0">1. <code>node=[10]</code> · <code>bisect_left → i=1</code></div>
-            <div class="stack-frame is-stagger" style="--fi:1">2. <code>node=[20]</code> · <code>bisect_left → i=0</code></div>
-            <div class="stack-frame is-stagger is-ok" style="--fi:2">3. <code>node=[12,17]</code> · <code>i=1</code> → trả <code>(node, 1)</code></div>
+            <div class="stack-title">Call Stack · <code>search(17)</code> (nhấn từng khung để rọi mã &amp; cây)</div>
+            <button type="button" class="stack-frame is-stagger" data-s13f="1" style="--fi:0">1. <code>node=[10]</code> · <code>bisect_left → i=1</code> → xuống <code>[20]</code></button>
+            <button type="button" class="stack-frame is-stagger" data-s13f="2" style="--fi:1">2. <code>node=[20]</code> · <code>bisect_left → i=0</code> → xuống <code>[12, 17]</code></button>
+            <button type="button" class="stack-frame is-stagger is-ok is-selected" data-s13f="3" style="--fi:2">3. <code>node=[12, 17]</code> · <code>i=1</code> → trả <code>(node, 1)</code></button>
           </div>
         </div>
       `;
       const miniTree = vis.querySelector<HTMLElement>('[data-role="s13-tree"]')!;
-      renderTreeScene(
-        miniTree,
-        {
-          viewBox: [0, 0, 420, 210],
-          nodes: [
-            { id: 'p13-r', x: 210, y: 34, cellW: 44, cellH: 32, state: 'active', keys: [{ id: 'p13-10', label: '10' }] },
-            { id: 'p13-0', x: 105, y: 104, cellW: 40, cellH: 30, state: 'muted', keys: [{ id: 'p13-5', label: '5', tone: 'muted' }] },
-            { id: 'p13-1', x: 315, y: 104, cellW: 44, cellH: 32, state: 'active', keys: [{ id: 'p13-20', label: '20' }] },
-            { id: 'p13-l', x: 245, y: 176, cellW: 44, cellH: 32, state: 'success', keys: [{ id: 'p13-12', label: '12' }, { id: 'p13-17', label: '17', tone: 'success' }] },
-            { id: 'p13-r2', x: 372, y: 176, cellW: 36, cellH: 30, state: 'muted', keys: [{ id: 'p13-25', label: '25', tone: 'muted' }] },
-          ],
-          edges: [
-            { id: 'p13e0', fromNode: 'p13-r', portIndex: 0, toNode: 'p13-0', state: 'muted' },
-            { id: 'p13e1', fromNode: 'p13-r', portIndex: 1, toNode: 'p13-1', state: 'active', arrow: true, label: 'i=1' },
-            { id: 'p13e2', fromNode: 'p13-1', portIndex: 0, toNode: 'p13-l', state: 'active', arrow: true, label: 'i=0' },
-            { id: 'p13e3', fromNode: 'p13-1', portIndex: 1, toNode: 'p13-r2', state: 'muted' },
-          ],
-        },
-        { reducedMotion: ctx.getReducedMotion() },
-      );
+      const renderSearchFrame = (f: number) => {
+        const hlMap: Record<number, number[]> = {
+          1: [24, 25, 26, 31],
+          2: [26, 31],
+          3: [26, 27, 28],
+        };
+        updateCodeHighlight(cSearch, hlMap[f] ?? [23, 24, 25, 26, 27, 28, 29, 30, 31]);
+        vis.querySelectorAll<HTMLElement>('[data-s13f]').forEach((el) => {
+          el.classList.toggle('is-selected', Number(el.dataset.s13f) === f);
+        });
+        renderTreeScene(
+          miniTree,
+          {
+            viewBox: [0, 0, 420, 210],
+            nodes: [
+              { id: 'p13-r', x: 210, y: 34, cellW: 44, cellH: 32, state: f >= 1 ? 'active' : 'normal', keys: [{ id: 'p13-10', label: '10', tone: f === 1 ? 'active' : 'default' }] },
+              { id: 'p13-0', x: 105, y: 104, cellW: 40, cellH: 30, state: 'muted', keys: [{ id: 'p13-5', label: '5', tone: 'muted' }] },
+              { id: 'p13-1', x: 315, y: 104, cellW: 44, cellH: 32, state: f >= 2 ? 'active' : 'normal', keys: [{ id: 'p13-20', label: '20', tone: f === 2 ? 'active' : 'default' }] },
+              { id: 'p13-l', x: 245, y: 176, cellW: 44, cellH: 32, state: f === 3 ? 'success' : f === 2 ? 'active' : 'normal', keys: [{ id: 'p13-12', label: '12' }, { id: 'p13-17', label: '17', tone: f === 3 ? 'success' : 'default' }] },
+              { id: 'p13-r2', x: 372, y: 176, cellW: 36, cellH: 30, state: 'muted', keys: [{ id: 'p13-25', label: '25', tone: 'muted' }] },
+            ],
+            edges: [
+              { id: 'p13e0', fromNode: 'p13-r', portIndex: 0, toNode: 'p13-0', state: 'muted' },
+              { id: 'p13e1', fromNode: 'p13-r', portIndex: 1, toNode: 'p13-1', state: f >= 1 ? 'active' : 'normal', arrow: f >= 1, label: f >= 1 ? 'i=1' : undefined },
+              { id: 'p13e2', fromNode: 'p13-1', portIndex: 0, toNode: 'p13-l', state: f >= 2 ? 'active' : 'normal', arrow: f >= 2, label: f >= 2 ? 'i=0' : undefined },
+              { id: 'p13e3', fromNode: 'p13-1', portIndex: 1, toNode: 'p13-r2', state: 'muted' },
+            ],
+          },
+          { reducedMotion: ctx.getReducedMotion() },
+        );
+      };
+      renderSearchFrame(3);
+      vis.querySelectorAll<HTMLButtonElement>('[data-s13f]').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          renderSearchFrame(Number(btn.dataset.s13f));
+        });
+      });
       note.innerHTML = '<strong>3 nhánh của <code>search</code>:</strong> khớp trả <code>(node, i)</code> · ở lá chưa khớp trả <code>None</code> · còn lại đệ quy <code>children[i]</code>.';
     }
   },
@@ -194,10 +240,17 @@ const slide14: SlideDef = {
                 <li>Con tách → trả <code>(middle, right)</code> (nút trái giữ nguyên tại địa chỉ cũ)</li>
               </ul>
             </div>
+            <div class="ch3-trace-card" data-role="s14-trace">
+              <div class="ch3-trace-head"><span>Luồng đệ quy · insert(72)</span><span>Bottom-up</span></div>
+              <div class="ch3-trace-item" data-t14="1"><span class="ch3-trace-num">1</span><span><code>search(72) → None</code>, đi xuống lá <code>[52,60,65]</code></span></div>
+              <div class="ch3-trace-item" data-t14="2"><span class="ch3-trace-num">2</span><span>Lá tràn → trả phiếu <code>(65, [72]) ↑</code></span></div>
+              <div class="ch3-trace-item" data-t14="3"><span class="ch3-trace-num">3</span><span>Cha nhận <code>65</code> bị tràn → tách <code>children</code></span></div>
+              <div class="ch3-trace-item" data-t14="4"><span class="ch3-trace-num">4</span><span><code>insert()</code> tạo gốc mới <code>[65]</code> → <code>True</code></span></div>
+            </div>
           </div>
 
           <div class="s14-mid">
-            ${renderPythonWindow({ title: '_insert(node, key)', startLine: 46, endLine: 66, compact: true, blockId: 's14-priv' })}
+            ${renderPythonWindow({ title: '_insert(node, key)', startLine: 46, endLine: 67, compact: true, blockId: 's14-priv' })}
           </div>
 
           <div class="s14-right">
@@ -215,9 +268,15 @@ const slide14: SlideDef = {
     const treeBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
 
     const hlPub = [[], [35, 36, 37], [], [], [38, 39, 40, 41, 42, 43, 44]][step];
-    const hlPriv = [[], [47, 50, 51], [48, 49, 57, 58, 59, 60, 61, 62, 63], [52, 53, 54, 55, 56, 64, 65, 66], []][step];
+    const hlPriv = [[], [47, 50, 51], [48, 49, 57, 59, 60, 61, 62, 63, 67], [52, 53, 54, 55, 56, 64, 65, 66, 67], []][step];
     updateCodeHighlight(cPub, hlPub);
     updateCodeHighlight(cPriv, hlPriv);
+
+    ctx.slideEl.querySelectorAll<HTMLElement>('[data-t14]').forEach((el) => {
+      const idx = Number(el.dataset.t14);
+      el.classList.toggle('is-done', step > idx);
+      el.classList.toggle('is-now', step === idx);
+    });
 
     const tickets = [
       'Chuẩn bị gọi <code>insert(72)</code> trên cây M = 4',
@@ -234,37 +293,49 @@ const slide14: SlideDef = {
         ? {
             viewBox: [0, 0, 360, 260],
             nodes: [
-              { id: 'p14r', x: 180, y: 48, cellW: 40, cellH: 34, keys: [{ id: 'q30', label: '30' }, { id: 'q50', label: '50' }, { id: 'q75', label: '75' }] },
-              { id: 'p14l0', x: 54, y: 174, cellW: 34, cellH: 30, state: 'muted', keys: [{ id: 'q10', label: '10', tone: 'muted' }] },
-              { id: 'p14l2', x: 185, y: 174, cellW: 36, cellH: 32, state: step === 1 ? 'active' : 'normal', keys: [{ id: 'q52', label: '52' }, { id: 'q60', label: '60' }, { id: 'q65', label: '65' }] },
-              { id: 'p14l3', x: 314, y: 174, cellW: 34, cellH: 30, state: 'muted', keys: [{ id: 'q80', label: '80', tone: 'muted' }] },
+              ...(step === 1
+                ? [{ id: 'p14-in72', x: 304, y: 108, cellW: 40, cellH: 32, state: 'active' as const, tag: 'Chèn 72', tagPos: 'top' as const, tagTone: 'warn' as const, keys: [{ id: 'q72', label: '72', tone: 'active' as const }] }]
+                : []),
+              { id: 'p14r', x: 180, y: 48, cellW: 40, cellH: 34, state: step === 1 ? 'active' : 'normal', keys: [{ id: 'q30', label: '30' }, { id: 'q50', label: '50', tone: step === 1 ? 'active' : 'default' }, { id: 'q75', label: '75', tone: step === 1 ? 'active' : 'default' }] },
+              { id: 'p14l0', x: 54, y: 184, cellW: 34, cellH: 30, state: 'muted', keys: [{ id: 'q10', label: '10', tone: 'muted' }] },
+              { id: 'p14l2', x: 185, y: 184, cellW: 36, cellH: 32, state: step === 1 ? 'active' : 'normal', keys: [{ id: 'q52', label: '52' }, { id: 'q60', label: '60' }, { id: 'q65', label: '65' }] },
+              { id: 'p14l3', x: 314, y: 184, cellW: 34, cellH: 30, state: 'muted', keys: [{ id: 'q80', label: '80', tone: 'muted' }] },
             ],
             edges: [
               { id: 'p14e0', fromNode: 'p14r', portIndex: 0, toNode: 'p14l0', state: 'muted' },
               { id: 'p14e2', fromNode: 'p14r', portIndex: 2, toNode: 'p14l2', state: step === 1 ? 'active' : 'normal', arrow: step === 1 },
               { id: 'p14e3', fromNode: 'p14r', portIndex: 3, toNode: 'p14l3', state: 'muted' },
             ],
+            transfers: step === 1
+              ? [{ id: 'p14tr-in', fromX: 294, fromY: 126, toX: 244, toY: 170, ctrlX: 280, ctrlY: 158, tone: 'warn' }]
+              : [],
           }
         : step === 2
           ? {
               viewBox: [0, 0, 360, 260],
               nodes: [
                 { id: 'p14r', x: 180, y: 48, cellW: 40, cellH: 34, keys: [{ id: 'q30', label: '30' }, { id: 'q50', label: '50' }, { id: 'q75', label: '75' }] },
-                { id: 'p14l2', x: 180, y: 174, cellW: 42, cellH: 36, state: 'overflow', tag: 'mid = 2 → 65', tagPos: 'bottom', tagTone: 'error', keys: [{ id: 'q52', label: '52' }, { id: 'q60', label: '60' }, { id: 'q65', label: '65', tone: 'active' }, { id: 'q72', label: '72', tone: 'active' }] },
+                { id: 'p14l2', x: 180, y: 184, cellW: 42, cellH: 36, state: 'overflow', tag: 'mid = 2 → 65', tagPos: 'bottom', tagTone: 'error', keys: [{ id: 'q52', label: '52' }, { id: 'q60', label: '60' }, { id: 'q65', label: '65', tone: 'active' }, { id: 'q72', label: '72', tone: 'active' }] },
               ],
               edges: [{ id: 'p14e2', fromNode: 'p14r', portIndex: 2, toNode: 'p14l2', state: 'active' }],
+              transfers: [
+                { id: 'p14tr-up1', fromX: 204, fromY: 158, toX: 204, toY: 74, ctrlX: 254, ctrlY: 116, label: 'return (65, [72]) ↑', tone: 'error' },
+              ],
             }
           : step === 3
             ? {
                 viewBox: [0, 0, 360, 260],
                 nodes: [
-                  { id: 'p14r', x: 180, y: 54, cellW: 42, cellH: 36, state: 'overflow', tag: 'Nhận (65, [72]) → Tràn!', tagTone: 'error', keys: [{ id: 'q30', label: '30' }, { id: 'q50', label: '50' }, { id: 'q65', label: '65', tone: 'active' }, { id: 'q75', label: '75' }] },
-                  { id: 'p14l2', x: 112, y: 184, cellW: 38, cellH: 34, tag: 'node cũ (trái)', tagPos: 'bottom', keys: [{ id: 'q52', label: '52' }, { id: 'q60', label: '60' }] },
-                  { id: 'p14l2b', x: 256, y: 184, cellW: 38, cellH: 34, state: 'success', tag: 'right mới', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'q72', label: '72', tone: 'success' }] },
+                  { id: 'p14r', x: 180, y: 70, cellW: 42, cellH: 36, state: 'overflow', tag: 'Tràn gốc! tách children', tagPos: 'bottom', tagTone: 'error', keys: [{ id: 'q30', label: '30' }, { id: 'q50', label: '50' }, { id: 'q65', label: '65', tone: 'active' }, { id: 'q75', label: '75' }] },
+                  { id: 'p14l2', x: 102, y: 208, cellW: 38, cellH: 34, tag: 'node cũ (trái)', tagPos: 'bottom', keys: [{ id: 'q52', label: '52' }, { id: 'q60', label: '60' }] },
+                  { id: 'p14l2b', x: 256, y: 208, cellW: 38, cellH: 34, state: 'success', tag: 'right mới', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'q72', label: '72', tone: 'success' }] },
                 ],
                 edges: [
                   { id: 'p14e2', fromNode: 'p14r', portIndex: 2, toNode: 'p14l2' },
-                  { id: 'p14e2b', fromNode: 'p14r', portIndex: 3, toNode: 'p14l2b', state: 'active', label: 'i+1' },
+                  { id: 'p14e2b', fromNode: 'p14r', portIndex: 3, toNode: 'p14l2b', state: 'active', arrow: true },
+                ],
+                transfers: [
+                  { id: 'p14tr-up2', fromX: 201, fromY: 44, toX: 201, toY: 8, ctrlX: 201, ctrlY: 26, label: '65 ↑ gốc mới', tone: 'error' },
                 ],
               }
             : {
@@ -332,14 +403,21 @@ const slide15: SlideDef = {
 
         <div class="s15-grid">
           <div class="s15-left">
-            ${renderPythonWindow({ title: 'delete(key) -> bool', startLine: 69, endLine: 73, compact: true, blockId: 's15-pub' })}
+            ${renderPythonWindow({ title: 'delete(key) -> bool', startLine: 70, endLine: 74, compact: true, blockId: 's15-pub' })}
             <div class="canva-card var-watch" data-role="vars"></div>
             <div class="s15-tree" data-role="tree"></div>
           </div>
 
           <div class="s15-right">
-            ${renderPythonWindow({ title: '_delete(node, key)', startLine: 75, endLine: 90, compact: true, blockId: 's15-priv' })}
+            ${renderPythonWindow({ title: '_delete(node, key)', startLine: 76, endLine: 92, compact: true, blockId: 's15-priv' })}
             <div class="canva-card note-strip" data-role="note"></div>
+            <div class="ch3-trace-card" data-role="s15-trace">
+              <div class="ch3-trace-head"><span>Theo dõi thực thi · delete(10)</span><span>M = 3</span></div>
+              <div class="ch3-trace-item" data-t15="1"><span class="ch3-trace-num">1</span><span>Tìm <code>10</code> ở gốc (<code>found=True</code>, <code>leaf=False</code>)</span></div>
+              <div class="ch3-trace-item" data-t15="2"><span class="ch3-trace-num">2</span><span>Lấy tiền nhiệm <code>7</code> ghi đè gốc, đổi <code>key = 7</code></span></div>
+              <div class="ch3-trace-item" data-t15="3"><span class="ch3-trace-num">3</span><span>Đệ quy <code>_delete([5,7], 7)</code> → lá còn <code>[5]</code> (hợp lệ)</span></div>
+              <div class="ch3-trace-item" data-t15="4"><span class="ch3-trace-num">4</span><span>Gốc <code>[7,20]</code> không rỗng → giữ nguyên chiều cao</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -357,10 +435,16 @@ const slide15: SlideDef = {
     const treeBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
     const note = ctx.slideEl.querySelector<HTMLElement>('[data-role="note"]')!;
 
-    const hlPub = [[], [70], [], [], [71, 72, 73]][step];
-    const hlPriv = [[], [76, 77, 78, 79, 80, 81], [82, 83, 84, 85, 86, 87], [88, 89, 90], []][step];
+    const hlPub = [[], [71], [], [], [72, 73, 74]][step];
+    const hlPriv = [[], [77, 78, 79, 80, 81, 82], [83, 84, 85, 86, 87, 88], [89, 90, 91, 92], []][step];
     updateCodeHighlight(cPub, hlPub);
     updateCodeHighlight(cPriv, hlPriv);
+
+    ctx.slideEl.querySelectorAll<HTMLElement>('[data-t15]').forEach((el) => {
+      const idx = Number(el.dataset.t15);
+      el.classList.toggle('is-done', step > idx);
+      el.classList.toggle('is-now', step === idx);
+    });
 
     const varHtml = [
       '<strong>Biến theo dõi:</strong> <code>key = 10</code> · <code>i = ?</code> · <code>deleted = ?</code>',
@@ -412,7 +496,7 @@ const slide15: SlideDef = {
               ? [{ id: 'p15-5', label: '5', tone: 'success' }]
               : [
                   { id: 'p15-5', label: '5' },
-                  { id: 'p15-7', label: '7', tone: step === 2 ? 'active' : 'default' },
+                  { id: 'p15-7', label: '7', tone: step === 2 ? 'error' : 'default', badge: step === 2 ? 'xóa cũ' : undefined },
                 ],
         },
         { id: 'p15l1', x: 260, y: 132, cellW: 42, cellH: 32, keys: [{ id: 'p15-12', label: '12' }, { id: 'p15-17', label: '17' }] },
@@ -423,6 +507,9 @@ const slide15: SlideDef = {
         { id: 'p15e1', fromNode: 'p15r', portIndex: 1, toNode: 'p15l1' },
         { id: 'p15e2', fromNode: 'p15r', portIndex: 2, toNode: 'p15l2' },
       ],
+      transfers: step === 2
+        ? [{ id: 'p15tr', fromX: 134, fromY: 102, toX: 208, toY: 38, ctrlX: 142, ctrlY: 32, label: '7 ↑ ghi đè', tone: 'warn' }]
+        : [],
     };
     renderTreeScene(treeBox, scene, { reducedMotion: ctx.getReducedMotion() });
   },
@@ -468,10 +555,16 @@ const slide16: SlideDef = {
 
         <div class="s16-grid">
           <div class="s16-code">
-            ${renderPythonWindow({ title: '_fix_underflow(parent, i)', startLine: 93, endLine: 113, compact: true, blockId: 's16-code' })}
+            ${renderPythonWindow({ title: '_fix_underflow(parent, i)', startLine: 95, endLine: 118, compact: true, blockId: 's16-code' })}
           </div>
 
           <div class="s16-right">
+            <div class="s16-tabs" data-role="s16-tabs">
+              <button type="button" class="s16-tab" data-b16="0">0. Tham số</button>
+              <button type="button" class="s16-tab" data-b16="1">1. Mượn trái</button>
+              <button type="button" class="s16-tab" data-b16="2">2. Mượn phải</button>
+              <button type="button" class="s16-tab" data-b16="3">3. Gộp nút</button>
+            </div>
             <div class="s16-branch-pill" data-role="branch">Cấu trúc tham số: <code>left ← parent.children[i] → right</code></div>
             <div class="s16-tree" data-role="tree"></div>
             <div class="canva-card s16-note" data-role="note"></div>
@@ -479,111 +572,126 @@ const slide16: SlideDef = {
         </div>
       </div>
     `;
+
+    ctx.slideEl.querySelectorAll<HTMLButtonElement>('[data-b16]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        renderSlide16State(Number(btn.dataset.b16), ctx.slideEl, ctx.getReducedMotion());
+      });
+    });
   },
   renderStep(step, _prev, ctx) {
-    const codeEl = ctx.slideEl.querySelector('#s16-code');
-    const branch = ctx.slideEl.querySelector<HTMLElement>('[data-role="branch"]')!;
-    const treeBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
-    const note = ctx.slideEl.querySelector<HTMLElement>('[data-role="note"]')!;
-
-    const hlLines = [
-      [93, 94, 95, 96],
-      [97, 98, 99, 100, 101, 102],
-      [103, 104, 105, 106, 107, 108],
-      [109, 110, 111, 112, 113],
-    ][step];
-    updateCodeHighlight(codeEl, hlLines);
-
-    const branchTitles = [
-      'Cấu trúc: <code>left ← child[i] → right</code> dưới cùng <code>parent</code>',
-      'Nhánh 1 · Mượn từ anh em trái (<code>len(left.keys) &gt; min_keys</code>)',
-      'Nhánh 2 · Mượn từ anh em phải (ví dụ <code>10 ↓, 12 ↑</code> ở Trang 10)',
-      'Nhánh 3 · Gộp cặp liền kề &amp; trả quyền kiểm tra cha cho <code>_delete</code>',
-    ];
-    branch.innerHTML = branchTitles[step];
-    triggerStepPulse(branch, ctx.getReducedMotion());
-
-    const scene: TreeSceneSpec =
-      step === 0
-        ? {
-            viewBox: [0, 0, 560, 260],
-            nodes: [
-              { id: 'f-par', x: 280, y: 48, cellW: 68, cellH: 40, keys: [{ id: 'fk-p0', label: 'k[i-1]' }, { id: 'fk-p1', label: 'k[i]' }] },
-              { id: 'f-left', x: 100, y: 174, cellW: 54, cellH: 38, tag: 'left', tagPos: 'bottom', keys: [{ id: 'fk-l', label: '…' }] },
-              { id: 'f-child', x: 280, y: 174, cellW: 64, cellH: 38, state: 'underflow', tag: 'child[i] thiếu', tagPos: 'bottom', tagTone: 'error', keys: [] },
-              { id: 'f-right', x: 460, y: 174, cellW: 54, cellH: 38, tag: 'right', tagPos: 'bottom', keys: [{ id: 'fk-r', label: '…' }] },
-            ],
-            edges: [
-              { id: 'fe0', fromNode: 'f-par', portIndex: 0, toNode: 'f-left' },
-              { id: 'fe1', fromNode: 'f-par', portIndex: 1, toNode: 'f-child', state: 'error' },
-              { id: 'fe2', fromNode: 'f-par', portIndex: 2, toNode: 'f-right' },
-            ],
-          }
-        : step === 1
-          ? {
-              viewBox: [0, 0, 560, 260],
-              nodes: [
-                { id: 'f-par', x: 280, y: 44, cellW: 66, cellH: 38, keys: [{ id: 'fk-p0', label: '30', tone: 'active' }] },
-                { id: 'f-left', x: 130, y: 146, cellW: 50, cellH: 38, state: 'success', showPorts: true, tag: 'left dư (c2 chuyển sang!)', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'fk-l1', label: '10' }, { id: 'fk-l2', label: '20', tone: 'active' }] },
-                { id: 'f-child', x: 410, y: 146, cellW: 54, cellH: 38, state: 'underflow', showPorts: true, tag: 'child[i] nhận 30 & nhánh c2', tagPos: 'bottom', tagTone: 'error', keys: [] },
-              ],
-              edges: [
-                { id: 'fe0', fromNode: 'f-par', portIndex: 0, toNode: 'f-left' },
-                { id: 'fe1', fromNode: 'f-par', portIndex: 1, toNode: 'f-child', state: 'error' },
-              ],
-              transfers: [
-                { id: 'ft-l1', fromX: 162, fromY: 122, toX: 256, toY: 50, ctrlX: 185, ctrlY: 54, label: '20 ↑ cha', tone: 'success' },
-                { id: 'ft-l2', fromX: 312, fromY: 54, toX: 392, toY: 120, ctrlX: 378, ctrlY: 66, label: '30 ↓ đầu child', tone: 'warn' },
-                { id: 'ft-lc', fromX: 182, fromY: 178, toX: 376, toY: 178, ctrlX: 280, ctrlY: 238, label: 'left.children.pop() → đầu child', tone: 'cobalt' },
-              ],
-            }
-          : step === 2
-            ? {
-                viewBox: [0, 0, 560, 260],
-                nodes: [
-                  { id: 'f-par', x: 280, y: 44, cellW: 58, cellH: 38, keys: [{ id: 'fk-10', label: '10', tone: 'active' }, { id: 'fk-20', label: '20' }] },
-                  { id: 'f-child', x: 118, y: 158, cellW: 56, cellH: 38, state: 'underflow', tag: 'child[0] nhận 10', tagPos: 'bottom', tagTone: 'error', keys: [] },
-                  { id: 'f-right', x: 295, y: 158, cellW: 52, cellH: 38, state: 'success', tag: 'right dư → đẩy 12 ↑', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'fk-12', label: '12', tone: 'active' }, { id: 'fk-17', label: '17' }] },
-                  { id: 'f-r2', x: 465, y: 158, cellW: 48, cellH: 38, keys: [{ id: 'fk-25', label: '25' }] },
-                ],
-                edges: [
-                  { id: 'fe0', fromNode: 'f-par', portIndex: 0, toNode: 'f-child', state: 'error' },
-                  { id: 'fe1', fromNode: 'f-par', portIndex: 1, toNode: 'f-right' },
-                  { id: 'fe2', fromNode: 'f-par', portIndex: 2, toNode: 'f-r2' },
-                ],
-                transfers: [
-                  { id: 'ft-r1', fromX: 244, fromY: 56, toX: 132, toY: 134, ctrlX: 162, ctrlY: 64, label: '10 ↓ cuối child', tone: 'warn' },
-                  { id: 'ft-r2', fromX: 266, fromY: 136, toX: 256, toY: 66, ctrlX: 306, ctrlY: 102, label: '12 ↑ cha', tone: 'success' },
-                ],
-              }
-            : {
-                viewBox: [0, 0, 560, 260],
-                nodes: [
-                  { id: 'f-par', x: 280, y: 44, cellW: 58, cellH: 38, tag: 'parent.keys.pop(i) & children.pop(i+1)', tagTone: 'cobalt', keys: [{ id: 'fk-20', label: '20' }] },
-                  { id: 'f-merged', x: 205, y: 168, cellW: 66, cellH: 42, state: 'success', tag: 'left + sep(10) + right', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'fk-10', label: '10', tone: 'success' }, { id: 'fk-12', label: '12', tone: 'success' }] },
-                  { id: 'f-r2', x: 430, y: 168, cellW: 54, cellH: 40, keys: [{ id: 'fk-25', label: '25' }] },
-                ],
-                edges: [
-                  { id: 'fe0', fromNode: 'f-par', portIndex: 0, toNode: 'f-merged', state: 'active', arrow: true },
-                  { id: 'fe2', fromNode: 'f-par', portIndex: 1, toNode: 'f-r2' },
-                ],
-              };
-
-    renderTreeScene(treeBox, scene, { reducedMotion: ctx.getReducedMotion() });
-
-    const notes = [
-      'Nhận <code>(parent, i)</code> nên không cần con trỏ ngược về cha. Xác định <code>left</code> và <code>right</code> rồi xét theo đúng thứ tự 3 nhánh.',
-      '<strong>Mượn trái:</strong> chuyển cả khóa biên <em>lẫn nhánh con ngoài cùng</em> nếu là nút trong — quên chuyển cạnh sẽ khiến khoảng tìm kiếm sai lệch!',
-      '<strong>Mượn phải:</strong> đối xứng với mượn trái; lệnh <code>return</code> kết thúc ngay khi mượn thành công vì cha không mất khóa.',
-      '<strong>Gộp nút:</strong> nếu <code>right is None</code> lùi <code>i -= 1</code> để gộp với trái. Việc kiểm tra cha có bị thiếu khóa hay không do <code>_delete()</code> tiếp tục ở tầng trên.',
-    ];
-    note.innerHTML = notes[step];
+    renderSlide16State(step, ctx.slideEl, ctx.getReducedMotion());
   },
   cancelAnimations(slideEl) {
     const t = slideEl.querySelector<HTMLElement>('[data-role="tree"]');
     if (t) cancelTreeAnimations(t);
   },
 };
+
+function renderSlide16State(step: number, slideEl: HTMLElement, reducedMotion: boolean): void {
+  const codeEl = slideEl.querySelector('#s16-code');
+  const branch = slideEl.querySelector<HTMLElement>('[data-role="branch"]')!;
+  const treeBox = slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
+  const note = slideEl.querySelector<HTMLElement>('[data-role="note"]')!;
+
+  slideEl.querySelectorAll<HTMLElement>('[data-b16]').forEach((b) => {
+    b.classList.toggle('is-active', Number(b.dataset.b16) === step);
+  });
+
+  const hlLines = [
+    [95, 96, 97, 98],
+    [99, 100, 101, 102, 103, 104],
+    [105, 106, 107, 108, 109, 110],
+    [111, 112, 113, 114, 115, 116, 117, 118],
+  ][step];
+  updateCodeHighlight(codeEl, hlLines);
+
+  const branchTitles = [
+    'Cấu trúc: <code>left ← child[i] → right</code> dưới cùng <code>parent</code>',
+    'Nhánh 1 · Mượn từ anh em trái (<code>len(left.keys) &gt; min_keys</code>)',
+    'Nhánh 2 · Mượn từ anh em phải (ví dụ <code>10 ↓, 12 ↑</code> ở Trang 10)',
+    'Nhánh 3 · Gộp cặp liền kề &amp; trả quyền kiểm tra cha cho <code>_delete</code>',
+  ];
+  branch.innerHTML = branchTitles[step];
+  triggerStepPulse(branch, reducedMotion);
+
+  const scene: TreeSceneSpec =
+    step === 0
+      ? {
+          viewBox: [0, 0, 560, 290],
+          nodes: [
+            { id: 'f-par', x: 280, y: 54, cellW: 68, cellH: 40, keys: [{ id: 'fk-p0', label: 'k[i-1]' }, { id: 'fk-p1', label: 'k[i]' }] },
+            { id: 'f-left', x: 100, y: 184, cellW: 54, cellH: 38, tag: 'left', tagPos: 'bottom', keys: [{ id: 'fk-l', label: '…' }] },
+            { id: 'f-child', x: 280, y: 184, cellW: 64, cellH: 38, state: 'underflow', tag: 'child[i] thiếu', tagPos: 'bottom', tagTone: 'error', keys: [] },
+            { id: 'f-right', x: 460, y: 184, cellW: 54, cellH: 38, tag: 'right', tagPos: 'bottom', keys: [{ id: 'fk-r', label: '…' }] },
+          ],
+          edges: [
+            { id: 'fe0', fromNode: 'f-par', portIndex: 0, toNode: 'f-left' },
+            { id: 'fe1', fromNode: 'f-par', portIndex: 1, toNode: 'f-child', state: 'error' },
+            { id: 'fe2', fromNode: 'f-par', portIndex: 2, toNode: 'f-right' },
+          ],
+        }
+      : step === 1
+        ? {
+            viewBox: [0, 0, 560, 290],
+            nodes: [
+              { id: 'f-par', x: 280, y: 44, cellW: 66, cellH: 38, keys: [{ id: 'fk-p0', label: '30', tone: 'active' }] },
+              { id: 'f-left', x: 132, y: 140, cellW: 50, cellH: 38, state: 'success', showPorts: true, tag: 'left dư (đưa c2 sang)', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'fk-l1', label: '10' }, { id: 'fk-l2', label: '20', tone: 'active' }] },
+              { id: 'f-child', x: 422, y: 140, cellW: 54, cellH: 38, state: 'underflow', showPorts: true, tag: 'child[i] nhận 30 & c2', tagPos: 'bottom', tagTone: 'error', keys: [] },
+            ],
+            edges: [
+              { id: 'fe0', fromNode: 'f-par', portIndex: 0, toNode: 'f-left' },
+              { id: 'fe1', fromNode: 'f-par', portIndex: 1, toNode: 'f-child', state: 'error' },
+            ],
+            transfers: [
+              { id: 'ft-l1', fromX: 162, fromY: 116, toX: 256, toY: 50, ctrlX: 185, ctrlY: 50, label: '20 ↑ cha', tone: 'success' },
+              { id: 'ft-l2', fromX: 312, fromY: 54, toX: 404, toY: 114, ctrlX: 388, ctrlY: 64, label: '30 ↓ đầu child', tone: 'warn' },
+              { id: 'ft-lc', fromX: 170, fromY: 204, toX: 392, toY: 204, ctrlX: 280, ctrlY: 286, label: 'left.children.pop() → đầu child', tone: 'cobalt' },
+            ],
+          }
+        : step === 2
+          ? {
+              viewBox: [0, 0, 560, 290],
+              nodes: [
+                { id: 'f-par', x: 280, y: 48, cellW: 58, cellH: 38, keys: [{ id: 'fk-10', label: '10', tone: 'active' }, { id: 'fk-20', label: '20' }] },
+                { id: 'f-child', x: 118, y: 174, cellW: 56, cellH: 38, state: 'underflow', tag: 'child[0] nhận 10', tagPos: 'bottom', tagTone: 'error', keys: [] },
+                { id: 'f-right', x: 295, y: 174, cellW: 52, cellH: 38, state: 'success', tag: 'right dư → đẩy 12 ↑', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'fk-12', label: '12', tone: 'active' }, { id: 'fk-17', label: '17' }] },
+                { id: 'f-r2', x: 465, y: 174, cellW: 48, cellH: 38, keys: [{ id: 'fk-25', label: '25' }] },
+              ],
+              edges: [
+                { id: 'fe0', fromNode: 'f-par', portIndex: 0, toNode: 'f-child', state: 'error' },
+                { id: 'fe1', fromNode: 'f-par', portIndex: 1, toNode: 'f-right' },
+                { id: 'fe2', fromNode: 'f-par', portIndex: 2, toNode: 'f-r2' },
+              ],
+              transfers: [
+                { id: 'ft-r1', fromX: 244, fromY: 60, toX: 132, toY: 146, ctrlX: 158, ctrlY: 66, label: '10 ↓ cuối child', tone: 'warn' },
+                { id: 'ft-r2', fromX: 266, fromY: 148, toX: 256, toY: 70, ctrlX: 308, ctrlY: 110, label: '12 ↑ cha', tone: 'success' },
+              ],
+            }
+          : {
+              viewBox: [0, 0, 560, 290],
+              nodes: [
+                { id: 'f-par', x: 280, y: 52, cellW: 58, cellH: 38, tag: 'parent.keys.pop(i) & children.pop(i+1)', tagTone: 'cobalt', keys: [{ id: 'fk-20', label: '20' }] },
+                { id: 'f-merged', x: 205, y: 184, cellW: 66, cellH: 42, state: 'success', tag: 'left + sep(10) + right', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'fk-10', label: '10', tone: 'success' }, { id: 'fk-12', label: '12', tone: 'success' }] },
+                { id: 'f-r2', x: 430, y: 184, cellW: 54, cellH: 40, keys: [{ id: 'fk-25', label: '25' }] },
+              ],
+              edges: [
+                { id: 'fe0', fromNode: 'f-par', portIndex: 0, toNode: 'f-merged', state: 'active', arrow: true },
+                { id: 'fe2', fromNode: 'f-par', portIndex: 1, toNode: 'f-r2' },
+              ],
+            };
+
+  renderTreeScene(treeBox, scene, { reducedMotion });
+
+  const notes = [
+    'Nhận <code>(parent, i)</code> nên không cần con trỏ ngược về cha. Xác định <code>left</code> và <code>right</code> rồi xét theo đúng thứ tự 3 nhánh.',
+    '<strong>Mượn trái:</strong> chuyển cả khóa biên <em>lẫn nhánh con ngoài cùng</em> nếu là nút trong — quên chuyển cạnh sẽ khiến khoảng tìm kiếm sai lệch!',
+    '<strong>Mượn phải:</strong> đối xứng với mượn trái; lệnh <code>return</code> kết thúc ngay khi mượn thành công vì cha không mất khóa.',
+    '<strong>Gộp nút:</strong> nếu <code>right is None</code> lùi <code>i -= 1</code> để gộp với trái. Việc kiểm tra cha có bị thiếu khóa hay không do <code>_delete()</code> tiếp tục ở tầng trên.',
+  ];
+  note.innerHTML = notes[step];
+}
 
 // ============================================================================
 // SLIDE 17 — Chạy thử B-tree bằng Python (Hiệu ứng gõ code + Console + Cây trực tiếp)

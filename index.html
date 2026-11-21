@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>B-tree, các cải tiến và ứng dụng — Nhóm 10</title>
   </head>
-  <body>
+  <body class="podium-hidden">
     <!-- Top kinetic progress bar -->
     <div class="top-progress" aria-hidden="true">
       <div id="top-progress-fill" class="top-progress__fill"></div>
@@ -100,6 +100,36 @@
         <div id="codezoom-body" class="modal-body modal-body--code" tabindex="0"></div>
       </div>
     </div>
+
+    <!-- Keyboard Shortcuts Cheat-Sheet Modal (? / H) -->
+    <div id="shortcuts-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" hidden>
+      <div class="modal-dialog modal-dialog--shortcuts">
+        <header class="modal-header">
+          <div>
+            <span class="modal-badge">Điều khiển không cần chuột</span>
+            <h2 id="shortcuts-title" class="modal-title">Phím tắt thuyết trình</h2>
+          </div>
+          <button id="shortcuts-close" class="modal-close" type="button" aria-label="Đóng bảng phím tắt">Đóng (Esc)</button>
+        </header>
+        <div class="modal-body shortcuts-grid">
+          <div class="sc-item"><kbd>→</kbd> / <kbd>Space</kbd><span>Tiến một nhịp / trang tiếp</span></div>
+          <div class="sc-item"><kbd>←</kbd><span>Lùi một nhịp / trang trước</span></div>
+          <div class="sc-item"><kbd>R</kbd><span>Làm lại ví dụ (về nhịp 0)</span></div>
+          <div class="sc-item"><kbd>M</kbd> / <kbd>T</kbd><span>Về Mục lục (Trang 02)</span></div>
+          <div class="sc-item"><kbd>V</kbd><span>Mở / đóng Xem đầy đủ</span></div>
+          <div class="sc-item"><kbd>L</kbd><span>Bật / tắt chấm Laser</span></div>
+          <div class="sc-item"><kbd>O</kbd><span>Mở / đóng Tổng quan (Overview)</span></div>
+          <div class="sc-item"><kbd>S</kbd><span>Mở cửa sổ Ghi chú người nói</span></div>
+          <div class="sc-item"><kbd>F</kbd><span>Bật / tắt Toàn màn hình</span></div>
+          <div class="sc-item"><kbd>B</kbd><span>Hiện / ẩn thanh điều khiển dưới</span></div>
+          <div class="sc-item"><kbd>H</kbd> / <kbd>?</kbd><span>Hiện / ẩn bảng phím tắt này</span></div>
+          <div class="sc-item"><kbd>Esc</kbd><span>Đóng hộp thoại / thoát Tổng quan</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Brief shortcut feedback toast -->
+    <div id="shortcut-toast" class="shortcut-toast" role="status" aria-live="polite" hidden></div>
 
     <script type="module" src="/src/main.ts"></script>
   </body>

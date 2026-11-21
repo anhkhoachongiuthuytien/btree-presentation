@@ -66,6 +66,11 @@ const codeZoomTitle = document.getElementById('codezoom-title')!;
 const codeZoomBody = document.getElementById('codezoom-body')!;
 const codeZoomClose = document.getElementById('codezoom-close') as HTMLButtonElement;
 
+const shortcutsModal = document.getElementById('shortcuts-modal')!;
+const shortcutsClose = document.getElementById('shortcuts-close') as HTMLButtonElement;
+const shortcutToast = document.getElementById('shortcut-toast')!;
+let toastTimer: number | null = null;
+
 let savedFocusBeforeModal: HTMLElement | null = null;
 let deck: Reveal.Api | null = null;
 const slideSections: HTMLElement[] = [];
@@ -74,8 +79,42 @@ const lastRenderedStep = new Map<number, number>();
 let currentSlideNumber = 1;
 let laserEnabled = false;
 
+function showShortcutToast(msg: string): void {
+  shortcutToast.textContent = msg;
+  shortcutToast.hidden = false;
+  shortcutToast.classList.remove('is-show');
+  void shortcutToast.offsetWidth;
+  shortcutToast.classList.add('is-show');
+  if (toastTimer !== null) window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => {
+    shortcutToast.classList.remove('is-show');
+    shortcutToast.hidden = true;
+    toastTimer = null;
+  }, 1500);
+}
+
 function isAnyModalOpen(): boolean {
-  return !fullViewModal.hidden || !codeZoomModal.hidden;
+  return !fullViewModal.hidden || !codeZoomModal.hidden || !shortcutsModal.hidden;
+}
+
+function closeShortcutsModal(): void {
+  shortcutsModal.hidden = true;
+  if (!isAnyModalOpen() && savedFocusBeforeModal) {
+    savedFocusBeforeModal.focus();
+    savedFocusBeforeModal = null;
+  }
+}
+
+function toggleShortcutsModal(): void {
+  if (!shortcutsModal.hidden) {
+    closeShortcutsModal();
+    return;
+  }
+  if (!savedFocusBeforeModal) {
+    savedFocusBeforeModal = document.activeElement as HTMLElement | null;
+  }
+  shortcutsModal.hidden = false;
+  shortcutsClose.focus();
 }
 
 function openCodeZoom(title: string, startLine: number, endLine: number, highlightLines?: number[]): void {
@@ -294,7 +333,7 @@ deck = new Reveal(document.getElementById('deck-root')!, {
   transition: 'none',
   backgroundTransition: 'none',
   controls: false,
-  progress: true,
+  progress: false,
   slideNumber: false,
   keyboard: true,
   overview: true,
@@ -374,8 +413,7 @@ btnNext.addEventListener('click', (e) => {
   deck.next();
 });
 
-btnReset.addEventListener('click', (e) => {
-  e.stopPropagation();
+function resetCurrentSlide(): void {
   if (!deck) return;
   const h = deck.getIndices().h ?? 0;
   const slide = ALL_SLIDES[h];
@@ -384,6 +422,12 @@ btnReset.addEventListener('click', (e) => {
   deck.slide(h, 0, -1);
   lastRenderedStep.set(slide.number, -1);
   syncCurrentSlide();
+  showShortcutToast(`Đặt lại nhịp 0 · Trang ${pad2(slide.number)}`);
+}
+
+btnReset.addEventListener('click', (e) => {
+  e.stopPropagation();
+  resetCurrentSlide();
 });
 
 btnToc.addEventListener('click', (e) => {
@@ -391,10 +435,18 @@ btnToc.addEventListener('click', (e) => {
   goToSlide(2);
 });
 
+function toggleFullView(): void {
+  if (!fullViewModal.hidden) {
+    closeFullView();
+  } else {
+    const slide = ALL_SLIDES[currentSlideNumber - 1];
+    openFullView(slide);
+  }
+}
+
 btnFullView.addEventListener('click', (e) => {
   e.stopPropagation();
-  const slide = ALL_SLIDES[currentSlideNumber - 1];
-  openFullView(slide);
+  toggleFullView();
 });
 
 btnOverview.addEventListener('click', (e) => {
@@ -402,12 +454,16 @@ btnOverview.addEventListener('click', (e) => {
   deck?.toggleOverview();
 });
 
-btnNotes.addEventListener('click', (e) => {
-  e.stopPropagation();
+function openSpeakerNotes(): void {
   const notesPlugin = deck?.getPlugin('notes') as { open?: () => void } | undefined;
   if (notesPlugin?.open) {
     notesPlugin.open();
   }
+}
+
+btnNotes.addEventListener('click', (e) => {
+  e.stopPropagation();
+  openSpeakerNotes();
 });
 
 function toggleFullscreen(): void {
@@ -423,11 +479,18 @@ btnFullscreen.addEventListener('click', (e) => {
   toggleFullscreen();
 });
 
+function togglePodiumBar(): void {
+  const hidden = document.body.classList.toggle('podium-hidden');
+  deck?.layout();
+  showShortcutToast(hidden ? 'Thanh điều khiển: ẨN (nhấn B để hiện)' : 'Thanh điều khiển: HIỆN (nhấn B để ẩn)');
+}
+
 function toggleLaser(): void {
   laserEnabled = !laserEnabled;
   laserLayer.classList.toggle('is-on', laserEnabled);
   btnLaser.setAttribute('aria-pressed', String(laserEnabled));
   btnLaser.classList.toggle('podium-btn--laser-on', laserEnabled);
+  showShortcutToast(laserEnabled ? 'Laser: BẬT' : 'Laser: TẮT');
 }
 
 btnLaser.addEventListener('click', (e) => {
@@ -457,11 +520,29 @@ codeZoomModal.addEventListener('click', (e) => {
   if (e.target === codeZoomModal) closeCodeZoom();
 });
 
-// Layered keyboard handler (Esc closes topmost dialog first; L toggles laser; F fullscreen)
+shortcutsClose.addEventListener('click', (e) => {
+  e.stopPropagation();
+  closeShortcutsModal();
+});
+shortcutsModal.addEventListener('click', (e) => {
+  if (e.target === shortcutsModal) closeShortcutsModal();
+});
+
+// Layered keyboard handler (all podium bar actions available via single-key shortcuts)
 window.addEventListener(
   'keydown',
   (ev) => {
+    const activeTag = (document.activeElement as HTMLElement | null)?.tagName;
+    if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
+
     if (ev.key === 'Escape') {
+      if (!shortcutsModal.hidden) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        ev.stopImmediatePropagation();
+        closeShortcutsModal();
+        return;
+      }
       if (!codeZoomModal.hidden) {
         ev.preventDefault();
         ev.stopPropagation();
@@ -487,6 +568,24 @@ window.addEventListener(
       return;
     }
 
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+
+    const key = ev.key.toLowerCase();
+
+    if (ev.key === '?' || key === 'h') {
+      ev.preventDefault();
+      ev.stopPropagation();
+      toggleShortcutsModal();
+      return;
+    }
+
+    if (key === 'v') {
+      ev.preventDefault();
+      ev.stopPropagation();
+      toggleFullView();
+      return;
+    }
+
     if (isAnyModalOpen()) {
       if (['ArrowLeft', 'ArrowRight', ' ', 'Enter'].includes(ev.key) && ev.target === document.body) {
         ev.stopPropagation();
@@ -494,12 +593,28 @@ window.addEventListener(
       return;
     }
 
-    if (ev.key === 'l' || ev.key === 'L') {
+    if (key === 'l') {
       ev.preventDefault();
+      ev.stopPropagation();
       toggleLaser();
-    } else if (ev.key === 'f' || ev.key === 'F') {
+    } else if (key === 'f') {
       ev.preventDefault();
+      ev.stopPropagation();
       toggleFullscreen();
+    } else if (key === 'r') {
+      ev.preventDefault();
+      ev.stopPropagation();
+      resetCurrentSlide();
+    } else if (key === 'm' || key === 't') {
+      ev.preventDefault();
+      ev.stopPropagation();
+      goToSlide(2);
+      showShortcutToast('Mục lục (Trang 02)');
+    } else if (key === 'b') {
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+      togglePodiumBar();
     }
   },
   true,

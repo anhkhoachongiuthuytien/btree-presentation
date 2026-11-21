@@ -79,6 +79,10 @@ const slide22: SlideDef = {
               <h3>Duyệt theo khoảng</h3>
               <p>Tìm lá đầu tiên rồi đi theo <strong>liên kết ngang giữa các lá</strong>; đi qua biên hai cây con mà không quay về gốc.</p>
             </div>
+            <div class="s22-compare-box" data-role="s22-cmp">
+              <div class="s22-cmp-row"><span>B-tree gốc</span><strong class="cmp-bad">Quay lên cha 5 lần</strong></div>
+              <div class="s22-cmp-row"><span>B+ Tree</span><strong class="cmp-ok">1 xuống + 3 ngang</strong></div>
+            </div>
             <div class="s22-legend">
               <span class="lg-chip lg-guide">■ Khóa dẫn đường</span>
               <span class="lg-chip lg-rec">■ Bản ghi ở lá</span>
@@ -103,7 +107,9 @@ const slide22: SlideDef = {
   },
   renderStep(step, _prev, ctx) {
     const resStrip = ctx.slideEl.querySelector<HTMLElement>('[data-role="results"]')!;
+    const cmpBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="s22-cmp"]')!;
     resStrip.classList.toggle('is-revealed', step >= 2);
+    cmpBox.classList.toggle('is-lit', step >= 2);
     ctx.slideEl.querySelectorAll<HTMLElement>('.rec-pill').forEach((p) => p.classList.remove('is-selected'));
     renderSlide22Tree(ctx.slideEl, step, null, ctx.getReducedMotion());
   },
@@ -326,16 +332,28 @@ const slide23: SlideDef = {
         ? {
             viewBox: [0, 0, 740, 315],
             nodes: [
-              { id: 'cu-r', x: 370, y: 58, cellW: 62, cellH: 42, keys: [{ id: 'cu-40g', label: '40', tone: 'guide' }] },
+              {
+                id: 'cu-in25',
+                x: 234,
+                y: 80,
+                cellW: 62,
+                cellH: 46,
+                state: 'active',
+                tag: 'Chèn 25 + bản ghi',
+                tagPos: 'left',
+                tagTone: 'warn',
+                keys: [{ id: 'cu-25-leaf', label: '25', sublabel: 'bản ghi', tone: 'active' }],
+              },
+              { id: 'cu-r', x: 430, y: 58, cellW: 62, cellH: 42, keys: [{ id: 'cu-40g', label: '40', tone: 'guide' }] },
               {
                 id: 'cu-l0',
                 x: 205,
-                y: 204,
+                y: 214,
                 cellW: 58,
                 cellH: 46,
                 tag: 'TRƯỚC: lá trái đã đầy (3/3)',
+                tagPos: 'bottom',
                 tagTone: 'warn',
-                recordNote: 'bản ghi 10, 20, 30',
                 keys: [
                   { id: 'cu-10', label: '10', tone: 'record' },
                   { id: 'cu-20', label: '20', tone: 'record' },
@@ -344,8 +362,8 @@ const slide23: SlideDef = {
               },
               {
                 id: 'cu-l2',
-                x: 535,
-                y: 204,
+                x: 545,
+                y: 214,
                 cellW: 58,
                 cellH: 46,
                 recordNote: 'bản ghi 40, 50, 60',
@@ -361,7 +379,13 @@ const slide23: SlideDef = {
               { id: 'cue1', fromNode: 'cu-r', portIndex: 1, toNode: 'cu-l2' },
             ],
             leafLinks: [{ id: 'cull0', fromNode: 'cu-l0', toNode: 'cu-l2', active: false }],
-            chips: [{ id: 'ch-25rec', x: 115, y: 60, text: 'Chèn 25 + [bản ghi 25]', tone: 'active' }],
+            transfers: [
+              { id: 'tr-cu-in25', fromX: 234, fromY: 106, toX: 234, toY: 182, ctrlX: 234, ctrlY: 144, label: 'vào 20 | 30', tone: 'warn' },
+            ],
+            overlaySvg: `
+              <line x1="234" y1="191" x2="234" y2="237" stroke="#D97706" stroke-width="3.2" stroke-dasharray="5 3" />
+              <circle cx="234" cy="191" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="1.4" />
+            `,
           }
         : step === 1
           ? {
@@ -586,6 +610,17 @@ const slide24: SlideDef = {
             <div class="canva-card s24-stat" data-role="stat">
               <strong>Ví dụ chèn 35:</strong> Nút trái 6/6 khóa, nút phải 4/6 (còn 2 ô trống).
             </div>
+            <div class="s24-meters" data-role="s24-meters">
+              <div class="s24-meter">
+                <div class="s24-meter__head"><span>Nút trái</span><strong data-role="m-left">6 / 6 (100%)</strong></div>
+                <div class="s24-meter__track"><div class="s24-meter__fill" data-role="f-left" style="width:100%"></div></div>
+              </div>
+              <div class="s24-meter">
+                <div class="s24-meter__head"><span>Nút phải</span><strong data-role="m-right">4 / 6 (66.7%)</strong></div>
+                <div class="s24-meter__track"><div class="s24-meter__fill is-ok" data-role="f-right" style="width:66.7%"></div></div>
+              </div>
+              <div class="s24-page-pill" data-role="m-pages">Số trang đĩa: <strong>3 trang (không cấp thêm)</strong></div>
+            </div>
           </aside>
 
           <div class="s24-right">
@@ -604,6 +639,18 @@ const slide24: SlideDef = {
         ? {
             viewBox: [0, 0, 780, 340],
             nodes: [
+              {
+                id: 'bs-in35',
+                x: 190,
+                y: 74,
+                cellW: 58,
+                cellH: 42,
+                state: 'active',
+                tag: 'Chèn 35 (30 < 35 < 40)',
+                tagPos: 'top',
+                tagTone: 'warn',
+                keys: [{ id: 'bs-35', label: '35', tone: 'active' }],
+              },
               { id: 'bs-p', x: 390, y: 66, cellW: 64, cellH: 44, tag: 'Cha [70]', keys: [{ id: 'bs-70', label: '70' }] },
               {
                 id: 'bs-l',
@@ -634,7 +681,13 @@ const slide24: SlideDef = {
               { id: 'bse0', fromNode: 'bs-p', portIndex: 0, toNode: 'bs-l' },
               { id: 'bse1', fromNode: 'bs-p', portIndex: 1, toNode: 'bs-r' },
             ],
-            chips: [{ id: 'ch-35', x: 145, y: 66, text: 'Insert(35)', tone: 'active' }],
+            transfers: [
+              { id: 'tr-bs-in35', fromX: 190, fromY: 98, toX: 190, toY: 190, ctrlX: 190, ctrlY: 144, label: 'vào 30 | 40', tone: 'warn' },
+            ],
+            overlaySvg: `
+              <line x1="190" y1="200" x2="190" y2="244" stroke="#D97706" stroke-width="3.2" stroke-dasharray="5 3" />
+              <circle cx="190" cy="200" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="1.4" />
+            `,
           }
         : step === 1
           ? {
@@ -781,6 +834,20 @@ const slide24: SlideDef = {
       '<strong>Kết quả:</strong> Số nút giữ nguyên (không cấp trang mới). Trái 6/6, Phải 5/6, mọi khoảng tìm kiếm đều đúng.',
     ];
     stat.innerHTML = stats[step];
+
+    const mLeft = ctx.slideEl.querySelector<HTMLElement>('[data-role="m-left"]');
+    const mRight = ctx.slideEl.querySelector<HTMLElement>('[data-role="m-right"]');
+    const fLeft = ctx.slideEl.querySelector<HTMLElement>('[data-role="f-left"]');
+    const fRight = ctx.slideEl.querySelector<HTMLElement>('[data-role="f-right"]');
+    if (mLeft && mRight && fLeft && fRight) {
+      const isOver = step === 1 || step === 2;
+      const isDone = step === 3;
+      mLeft.textContent = isOver ? '7 / 6 (TRÀN!)' : '6 / 6 (100%)';
+      fLeft.style.width = '100%';
+      fLeft.classList.toggle('is-err', isOver);
+      mRight.textContent = isDone ? '5 / 6 (83.3%)' : '4 / 6 (66.7%)';
+      fRight.style.width = isDone ? '83.3%' : '66.7%';
+    }
   },
   cancelAnimations(slideEl) {
     const t = slideEl.querySelector<HTMLElement>('[data-role="tree"]');
@@ -837,19 +904,25 @@ const slide25: SlideDef = {
               </ol>
             </div>
             <div class="canva-card s25-ratio" data-role="ratio">
-              <div class="ratio-big">4 / 6 = 2/3 dung lượng</div>
+              <div class="ratio-big">4 / 6 = 66.7% <small>(so với 50% ở B-tree)</small></div>
               <p>Nút đầy hơn giúp giảm số trang lưu trữ; đổi lại mỗi lần cập nhật có thể phải chỉnh cả nút anh em.</p>
             </div>
           </aside>
         </div>
 
         <div class="s25-strip-box" data-role="strip14" hidden>
-          <span class="strip14-label">Dải 14 khóa đã sắp xếp:</span>
+          <span class="strip14-label">Dải 14 khóa (cắt tại 40 &amp; 90):</span>
           <div class="strip14-cells">
             ${ALL_14_KEYS.map(
               (k, i) => `<span class="s14-cell${k === 40 || k === 90 ? ' is-cut' : k === 35 || k === 70 ? ' is-in' : ''}" style="--ci:${i}">${k}</span>`,
             ).join('')}
           </div>
+        </div>
+
+        <div class="s25-bridge" data-role="s25-bridge">
+          <span><strong>B-tree:</strong> lấp đầy ≥50%</span>
+          <span><strong>B+ Tree:</strong> dữ liệu ở lá + liên kết ngang (mạnh truy vấn khoảng)</span>
+          <span><strong>B* Tree:</strong> lấp đầy ≥66.7% (giảm trang đĩa)</span>
         </div>
       </div>
     `;
@@ -858,8 +931,10 @@ const slide25: SlideDef = {
     const treeBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
     const strip14 = ctx.slideEl.querySelector<HTMLElement>('[data-role="strip14"]')!;
     const ratio = ctx.slideEl.querySelector<HTMLElement>('[data-role="ratio"]')!;
+    const bridge = ctx.slideEl.querySelector<HTMLElement>('[data-role="s25-bridge"]')!;
 
     strip14.hidden = step === 0 || step === 3;
+    bridge.hidden = !strip14.hidden;
     ratio.classList.toggle('is-active-card', step === 3);
 
     const scene: TreeSceneSpec =
@@ -867,6 +942,18 @@ const slide25: SlideDef = {
         ? {
             viewBox: [0, 0, 820, 310],
             nodes: [
+              {
+                id: 'x35-in',
+                x: 205,
+                y: 66,
+                cellW: 54,
+                cellH: 40,
+                state: 'active',
+                tag: 'Chèn 35',
+                tagPos: 'top',
+                tagTone: 'warn',
+                keys: [{ id: 'x35', label: '35', tone: 'active' }],
+              },
               { id: 'b25p', x: 410, y: 58, cellW: 60, cellH: 42, keys: [{ id: 'x70', label: '70' }] },
               {
                 id: 'b25l',
@@ -897,7 +984,13 @@ const slide25: SlideDef = {
               { id: 'e25-0', fromNode: 'b25p', portIndex: 0, toNode: 'b25l' },
               { id: 'e25-1', fromNode: 'b25p', portIndex: 1, toNode: 'b25r' },
             ],
-            chips: [{ id: 'x35-ch', x: 145, y: 58, text: 'Insert(35)', tone: 'active' }],
+            transfers: [
+              { id: 'tr-x35', fromX: 205, fromY: 88, toX: 205, toY: 176, ctrlX: 205, ctrlY: 132, label: 'vào 30 | 40', tone: 'warn' },
+            ],
+            overlaySvg: `
+              <line x1="205" y1="184" x2="205" y2="226" stroke="#D97706" stroke-width="3.2" stroke-dasharray="5 3" />
+              <circle cx="205" cy="184" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="1.4" />
+            `,
           }
         : step === 1
           ? {
@@ -1189,29 +1282,35 @@ const slide26: SlideDef = {
 
         <div class="s26-canva-cards">
           <article class="s26-card" data-app="1">
-            <div class="s26-card__band"><span class="s26-num">01</span><h3>Cơ sở dữ liệu</h3></div>
+            <div class="s26-card__band"><span class="s26-num">01</span><h3>Cơ sở dữ liệu</h3><span class="s26-var-tag">B+ Tree</span></div>
             <div class="s26-card__body">
               <div class="s26-impl">MySQL • InnoDB</div>
               <div class="s26-illus-box" data-role="illus-1"></div>
               <p>Lập chỉ mục để tìm bản ghi theo khóa và lọc theo khoảng, thay vì quét toàn bộ bảng.</p>
+              <button type="button" class="s26-qbtn" data-qapp="1">▶ <code>WHERE id BETWEEN 20 AND 40</code></button>
+              <div class="s26-qout" data-qout="1">Nhấn để chạy thử truy vấn khoảng</div>
             </div>
           </article>
 
           <article class="s26-card" data-app="2">
-            <div class="s26-card__band"><span class="s26-num">02</span><h3>Hệ thống tệp</h3></div>
+            <div class="s26-card__band"><span class="s26-num">02</span><h3>Hệ thống tệp</h3><span class="s26-var-tag">Catalog B-tree</span></div>
             <div class="s26-card__body">
               <div class="s26-impl">HFS+ • Catalog B-tree</div>
               <div class="s26-illus-box" data-role="illus-2"></div>
               <p>Quản lý thông tin tệp và thư mục. Tra cứu tên tệp mà không cần duyệt lần lượt mọi mục.</p>
+              <button type="button" class="s26-qbtn" data-qapp="2">▶ <code>lookup("/docs/report.pdf")</code></button>
+              <div class="s26-qout" data-qout="2">Nhấn để tra cứu tệp trong Catalog</div>
             </div>
           </article>
 
           <article class="s26-card" data-app="3">
-            <div class="s26-card__band"><span class="s26-num">03</span><h3>Kho khóa–giá trị</h3></div>
+            <div class="s26-card__band"><span class="s26-num">03</span><h3>Kho khóa–giá trị</h3><span class="s26-var-tag">B-tree / B+</span></div>
             <div class="s26-card__body">
               <div class="s26-impl">Berkeley DB • Btree</div>
               <div class="s26-illus-box" data-role="illus-3"></div>
               <p>Lưu các cặp khóa–giá trị theo thứ tự. Hỗ trợ tìm một khóa và duyệt các khóa liên tiếp.</p>
+              <button type="button" class="s26-qbtn" data-qapp="3">▶ <code>cursor.scan(101..103)</code></button>
+              <div class="s26-qout" data-qout="3">Nhấn để quét con trỏ tuần tự</div>
             </div>
           </article>
         </div>
@@ -1222,6 +1321,30 @@ const slide26: SlideDef = {
         </div>
       </div>
     `;
+
+    const qMsgs: Record<number, string> = {
+      1: 'Đọc 1 trang gốc + quét ngang 2 trang lá → khớp 2 bản ghi (không full scan).',
+      2: 'Đi 2 mức theo (parentID, filename) → trỏ thẳng extent của report.pdf.',
+      3: 'Tìm khóa 101 trong O(log N) rồi dịch con trỏ đọc liền 101 → 102 → 103.',
+    };
+    ctx.slideEl.querySelectorAll<HTMLButtonElement>('[data-qapp]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = Number(btn.dataset.qapp);
+        const out = ctx.slideEl.querySelector<HTMLElement>(`[data-qout="${id}"]`)!;
+        out.textContent = qMsgs[id];
+        out.classList.add('is-hit');
+        const box = ctx.slideEl.querySelector<HTMLElement>(`[data-role="illus-${id}"]`)!;
+        box.innerHTML = id === 1 ? s26InnoDbSvg(true) : id === 2 ? s26HfsSvg(true) : s26BdbSvg(true);
+        ctx.slideEl.querySelectorAll<HTMLElement>('.s26-card').forEach((c) => {
+          const cid = Number(c.dataset.app);
+          if (cid === id) {
+            c.classList.remove('is-dim');
+            c.classList.add('is-lit-card');
+          }
+        });
+      });
+    });
   },
   renderStep(step, _prev, ctx) {
     const cards = ctx.slideEl.querySelectorAll<HTMLElement>('.s26-card');
@@ -1320,7 +1443,11 @@ const slide27: SlideDef = {
               ([start, len], idx) => `
               <button type="button" class="ext-card" style="--ei:${idx}" data-ext-len="${len}">
                 <span class="ext-tuple">(${start}, <strong>${len}</strong>)</span>
-                <span class="ext-badge" data-role="eb">Chờ kiểm tra</span>
+                <span class="ext-bar-track" aria-hidden="true">
+                  <span class="ext-bar-fill${len >= 10 ? ' is-pass' : ''}" style="width:${Math.round((len / 20) * 100)}%"></span>
+                  <span class="ext-bar-thresh" title="Ngưỡng 10 block"></span>
+                </span>
+                <span class="ext-badge" data-role="eb">${len >= 10 ? '≥ 10 · Nhấn kiểm tra' : '< 10 · Nhấn kiểm tra'}</span>
               </button>
             `,
             ).join('')}
@@ -1418,9 +1545,16 @@ const slide28: SlideDef = {
           </article>
         </div>
 
-        <div class="s28-bottom">
-          <strong>Gốc dẫn đường. Lá cho biết vùng trống bắt đầu ở đâu và dài bao nhiêu.</strong>
-          <span>Sơ đồ thu nhỏ · Nhấn vào tên <code>cntbt</code> hoặc <code>bnobt</code> để phát lại riêng đường tìm.</span>
+        <div class="s28-disk-bar" data-role="disk-map">
+          <div class="s28-disk-label">Đĩa thật (AG) · 6 vùng trống:</div>
+          <div class="s28-disk-segs">
+            <span class="s28-seg" data-seg="100"><code>100</code><small>8 blk</small></span>
+            <span class="s28-seg" data-seg="200"><code>200</code><small>20 blk</small></span>
+            <span class="s28-seg" data-seg="300"><code>300</code><small>6 blk</small></span>
+            <span class="s28-seg s28-seg--400" data-seg="400"><code>400–411</code><small data-role="seg400-lbl">12 blk</small></span>
+            <span class="s28-seg" data-seg="500"><code>500</code><small>4 blk</small></span>
+            <span class="s28-seg" data-seg="600"><code>600</code><small>16 blk</small></span>
+          </div>
         </div>
       </div>
     `;
@@ -1430,8 +1564,10 @@ const slide28: SlideDef = {
         e.stopPropagation();
         if (btn.dataset.replay === 'cntbt') {
           renderCntbt(ctx.slideEl, 2, ctx.getReducedMotion());
+          updateS28DiskMap(ctx.slideEl, 2);
         } else {
           renderBnobt(ctx.slideEl, 4, ctx.getReducedMotion());
+          updateS28DiskMap(ctx.slideEl, 4);
         }
       });
     });
@@ -1439,11 +1575,31 @@ const slide28: SlideDef = {
   renderStep(step, _prev, ctx) {
     renderCntbt(ctx.slideEl, step, ctx.getReducedMotion());
     renderBnobt(ctx.slideEl, step, ctx.getReducedMotion());
+    updateS28DiskMap(ctx.slideEl, step);
   },
   cancelAnimations(slideEl) {
     slideEl.querySelectorAll<HTMLElement>('[data-role^="tree-"]').forEach((el) => cancelTreeAnimations(el));
   },
 };
+
+function updateS28DiskMap(slideEl: HTMLElement, step: number): void {
+  const seg400 = slideEl.querySelector<HTMLElement>('[data-seg="400"]');
+  const seg400Lbl = slideEl.querySelector<HTMLElement>('[data-role="seg400-lbl"]');
+  if (!seg400 || !seg400Lbl) return;
+  seg400.classList.remove('is-picked', 'is-merge');
+  if (step === 1 || step === 2) {
+    seg400.classList.add('is-picked');
+    seg400.querySelector('code')!.textContent = '400–411';
+    seg400Lbl.textContent = step === 2 ? 'cntbt chọn (12 ≥ 10)' : 'đang kiểm tra (12)';
+  } else if (step >= 3) {
+    seg400.classList.add('is-merge');
+    seg400.querySelector('code')!.textContent = '400–409 | 410–411';
+    seg400Lbl.textContent = step === 4 ? 'khớp 409|410 → gộp!' : 'tìm hàng xóm 410';
+  } else {
+    seg400.querySelector('code')!.textContent = '400–411';
+    seg400Lbl.textContent = '12 blk';
+  }
+}
 
 function renderCntbt(slideEl: HTMLElement, step: number, reducedMotion: boolean): void {
   const box = slideEl.querySelector<HTMLElement>('[data-role="tree-cntbt"]')!;
@@ -1652,7 +1808,10 @@ const slide29: SlideDef = {
             <p class="slide-lead">XFS lấy 10 block đầu của vùng (400, 12). Hai cây phải cùng phản ánh vùng trống mới.</p>
           </div>
           <div class="btn-row">
-            <button type="button" class="inline-action-btn" data-role="goto-toc">Về Mục lục</button>
+            <button type="button" class="inline-action-btn" data-s29-sim="0">1. Ban đầu</button>
+            <button type="button" class="inline-action-btn" data-s29-sim="2">2. Cấp 10 block</button>
+            <button type="button" class="inline-action-btn" data-s29-sim="3">3. Thu hồi</button>
+            <button type="button" class="inline-action-btn" data-role="goto-toc">Mục lục</button>
           </div>
         </header>
 
@@ -1704,9 +1863,14 @@ const slide29: SlideDef = {
           </aside>
         </div>
 
-        <div class="xfs-conclusion-strip">
-          <strong>Gộp vùng trống là nối các block liền nhau. Gộp nút là thao tác cân bằng cây.</strong>
-          <span>Nhóm 10 cảm ơn thầy cô và các bạn!</span>
+        <div class="xfs-conclusion-strip s29-closing-strip">
+          <strong>Gộp vùng trống = nối block liền nhau · Gộp nút = cân bằng cây</strong>
+          <div class="s29-pillars">
+            <span>01 Cân bằng O(log N)</span>
+            <span>02 Tối ưu I/O trang đĩa</span>
+            <span>03 B+ / B* / XFS</span>
+          </div>
+          <span>Cảm ơn thầy cô &amp; các bạn!</span>
         </div>
       </div>
     `;
@@ -1714,6 +1878,13 @@ const slide29: SlideDef = {
     ctx.slideEl.querySelector<HTMLButtonElement>('[data-role="goto-toc"]')?.addEventListener('click', (e) => {
       e.stopPropagation();
       ctx.goToSlide(2);
+    });
+
+    ctx.slideEl.querySelectorAll<HTMLButtonElement>('[data-s29-sim]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        renderSlide29State(Number(btn.dataset.s29Sim), ctx.slideEl, ctx.getReducedMotion());
+      });
     });
 
     const ansBtn = ctx.slideEl.querySelector<HTMLButtonElement>('[data-role="reveal-ans"]')!;
@@ -1739,52 +1910,62 @@ const slide29: SlideDef = {
     });
   },
   renderStep(step, _prev, ctx) {
-    const r1 = ctx.slideEl.querySelector<HTMLElement>('[data-s29-row="1"]')!;
-    const r2 = ctx.slideEl.querySelector<HTMLElement>('[data-s29-row="2"]')!;
-    const r3 = ctx.slideEl.querySelector<HTMLElement>('[data-s29-row="3"]')!;
-    const reqTag = ctx.slideEl.querySelector<HTMLElement>('[data-role="req-tag"]')!;
-    const bnoVal = ctx.slideEl.querySelector<HTMLElement>('[data-role="bnobt-val"]')!;
-    const cntVal = ctx.slideEl.querySelector<HTMLElement>('[data-role="cntbt-val"]')!;
-    const qaBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="qa-box"]')!;
-    const ansBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="qa-ans"]')!;
-    const ansBtn = ctx.slideEl.querySelector<HTMLButtonElement>('[data-role="reveal-ans"]')!;
-
-    r1.classList.toggle('is-active-card', step <= 1);
-    r2.classList.toggle('is-dim', step < 2);
-    r2.classList.toggle('is-active-card', step === 2);
-    r3.classList.toggle('is-dim', step < 3);
-    r3.classList.toggle('is-active-card', step === 3);
-    qaBox.classList.toggle('is-dim', step < 4);
-    qaBox.classList.toggle('is-active-card', step === 4);
-
-    if (step === 0) {
-      reqTag.textContent = 'Toàn bộ đoạn 400–411 đang trống (12 block)';
-      bnoVal.innerHTML = '(400, 12)';
-      cntVal.innerHTML = '(12, 400)';
-      ansBox.hidden = true;
-      ansBtn.textContent = 'Hiện đáp án';
-    } else if (step === 1) {
-      reqTag.innerHTML = 'Yêu cầu <strong>10 block</strong> → block cuối được cấp sẽ là?';
-      bnoVal.innerHTML = '(400, 12)';
-      cntVal.innerHTML = '(12, 400)';
-    } else if (step === 2) {
-      reqTag.textContent = 'Đã cắt 10 block đầu (400–409)';
-      bnoVal.innerHTML = '<del>(400, 12)</del> → <strong>(410, 2)</strong>';
-      cntVal.innerHTML = '<del>(12, 400)</del> → <strong>(2, 410)</strong>';
-    } else {
-      reqTag.textContent = 'Đối chiếu đủ 3 mốc thời gian';
-      bnoVal.innerHTML = '<del>(410, 2)</del> → <strong class="val-ok">(400, 12)</strong>';
-      cntVal.innerHTML = '<del>(2, 410)</del> → <strong class="val-ok">(12, 400)</strong>';
-    }
-
-    if (!ctx.getReducedMotion() && (step === 2 || step === 3)) {
-      ctx.slideEl.querySelectorAll<HTMLElement>('.idx-row').forEach((row) => {
-        row.classList.remove('step-flash');
-        void row.offsetWidth;
-        row.classList.add('step-flash');
-      });
-    }
+    renderSlide29State(step, ctx.slideEl, ctx.getReducedMotion());
   },
 };
+
+function renderSlide29State(step: number, slideEl: HTMLElement, reducedMotion: boolean): void {
+  const r1 = slideEl.querySelector<HTMLElement>('[data-s29-row="1"]')!;
+  const r2 = slideEl.querySelector<HTMLElement>('[data-s29-row="2"]')!;
+  const r3 = slideEl.querySelector<HTMLElement>('[data-s29-row="3"]')!;
+  const reqTag = slideEl.querySelector<HTMLElement>('[data-role="req-tag"]')!;
+  const bnoVal = slideEl.querySelector<HTMLElement>('[data-role="bnobt-val"]')!;
+  const cntVal = slideEl.querySelector<HTMLElement>('[data-role="cntbt-val"]')!;
+  const qaBox = slideEl.querySelector<HTMLElement>('[data-role="qa-box"]')!;
+  const ansBox = slideEl.querySelector<HTMLElement>('[data-role="qa-ans"]')!;
+  const ansBtn = slideEl.querySelector<HTMLButtonElement>('[data-role="reveal-ans"]')!;
+
+  slideEl.querySelectorAll<HTMLButtonElement>('[data-s29-sim]').forEach((btn) => {
+    const s = Number(btn.dataset.s29Sim);
+    const active = (s === 0 && step <= 1) || (s === 2 && step === 2) || (s === 3 && step >= 3);
+    btn.classList.toggle('inline-action-btn--primary', active);
+  });
+
+  r1.classList.toggle('is-active-card', step <= 1);
+  r2.classList.toggle('is-dim', step < 2);
+  r2.classList.toggle('is-active-card', step === 2);
+  r3.classList.toggle('is-dim', step < 3);
+  r3.classList.toggle('is-active-card', step === 3);
+  qaBox.classList.toggle('is-dim', step < 4);
+  qaBox.classList.toggle('is-active-card', step === 4);
+
+  if (step === 0) {
+    reqTag.textContent = 'Toàn bộ đoạn 400–411 đang trống (12 block)';
+    bnoVal.innerHTML = '(400, 12)';
+    cntVal.innerHTML = '(12, 400)';
+    ansBox.hidden = true;
+    ansBtn.textContent = 'Hiện đáp án';
+  } else if (step === 1) {
+    reqTag.innerHTML = 'Yêu cầu <strong>10 block</strong> → block cuối được cấp sẽ là?';
+    bnoVal.innerHTML = '(400, 12)';
+    cntVal.innerHTML = '(12, 400)';
+  } else if (step === 2) {
+    reqTag.textContent = 'Đã cắt 10 block đầu (400–409)';
+    bnoVal.innerHTML = '<del>(400, 12)</del> → <strong>(410, 2)</strong>';
+    cntVal.innerHTML = '<del>(12, 400)</del> → <strong>(2, 410)</strong>';
+  } else {
+    reqTag.textContent = 'Đối chiếu đủ 3 mốc thời gian';
+    bnoVal.innerHTML = '<del>(410, 2)</del> → <strong class="val-ok">(400, 12)</strong>';
+    cntVal.innerHTML = '<del>(2, 410)</del> → <strong class="val-ok">(12, 400)</strong>';
+  }
+
+  if (!reducedMotion && (step === 2 || step === 3)) {
+    slideEl.querySelectorAll<HTMLElement>('.idx-row').forEach((row) => {
+      row.classList.remove('step-flash');
+      void row.offsetWidth;
+      row.classList.add('step-flash');
+    });
+  }
+}
 
 export const PART5_SLIDES: SlideDef[] = [slide22, slide23, slide24, slide25, slide26, slide27, slide28, slide29];
