@@ -308,6 +308,9 @@ function syncCurrentSlide(playTransitionFrom?: number, forceEntrance = false): v
   lastRenderedStep.set(slide.number, step);
   currentSlideNumber = slide.number;
 
+  // Sync body canvas backdrop seamlessly to active slide theme (zero ugly bars on ultrawide/fullscreen)
+  document.body.dataset.slideTheme = slide.theme;
+
   // Update top kinetic progress ribbon & podium bar
   topProgressFill.style.transform = `scaleX(${slide.number / ALL_SLIDES.length})`;
   statusChapter.textContent = slide.chapter;
@@ -323,10 +326,10 @@ deck = new Reveal(document.getElementById('deck-root')!, {
   plugins: [RevealNotes],
   width: 1280,
   height: 720,
-  margin: 0.04,
+  margin: 0,
   minScale: 0.2,
-  maxScale: 2.0,
-  center: false,
+  maxScale: 3.0,
+  center: true,
   hash: true,
   fragmentInURL: true,
   autoSlide: 0,
@@ -475,6 +478,11 @@ function toggleFullscreen(): void {
 }
 
 btnFullscreen.addEventListener('click', (e) => {
+  e.stopPropagation();
+  toggleFullscreen();
+});
+
+document.getElementById('ghost-fs-btn')?.addEventListener('click', (e) => {
   e.stopPropagation();
   toggleFullscreen();
 });

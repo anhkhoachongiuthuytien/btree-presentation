@@ -993,9 +993,9 @@ function renderFlowchart(
 ): void {
   const op = (group: string) => {
     if (focus === 'all') return 1;
-    if (focus === 'leaf') return ['q1', 'leaf', 'check', 'ok'].includes(group) ? 1 : 0.25;
-    if (focus === 'borrow') return ['q1', 'leaf', 'internal', 'check', 'sib', 'borrow'].includes(group) ? 1 : 0.25;
-    return ['q1', 'internal', 'check', 'sib', 'merge', 'loop', 'root'].includes(group) ? 1 : 0.25;
+    if (focus === 'leaf') return ['q1', 'leaf', 'check', 'ok'].includes(group) ? 1 : 0.2;
+    if (focus === 'borrow') return ['q1', 'leaf', 'internal', 'check', 'sib', 'borrow'].includes(group) ? 1 : 0.2;
+    return ['q1', 'internal', 'check', 'sib', 'merge', 'loop', 'root'].includes(group) ? 1 : 0.2;
   };
   const show1 = step >= 1;
   const show2 = step >= 2;
@@ -1006,93 +1006,166 @@ function renderFlowchart(
   container.innerHTML = `
   <svg class="flow-svg" viewBox="0 0 820 470" role="img" aria-label="Lưu đồ quyết định khi xóa khóa trong B-tree">
     <defs>
+      <filter id="fl-shadow" x="-10%" y="-12%" width="124%" height="134%">
+        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0F1D3A" flood-opacity="0.12" />
+      </filter>
+      <linearGradient id="fl-g-q1" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#FEF9C3"/><stop offset="100%" stop-color="#FDE047"/>
+      </linearGradient>
+      <linearGradient id="fl-g-q2" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#F0F7FF"/><stop offset="100%" stop-color="#DBEAFE"/>
+      </linearGradient>
+      <linearGradient id="fl-g-q3" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#FFF1F2"/><stop offset="100%" stop-color="#FEE2E2"/>
+      </linearGradient>
+      <linearGradient id="fl-g-ok" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#ECFDF5"/><stop offset="100%" stop-color="#DCFCE7"/>
+      </linearGradient>
+      <linearGradient id="fl-g-merge" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#FFFBEB"/><stop offset="100%" stop-color="#FEF3C7"/>
+      </linearGradient>
+      <linearGradient id="fl-g-navy" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#0F1D3A"/><stop offset="100%" stop-color="#004AAD"/>
+      </linearGradient>
       <marker id="fl-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
         <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#004AAD"/>
+      </marker>
+      <marker id="fl-arr-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+        <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16A34A"/>
       </marker>
       <marker id="fl-arr-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
         <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#DC2626"/>
       </marker>
+      <path id="fl-loop-path" d="M 698 419 L 796 419 L 796 231 L 592 231" />
     </defs>
 
-    <!-- Q1 -->
-    <g opacity="${op('q1')}">
-      <rect x="235" y="14" width="320" height="50" rx="25" fill="#FEF08A" stroke="#B45309" stroke-width="2.5"/>
-      <text x="395" y="45" text-anchor="middle" fill="#0F1D3A" font-size="16" font-weight="800" font-family="'Be Vietnam Pro'">Khóa ở lá hay ở nút trong?</text>
+    <!-- Q1 · Root Decision -->
+    <g opacity="${op('q1')}" filter="url(#fl-shadow)">
+      <rect x="215" y="17" width="360" height="50" rx="6" fill="#B45309" opacity="0.22"/>
+      <rect x="215" y="13" width="360" height="50" rx="6" fill="url(#fl-g-q1)" stroke="#B45309" stroke-width="2.2"/>
+      <rect x="225" y="24" width="34" height="28" rx="4" fill="#B45309"/>
+      <text x="242" y="43" text-anchor="middle" fill="#FEF9C3" font-size="12" font-weight="800" font-family="'IBM Plex Mono', monospace">Q1</text>
+      <text x="415" y="44" text-anchor="middle" fill="#0F1D3A" font-size="15.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Khóa cần xóa ở lá hay nút trong?</text>
     </g>
 
     ${show1 ? `
     <g ${lvlCls(1)}>
-    <!-- Branch Leaf & Internal -->
+    <!-- Branch Leaf -->
     <g opacity="${op('leaf')}">
-      <path class="flow-edge" pathLength="1" d="M 310 64 L 185 104" stroke="#004AAD" stroke-width="2.4" marker-end="url(#fl-arr)"/>
-      <text x="215" y="80" fill="#004AAD" font-size="13" font-weight="800">Ở lá</text>
-      <rect x="55" y="106" width="250" height="54" rx="12" fill="#FFFFFF" stroke="#004AAD" stroke-width="2.2"/>
-      <text x="180" y="138" text-anchor="middle" fill="#0F1D3A" font-size="15" font-weight="700">Xóa trực tiếp tại lá</text>
+      <path class="flow-edge" pathLength="1" d="M 310 63 C 310 86, 167 74, 167 104" fill="none" stroke="#004AAD" stroke-width="2.4" marker-end="url(#fl-arr)"/>
+      <rect x="195" y="72" width="58" height="20" rx="10" fill="#DBEAFE" stroke="#004AAD" stroke-width="1.4"/>
+      <text x="224" y="86" text-anchor="middle" fill="#004AAD" font-size="11" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Ở LÁ</text>
+      <g filter="url(#fl-shadow)">
+        <rect x="34" y="108" width="266" height="56" rx="5" fill="#FFFFFF" stroke="#004AAD" stroke-width="2"/>
+        <rect x="34" y="108" width="6" height="56" rx="2" fill="#2563EB"/>
+        <text x="172" y="132" text-anchor="middle" fill="#0F1D3A" font-size="14.8" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Xóa trực tiếp tại lá</text>
+        <text x="172" y="151" text-anchor="middle" fill="#475569" font-size="12" font-weight="600" font-family="'Be Vietnam Pro', sans-serif">Bỏ khóa k khỏi node.keys</text>
+      </g>
     </g>
 
+    <!-- Branch Internal -->
     <g opacity="${op('internal')}">
-      <path class="flow-edge" pathLength="1" d="M 480 64 L 595 104" stroke="#004AAD" stroke-width="2.4" marker-end="url(#fl-arr)"/>
-      <text x="565" y="80" fill="#004AAD" font-size="13" font-weight="800">Ở nút trong</text>
-      <rect x="440" y="106" width="335" height="54" rx="12" fill="#FFFFFF" stroke="#004AAD" stroke-width="2.2"/>
-      <text x="608" y="130" text-anchor="middle" fill="#0F1D3A" font-size="14" font-weight="700">Thay bằng tiền nhiệm (Predecessor)</text>
-      <text x="608" y="149" text-anchor="middle" fill="#004AAD" font-size="13" font-weight="600">→ Xóa bản cũ tại lá</text>
+      <path class="flow-edge" pathLength="1" d="M 480 63 C 480 86, 602 74, 602 104" fill="none" stroke="#004AAD" stroke-width="2.4" marker-end="url(#fl-arr)"/>
+      <rect x="518" y="72" width="98" height="20" rx="10" fill="#DBEAFE" stroke="#004AAD" stroke-width="1.4"/>
+      <text x="567" y="86" text-anchor="middle" fill="#004AAD" font-size="11" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Ở NÚT TRONG</text>
+      <g filter="url(#fl-shadow)">
+        <rect x="422" y="108" width="360" height="56" rx="5" fill="#FFFFFF" stroke="#004AAD" stroke-width="2"/>
+        <rect x="422" y="108" width="6" height="56" rx="2" fill="#004AAD"/>
+        <text x="606" y="131" text-anchor="middle" fill="#0F1D3A" font-size="14.2" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Thay bằng tiền nhiệm (Predecessor)</text>
+        <text x="606" y="151" text-anchor="middle" fill="#004AAD" font-size="12.2" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Lấy khóa lớn nhất nhánh trái → xóa bản cũ ở lá</text>
+      </g>
     </g>
     </g>
     ` : ''}
 
     ${show2 ? `
     <g ${lvlCls(2)}>
-    <!-- Converge to underflow check -->
+    <!-- Converge to Q2 underflow check -->
     <g opacity="${op('check')}">
-      <path class="flow-edge" pathLength="1" d="M 180 160 L 340 202" stroke="#004AAD" stroke-width="2.2" marker-end="url(#fl-arr)"/>
-      <path class="flow-edge" pathLength="1" d="M 608 160 L 450 202" stroke="#004AAD" stroke-width="2.2" marker-end="url(#fl-arr)"/>
-      <rect x="200" y="204" width="390" height="52" rx="14" fill="#EEF7FF" stroke="#5284FF" stroke-width="2.5"/>
-      <text x="395" y="235" text-anchor="middle" fill="#004AAD" font-size="15.5" font-weight="800">Nút ngoài gốc có ít hơn min_keys?</text>
+      <path class="flow-edge" pathLength="1" d="M 167 164 C 167 188, 326 178, 326 200" fill="none" stroke="#004AAD" stroke-width="2.2" marker-end="url(#fl-arr)"/>
+      <path class="flow-edge" pathLength="1" d="M 602 164 C 602 188, 464 178, 464 200" fill="none" stroke="#004AAD" stroke-width="2.2" marker-end="url(#fl-arr)"/>
+      <g filter="url(#fl-shadow)">
+        <rect x="204" y="207" width="382" height="52" rx="6" fill="#004AAD" opacity="0.16"/>
+        <rect x="204" y="203" width="382" height="52" rx="6" fill="url(#fl-g-q2)" stroke="#2563EB" stroke-width="2.2"/>
+        <rect x="214" y="215" width="34" height="28" rx="4" fill="#2563EB"/>
+        <text x="231" y="234" text-anchor="middle" fill="#FFFFFF" font-size="12" font-weight="800" font-family="'IBM Plex Mono', monospace">Q2</text>
+        <text x="414" y="235" text-anchor="middle" fill="#004AAD" font-size="15" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Nút ngoài gốc có ít hơn min_keys?</text>
+      </g>
     </g>
 
+    <!-- OK terminal -->
     <g opacity="${op('ok')}">
-      <path class="flow-edge" pathLength="1" d="M 200 230 L 136 230" stroke="#16A34A" stroke-width="2.5" marker-end="url(#fl-arr)"/>
-      <text x="168" y="220" text-anchor="middle" fill="#15803D" font-size="13" font-weight="800">Không</text>
-      <rect x="18" y="206" width="116" height="48" rx="12" fill="#DCFCE7" stroke="#16A34A" stroke-width="2.2"/>
-      <text x="76" y="235" text-anchor="middle" fill="#14532D" font-size="14.5" font-weight="800">Kết thúc</text>
+      <path class="flow-edge" pathLength="1" d="M 204 231 L 140 231" fill="none" stroke="#16A34A" stroke-width="2.6" marker-end="url(#fl-arr-g)"/>
+      <rect x="145" y="204" width="54" height="19" rx="9.5" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.3"/>
+      <text x="172" y="217" text-anchor="middle" fill="#15803D" font-size="10.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">KHÔNG</text>
+      <g filter="url(#fl-shadow)">
+        <rect x="18" y="205" width="118" height="50" rx="6" fill="url(#fl-g-ok)" stroke="#16A34A" stroke-width="2.2"/>
+        <text x="77" y="228" text-anchor="middle" fill="#14532D" font-size="14.2" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Kết thúc</text>
+        <text x="77" y="245" text-anchor="middle" fill="#166534" font-size="11" font-weight="600" font-family="'Be Vietnam Pro', sans-serif">Cây hợp lệ</text>
+      </g>
     </g>
 
+    <!-- Q3 Sibling check -->
     <g opacity="${op('sib')}">
-      <path class="flow-edge" pathLength="1" d="M 395 256 L 395 292" stroke="#DC2626" stroke-width="2.5" marker-end="url(#fl-arr-r)"/>
-      <text x="412" y="280" fill="#B91C1C" font-size="13" font-weight="800">Có (Underflow)</text>
-      <rect x="190" y="294" width="410" height="46" rx="12" fill="#FEE2E2" stroke="#DC2626" stroke-width="2.2"/>
-      <text x="395" y="322" text-anchor="middle" fill="#991B1B" font-size="14.5" font-weight="800">Anh em liền kề cùng cha có dư khóa?</text>
+      <path class="flow-edge" pathLength="1" d="M 395 255 L 395 294" fill="none" stroke="#DC2626" stroke-width="2.6" marker-end="url(#fl-arr-r)"/>
+      <rect x="408" y="264" width="118" height="20" rx="10" fill="#FEE2E2" stroke="#DC2626" stroke-width="1.3"/>
+      <text x="467" y="278" text-anchor="middle" fill="#B91C1C" font-size="10.8" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">CÓ · UNDERFLOW</text>
+      <g filter="url(#fl-shadow)">
+        <rect x="186" y="301" width="418" height="46" rx="6" fill="#DC2626" opacity="0.16"/>
+        <rect x="186" y="297" width="418" height="46" rx="6" fill="url(#fl-g-q3)" stroke="#DC2626" stroke-width="2.2"/>
+        <rect x="196" y="306" width="34" height="28" rx="4" fill="#DC2626"/>
+        <text x="213" y="325" text-anchor="middle" fill="#FFFFFF" font-size="12" font-weight="800" font-family="'IBM Plex Mono', monospace">Q3</text>
+        <text x="414" y="325" text-anchor="middle" fill="#991B1B" font-size="14.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Anh em liền kề cùng cha có dư khóa?</text>
+      </g>
     </g>
     </g>
     ` : ''}
 
     ${show3 ? `
     <g ${lvlCls(3)}>
+    <!-- BORROW -->
     <g opacity="${op('borrow')}">
-      <path class="flow-edge" pathLength="1" d="M 280 340 L 175 384" stroke="#16A34A" stroke-width="2.5" marker-end="url(#fl-arr)"/>
-      <text x="200" y="365" fill="#15803D" font-size="13" font-weight="800">Có</text>
-      <rect x="28" y="386" width="275" height="62" rx="12" fill="#DCFCE7" stroke="#16A34A" stroke-width="2.3"/>
-      <text x="165" y="412" text-anchor="middle" fill="#14532D" font-size="15" font-weight="800">BORROW (Mượn qua cha)</text>
-      <text x="165" y="434" text-anchor="middle" fill="#166534" font-size="12.5" font-weight="600">Đổi khóa phân cách → Kết thúc</text>
+      <path class="flow-edge" pathLength="1" d="M 276 343 C 276 364, 172 358, 172 383" fill="none" stroke="#16A34A" stroke-width="2.6" marker-end="url(#fl-arr-g)"/>
+      <rect x="150" y="352" width="96" height="20" rx="10" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.3"/>
+      <text x="198" y="366" text-anchor="middle" fill="#15803D" font-size="10.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">CÓ · DƯ KHÓA</text>
+      <g filter="url(#fl-shadow)">
+        <rect x="24" y="386" width="296" height="66" rx="6" fill="url(#fl-g-ok)" stroke="#16A34A" stroke-width="2.2"/>
+        <rect x="24" y="386" width="7" height="66" rx="2" fill="#16A34A"/>
+        <text x="176" y="413" text-anchor="middle" fill="#14532D" font-size="15" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">BORROW · Mượn qua cha</text>
+        <text x="176" y="435" text-anchor="middle" fill="#166534" font-size="12.4" font-weight="600" font-family="'Be Vietnam Pro', sans-serif">Xoay khóa phân cách → Kết thúc ngay</text>
+      </g>
     </g>
 
+    <!-- MERGE -->
     <g opacity="${op('merge')}">
-      <path class="flow-edge" pathLength="1" d="M 480 340 L 545 384" stroke="#DC2626" stroke-width="2.5" marker-end="url(#fl-arr-r)"/>
-      <text x="540" y="365" fill="#B91C1C" font-size="13" font-weight="800">Không</text>
-      <rect x="355" y="386" width="335" height="62" rx="12" fill="#FEF3C7" stroke="#D97706" stroke-width="2.3"/>
-      <text x="522" y="412" text-anchor="middle" fill="#92400E" font-size="15" font-weight="800">MERGE (Gộp với anh em + khóa cha)</text>
-      <text x="522" y="434" text-anchor="middle" fill="#92400E" font-size="12.5" font-weight="600">Cha mất 1 khóa → Quay lại kiểm tra cha ↑</text>
+      <path class="flow-edge" pathLength="1" d="M 504 343 C 504 364, 526 358, 526 383" fill="none" stroke="#DC2626" stroke-width="2.6" marker-end="url(#fl-arr-r)"/>
+      <rect x="488" y="352" width="136" height="20" rx="10" fill="#FEE2E2" stroke="#DC2626" stroke-width="1.3"/>
+      <text x="556" y="366" text-anchor="middle" fill="#B91C1C" font-size="10.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">KHÔNG · SÁT NGƯỠNG</text>
+      <g filter="url(#fl-shadow)">
+        <rect x="356" y="386" width="342" height="66" rx="6" fill="url(#fl-g-merge)" stroke="#D97706" stroke-width="2.2"/>
+        <rect x="356" y="386" width="7" height="66" rx="2" fill="#D97706"/>
+        <text x="531" y="413" text-anchor="middle" fill="#92400E" font-size="15" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">MERGE · Gộp anh em + khóa cha</text>
+        <text x="531" y="435" text-anchor="middle" fill="#92400E" font-size="12.4" font-weight="600" font-family="'Be Vietnam Pro', sans-serif">Cha mất 1 khóa → Vòng lên kiểm tra cha ↑</text>
+      </g>
     </g>
 
-    <!-- Loop back arrow to parent check + Root shrink note -->
+    <!-- Loop-back Return Highway + Animated Signal Bead -->
     <g opacity="${op('loop')}">
-      <path class="flow-loop-dash" d="M 690 417 L 796 417 L 796 230 L 594 230" fill="none" stroke="#DC2626" stroke-width="2.6" stroke-dasharray="7 5" marker-end="url(#fl-arr-r)"/>
-      <text x="778" y="362" text-anchor="middle" fill="#B91C1C" font-size="12" font-weight="800" transform="rotate(-90 778 362)">Lặp lên cha ↑</text>
+      <path class="flow-loop-dash" d="M 698 419 L 796 419 L 796 231 L 592 231" fill="none" stroke="#DC2626" stroke-width="2.6" stroke-dasharray="7 5" marker-end="url(#fl-arr-r)"/>
+      <circle r="4.2" fill="#FEF08A" stroke="#DC2626" stroke-width="1.8">
+        <animateMotion dur="2.6s" repeatCount="indefinite"><mpath href="#fl-loop-path"/></animateMotion>
+      </circle>
+      <text x="776" y="368" text-anchor="middle" fill="#B91C1C" font-size="11.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif" transform="rotate(-90 776 368)">Lặp lên cha ↑</text>
     </g>
-    <g opacity="${op('root')}">
-      <rect x="610" y="246" width="160" height="54" rx="10" fill="#004AAD"/>
-      <text x="690" y="269" text-anchor="middle" fill="#FFFFFF" font-size="12" font-weight="700">Nếu gốc rỗng còn</text>
-      <text x="690" y="287" text-anchor="middle" fill="#FEF08A" font-size="12.5" font-weight="800">1 con → Hạ chiều cao</text>
+
+    <!-- Root Shrink Architectural Callout linked to return loop -->
+    <g opacity="${op('root')}" filter="url(#fl-shadow)">
+      <line x1="796" y1="276" x2="774" y2="276" stroke="#DC2626" stroke-width="2" stroke-dasharray="3 2"/>
+      <circle cx="796" cy="276" r="3.5" fill="#DC2626"/>
+      <rect x="610" y="248" width="164" height="56" rx="6" fill="url(#fl-g-navy)" stroke="#0F1D3A" stroke-width="1.6"/>
+      <rect x="610" y="248" width="5" height="56" rx="2" fill="#FEF08A"/>
+      <text x="694" y="271" text-anchor="middle" fill="#FFFFFF" font-size="12" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Gốc rỗng còn 1 con</text>
+      <text x="694" y="291" text-anchor="middle" fill="#FEF08A" font-size="12.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">→ Hạ chiều cao (h − 1)</text>
     </g>
     </g>
     ` : ''}
@@ -1328,15 +1401,18 @@ const slide11: SlideDef = {
 
         <div class="s11-grid">
           <aside class="s11-defs">
-            <div class="canva-card">
+            <div class="canva-card s11-card-underflow">
+              <div class="s11-card-kicker"><span>01 · Điều kiện kích hoạt</span><span>len &lt; min_keys</span></div>
               <h3>Underflow (Thiếu khóa)</h3>
               <p>Nút ngoài gốc có ít hơn <code>min_keys</code> khóa sau khi xóa → kiểm tra anh em trái/phải cùng cha.</p>
             </div>
             <div class="canva-card s11-card-borrow" data-def="borrow">
+              <div class="s11-card-kicker"><span>02 · Lượt A (Nhấn xem)</span><span>Giữ nguyên số cạnh</span></div>
               <h3>Borrow — Mượn khóa</h3>
               <p>Anh em dư khóa: kéo khóa phân cách từ cha xuống, đưa khóa biên của anh em lên thay. (Nút trong chuyển kèm nhánh con.)</p>
             </div>
             <div class="canva-card s11-card-merge" data-def="merge">
+              <div class="s11-card-kicker"><span>03 · Lượt B (Nhấn xem)</span><span>Cha giảm 1 khóa</span></div>
               <h3>Merge — Gộp nút</h3>
               <p>Không anh em nào dư: gộp nút thiếu + khóa phân cách + anh em. Cha giảm 1 khóa và 1 nhánh con.</p>
             </div>

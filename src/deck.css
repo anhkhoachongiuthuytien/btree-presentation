@@ -30,13 +30,40 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #0d1b3e;
+  background: #ffffff;
   font-family: var(--font-sans);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 220ms ease;
 }
 
-/* Reveal overrides for crisp 1280x720 Canva stage */
+body[data-slide-theme="cover"],
+body[data-slide-theme="blue"] {
+  background-color: var(--bg-blue);
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.28) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.28) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+body[data-slide-theme="xfs-blue"] {
+  background-color: var(--bg-xfs);
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.26) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.26) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+body[data-slide-theme="white"],
+body[data-slide-theme="toc"] {
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(to right, #e5effb 1px, transparent 1px),
+    linear-gradient(to bottom, #e5effb 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Reveal overrides for crisp 1280x720 edge-to-edge full-screen stage */
 .reveal {
   font-family: var(--font-sans);
   color: var(--ink);
@@ -65,8 +92,37 @@ body.podium-hidden .podium-bar {
   width: 1280px;
   top: 0 !important;
   overflow: hidden;
-  border-radius: 10px;
-  box-shadow: 0 20px 55px rgba(8, 18, 48, 0.45);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.ghost-fs-btn {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  z-index: 95;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1.5px solid rgba(15, 29, 58, 0.25);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--title-blue);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  opacity: 0.26;
+  transition: opacity 180ms ease, background 180ms ease, transform 160ms ease;
+}
+
+.ghost-fs-btn:hover {
+  opacity: 1;
+  background: #ffffff;
+  border-color: var(--title-blue);
+  transform: scale(1.06);
+}
+
+body:not(.podium-hidden) .ghost-fs-btn {
+  display: none;
 }
 
 .reveal .progress {
@@ -2422,40 +2478,76 @@ code {
   padding: 4px;
 }
 
-/* Slide 10 (was 11): Curved Organic Solid Cobalt Left Sidebar (Canva Slide 11) */
+/* Slide 10 (Borrow & Merge): 3 Balanced Architectural Cards (Zero dead vertical space) */
 .s11-grid {
   display: grid;
-  grid-template-columns: 378px 1fr;
-  gap: 22px;
+  grid-template-columns: 372px 1fr;
+  gap: 18px;
   flex: 1;
   min-height: 0;
 }
 
 .s11-defs {
-  margin-left: -36px;
-  padding: 18px 26px 18px 36px;
-  background: linear-gradient(168deg, #4f83f2 0%, #356add 100%);
-  border-radius: 0 56px 56px 0;
-  box-shadow: 6px 4px 0 rgba(0, 74, 173, 0.16);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 10px;
+  gap: 12px;
+  min-height: 0;
 }
 
 .s11-defs .canva-card {
-  background: transparent !important;
-  border: none !important;
-  border-left: 3.5px solid rgba(255, 255, 255, 0.28) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  padding: 10px 12px !important;
-  overflow: visible !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #ffffff !important;
+  border: 1.8px solid var(--title-blue) !important;
+  border-left: 5px solid var(--title-blue) !important;
+  border-radius: 3px !important;
+  box-shadow: 4px 4px 0 rgba(0, 74, 173, 0.14) !important;
+  padding: 12px 15px !important;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
 }
 
-.s11-defs .canva-card:last-child {
-  border-bottom: none !important;
+.s11-defs .s11-card-underflow {
+  background: #fff5f5 !important;
+  border-color: #fca5a5 !important;
+  border-left-color: #dc2626 !important;
+  box-shadow: 4px 4px 0 rgba(220, 38, 38, 0.12) !important;
+}
+
+.s11-defs .s11-card-borrow {
+  border-color: #86efac !important;
+  border-left-color: #16a34a !important;
+  cursor: pointer;
+}
+
+.s11-defs .s11-card-merge {
+  background: linear-gradient(155deg, #0f1d3a 0%, #004aad 100%) !important;
+  border-color: #0f1d3a !important;
+  border-left-color: #fde047 !important;
+  box-shadow: 4px 4px 0 rgba(15, 29, 58, 0.22) !important;
+  cursor: pointer;
+}
+
+.s11-card-kicker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  color: #b91c1c;
+}
+
+.s11-card-borrow .s11-card-kicker {
+  color: #15803d;
+}
+
+.s11-card-merge .s11-card-kicker {
+  color: #fef08a;
 }
 
 .s11-defs .canva-card > h3 {
@@ -2463,54 +2555,51 @@ code {
   padding: 0 !important;
   background: transparent !important;
   border: none !important;
-  color: #ffffff !important;
-  font-size: 16px !important;
+  color: var(--ink) !important;
+  font-size: 16.5px !important;
 }
 
 .s11-defs .canva-card > h3::before {
-  width: 9px;
-  height: 9px;
-  border-radius: 2px;
-  background: #fca5a5 !important;
+  display: none !important;
 }
 
-.s11-defs .s11-card-borrow,
-.s11-defs .s11-card-merge {
-  cursor: pointer;
-  transition: background 180ms ease, border-left-color 180ms ease;
+.s11-defs .s11-card-merge > h3 {
+  color: #ffffff !important;
+}
+
+.s11-defs .canva-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.44;
+  color: var(--ink-muted) !important;
+}
+
+.s11-defs .s11-card-merge p {
+  color: rgba(226, 232, 240, 0.94) !important;
+}
+
+.s11-defs .s11-card-merge code {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fef08a;
 }
 
 .s11-defs .s11-card-borrow:hover,
 .s11-defs .s11-card-merge:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-2px);
 }
 
-.s11-defs .s11-card-borrow > h3::before {
-  background: #86efac !important;
+.s11-defs .s11-card-borrow.is-active-card {
+  background: #ecfdf5 !important;
+  border-color: #16a34a !important;
+  box-shadow: 5px 5px 0 rgba(22, 163, 74, 0.24) !important;
+  transform: translateX(3px);
 }
 
-.s11-defs .s11-card-merge > h3::before {
-  background: #fde047 !important;
-}
-
-.s11-defs .canva-card p {
-  font-size: 14.5px;
-  line-height: 1.44;
-  color: rgba(255, 255, 255, 0.94) !important;
-}
-
-.s11-defs .canva-card code {
-  background: rgba(15, 29, 58, 0.28);
-  border-color: rgba(255, 255, 255, 0.35);
-  color: #ffffff;
-}
-
-.s11-defs .canva-card.is-active-card {
-  background: rgba(255, 255, 255, 0.17) !important;
-  border-left: 4px solid #fef08a !important;
-  border-radius: 0 8px 8px 0 !important;
-  transform: translateX(4px);
-  box-shadow: none !important;
+.s11-defs .s11-card-merge.is-active-card {
+  border-color: #fde047 !important;
+  box-shadow: 5px 5px 0 rgba(234, 179, 8, 0.34) !important;
+  transform: translateX(3px);
 }
 
 .s11-right {
@@ -2524,25 +2613,27 @@ code {
   background: var(--title-blue);
   color: #ffffff;
   padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 15.5px;
+  border-radius: 3px;
+  font-size: 14.5px;
   font-weight: 700;
 }
 
 .s11-tree {
   flex: 1;
   background: #ffffff;
-  border: 2px solid var(--title-blue);
-  border-radius: 12px;
+  border: 1.8px solid var(--title-blue);
+  border-radius: 3px;
+  box-shadow: 5px 5px 0 rgba(0, 74, 173, 0.18);
   padding: 8px;
 }
 
 .s11-cap {
-  background: #ffffff;
-  border: 2px solid var(--title-blue);
-  border-radius: 8px;
+  background: #f8fbff;
+  border: 1.8px solid var(--title-blue);
+  border-left: 4.5px solid var(--cobalt);
+  border-radius: 3px;
   padding: 10px 14px;
-  font-size: 15.5px;
+  font-size: 15px;
 }
 
 .s12-bar {
