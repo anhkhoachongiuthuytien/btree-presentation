@@ -27,9 +27,6 @@ import {
   CHAPTER_THEME_LABELS,
   type ChapterSoundTheme,
 } from './soundEffects';
-import { depthChips } from './depthChips';
-import { ambientParticles } from './ambientParticles';
-import { initTimelineDrawer, type TimelineController } from './timelineDrawer';
 import type { SlideContext, SlideDef } from './types';
 
 function pad2(n: number): string {
@@ -49,11 +46,7 @@ const topProgressFill = document.getElementById('top-progress-fill')!;
 const laserLayer = document.getElementById('laser-layer')!;
 const laserDot = document.getElementById('laser-dot')!;
 const fxRippleLayer = document.getElementById('fx-ripple-layer')!;
-const fxParticlesCanvas = document.getElementById('fx-particles') as HTMLCanvasElement | null;
-const fxDepthLayer = document.getElementById('fx-depth-layer');
 const ghostAudioBtn = document.getElementById('ghost-audio-btn') as HTMLButtonElement | null;
-const ghostTimelineBtn = document.getElementById('ghost-timeline-btn') as HTMLButtonElement | null;
-let timeline: TimelineController | null = null;
 
 type RippleTone = 'cobalt' | 'emerald' | 'amber' | 'red' | 'laser';
 
@@ -80,8 +73,11 @@ soundFx.setOnPulse(() => {
 
 function updateAudioButtonTitle(theme: ChapterSoundTheme): void {
   if (!ghostAudioBtn) return;
+  const on = soundFx.isEnabled();
+  ghostAudioBtn.setAttribute('aria-pressed', String(on));
+  ghostAudioBtn.classList.toggle('is-muted', !on);
   const label = CHAPTER_THEME_LABELS[theme];
-  ghostAudioBtn.title = soundFx.isEnabled()
+  ghostAudioBtn.title = on
     ? `Âm thanh BẬT · ${label} (A)`
     : `Âm thanh TẮT · ${label} (A)`;
 }
@@ -353,12 +349,7 @@ function showShortcutToast(msg: string): void {
 }
 
 function isAnyModalOpen(): boolean {
-  return (
-    !fullViewModal.hidden ||
-    !codeZoomModal.hidden ||
-    !shortcutsModal.hidden ||
-    (timeline?.isOpen() ?? false)
-  );
+  return !fullViewModal.hidden || !codeZoomModal.hidden || !shortcutsModal.hidden;
 }
 
 function closeShortcutsModal(): void {
@@ -567,11 +558,8 @@ function syncCurrentSlide(playTransitionFrom?: number, forceEntrance = false): v
     const prevSec = slideSections[playTransitionFrom - 1] ?? null;
     playSlideTransition(transitionOverlay, prevSec, sec, playTransitionFrom, slide.number, getReducedMotion());
     triggerSlideEntrance(sec, getReducedMotion());
-    depthChips.transition(slide.number, playTransitionFrom, getReducedMotion());
-    ambientParticles.impulse(slide.number > playTransitionFrom ? 1 : -1);
   } else if (forceEntrance && !deck.isOverview()) {
     triggerSlideEntrance(sec, getReducedMotion());
-    depthChips.transition(slide.number, null, getReducedMotion());
   } else {
     sec.classList.remove('slide-entering');
   }
@@ -581,13 +569,11 @@ function syncCurrentSlide(playTransitionFrom?: number, forceEntrance = false): v
   lastRenderedStep.set(slide.number, step);
   currentSlideNumber = slide.number;
 
-  // Sync body canvas backdrop, chapter acoustic theme, ambient particles & timeline
+  // Sync body canvas backdrop & chapter acoustic theme seamlessly
   document.body.dataset.slideTheme = slide.theme;
   const chapterSoundTheme = getChapterThemeForSlide(slide.number);
   soundFx.setChapterTheme(chapterSoundTheme);
   updateAudioButtonTitle(chapterSoundTheme);
-  ambientParticles.setSlideContext(slide.number, slide.theme, getReducedMotion());
-  timeline?.markActive(slide.number);
 
   // Update top kinetic progress ribbon & podium bar
   topProgressFill.style.transform = `scaleX(${slide.number / ALL_SLIDES.length})`;
@@ -627,11 +613,6 @@ deck.initialize().then(() => {
     lastRenderedStep.set(s.number, 0);
   });
   initChapterStageSkins();
-  if (fxDepthLayer) depthChips.init(fxDepthLayer);
-  if (fxParticlesCanvas) ambientParticles.init(fxParticlesCanvas, getReducedMotion());
-  timeline = initTimelineDrawer(ALL_SLIDES, (num) => {
-    goToSlide(num);
-  });
   syncCurrentSlide(undefined, true);
 });
 
@@ -676,11 +657,9 @@ deck.on('fragmenthidden', () => {
 
 deck.on('overviewshown', () => {
   cancelSlideTransition(transitionOverlay);
-  depthChips.setVisible(false);
 });
 
 deck.on('overviewhidden', () => {
-  depthChips.setVisible(true);
   syncCurrentSlide();
 });
 
@@ -796,41 +775,10 @@ document.getElementById('ghost-fs-btn')?.addEventListener('click', (e) => {
   toggleFullscreen();
 });
 
-ghostTimelineBtn?.addEventListener('click', (e) => {
-  e.stopPropagation();
-  timeline?.toggle();
-});
-
 ghostAudioBtn?.addEventListener('click', (e) => {
   e.stopPropagation();
   toggleAudio();
 });
-
-// Smooth debounced mouse-wheel navigation (ignores open modals, timeline & scrollable containers)
-let lastWheelAt = 0;
-window.addEventListener(
-  'wheel',
-  (ev) => {
-    if (!deck || deck.isOverview() || isAnyModalOpen()) return;
-    const target = ev.target as HTMLElement | null;
-    if (target?.closest('.tl-drawer, .modal-dialog, .code-window__body, .s17py-term-body')) return;
-    if (Math.abs(ev.deltaY) < 28) return;
-    const now = performance.now();
-    if (now - lastWheelAt < 480) return;
-    lastWheelAt = now;
-    soundFx.unlock();
-    if (ev.deltaY > 0) {
-      const h = deck.getIndices().h ?? 0;
-      const slide = ALL_SLIDES[h];
-      const step = getCurrentStepForSection(slideSections[h]);
-      if (slide.number === ALL_SLIDES.length && step >= slide.stepCount) return;
-      deck.next();
-    } else {
-      deck.prev();
-    }
-  },
-  { passive: true },
-);
 
 // Unlock Web Audio cleanly on first user gesture & spawn semantic interactive feedback
 window.addEventListener(
@@ -919,7 +867,13 @@ window.addEventListener(
       return;
     }
 
-    if (target.closest('[data-role="reveal-ans"], .rec-pill')) {
+    if (target.closest('[data-role="reveal-ans"]')) {
+      spawnRipple(ev.clientX, ev.clientY, 'emerald');
+      soundFx.playSparkleChime();
+      return;
+    }
+
+    if (target.closest('.rec-pill')) {
       spawnRipple(ev.clientX, ev.clientY, 'emerald');
       soundFx.playSuccess();
       return;
@@ -994,13 +948,6 @@ window.addEventListener(
     if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
 
     if (ev.key === 'Escape') {
-      if (timeline?.isOpen()) {
-        ev.preventDefault();
-        ev.stopPropagation();
-        ev.stopImmediatePropagation();
-        timeline.close();
-        return;
-      }
       if (!shortcutsModal.hidden) {
         ev.preventDefault();
         ev.stopPropagation();
@@ -1051,13 +998,6 @@ window.addEventListener(
       return;
     }
 
-    if (key === 't') {
-      ev.preventDefault();
-      ev.stopPropagation();
-      timeline?.toggle();
-      return;
-    }
-
     if (isAnyModalOpen()) {
       if (['ArrowLeft', 'ArrowRight', ' ', 'Enter'].includes(ev.key) && ev.target === document.body) {
         ev.stopPropagation();
@@ -1077,7 +1017,7 @@ window.addEventListener(
       ev.preventDefault();
       ev.stopPropagation();
       resetCurrentSlide();
-    } else if (key === 'm') {
+    } else if (key === 'm' || key === 't') {
       ev.preventDefault();
       ev.stopPropagation();
       goToSlide(2);

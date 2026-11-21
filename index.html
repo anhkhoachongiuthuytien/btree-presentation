@@ -15,31 +15,6 @@
       <div class="slides" id="slides-container"></div>
     </div>
 
-    <!-- Persistent Blueprint Constellation Particle Field & 3D Depth-Fly Chips -->
-    <canvas id="fx-particles" class="fx-particles" aria-hidden="true"></canvas>
-    <div id="fx-depth-layer" class="fx-depth-layer" aria-hidden="true"></div>
-
-    <!-- Left-edge subtle Timeline trigger & Slide-out 30-slide Timeline Drawer (T) -->
-    <div id="tl-edge" class="tl-edge" title="Mở Timeline 30 trang (T)" aria-hidden="true"></div>
-    <div id="timeline-backdrop" class="tl-backdrop" hidden></div>
-    <aside id="timeline-drawer" class="tl-drawer" aria-label="Timeline 30 trang" aria-hidden="true">
-      <header class="tl-head">
-        <div>
-          <span class="tl-badge">TIMELINE · 30 TRANG</span>
-          <h2 class="tl-title">Điều hướng nhanh</h2>
-        </div>
-        <button id="tl-close" class="modal-close" type="button" aria-label="Đóng Timeline">Đóng (Esc)</button>
-      </header>
-      <div class="tl-body">
-        <div id="tl-list" class="tl-list"></div>
-        <div id="tl-rail" class="tl-rail" title="Kéo để trượt nhanh 30 trang">
-          <div id="tl-fill" class="tl-fill"></div>
-          <div id="tl-thumb" class="tl-thumb">01</div>
-        </div>
-      </div>
-      <footer class="tl-foot">Nhấn <kbd>T</kbd> để đóng/mở · Kéo thanh bên phải để trượt nhanh</footer>
-    </aside>
-
     <!-- Dedicated transition overlay layer (separated from algorithm SVGs) -->
     <div id="transition-overlay" class="transition-overlay" aria-hidden="true"></div>
 
@@ -142,10 +117,8 @@
         <div class="modal-body shortcuts-grid">
           <div class="sc-item"><kbd>→</kbd> / <kbd>Space</kbd><span>Tiến một nhịp / trang tiếp</span></div>
           <div class="sc-item"><kbd>←</kbd><span>Lùi một nhịp / trang trước</span></div>
-          <div class="sc-item"><kbd>Cuộn chuột</kbd><span>Tiến / lùi nhịp mượt</span></div>
-          <div class="sc-item"><kbd>T</kbd><span>Mở / đóng Timeline 30 trang</span></div>
-          <div class="sc-item"><kbd>M</kbd><span>Về Mục lục (Trang 02)</span></div>
           <div class="sc-item"><kbd>R</kbd><span>Làm lại ví dụ (về nhịp 0)</span></div>
+          <div class="sc-item"><kbd>M</kbd> / <kbd>T</kbd><span>Về Mục lục (Trang 02)</span></div>
           <div class="sc-item"><kbd>V</kbd><span>Mở / đóng Xem đầy đủ</span></div>
           <div class="sc-item"><kbd>L</kbd><span>Bật / tắt chấm Laser</span></div>
           <div class="sc-item"><kbd>O</kbd><span>Mở / đóng Tổng quan (Overview)</span></div>
@@ -162,11 +135,8 @@
     <!-- Brief shortcut feedback toast -->
     <div id="shortcut-toast" class="shortcut-toast" role="status" aria-live="polite" hidden></div>
 
-    <!-- Subtle unobtrusive ghost corner controls (Timeline T, Audio A & Fullscreen F) -->
+    <!-- Subtle unobtrusive ghost corner controls (Audio A & Fullscreen F) -->
     <div class="ghost-corner-dock">
-      <button id="ghost-timeline-btn" class="ghost-fs-btn" type="button" title="Mở Timeline 30 trang (T)" aria-label="Mở Timeline 30 trang">
-        <svg class="ui-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 4h10M3 8h7M3 12h10"/></svg>
-      </button>
       <button id="ghost-audio-btn" class="ghost-fs-btn" type="button" aria-pressed="true" title="Bật/tắt âm thanh (A)" aria-label="Bật/tắt âm thanh">
         <svg class="ui-ico ico-sound-on" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.2h2.7l3.3-2.7v9l-3.3-2.7H2.5z"/><path d="M11 5.6a3.5 3.5 0 0 1 0 4.8"/><path d="M12.8 3.8a6 6 0 0 1 0 8.4"/></svg>
         <svg class="ui-ico ico-sound-off" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.2h2.7l3.3-2.7v9l-3.3-2.7H2.5z"/><path d="M11 6l3 4M14 6l-3 4"/></svg>
