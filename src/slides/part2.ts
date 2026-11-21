@@ -347,13 +347,26 @@ const slide07: SlideDef = {
             viewBox: [0, 0, 680, 310],
             nodes: [
               {
+                id: 'n7-in20',
+                x: 304,
+                y: 66,
+                cellW: 64,
+                cellH: 44,
+                state: 'active',
+                tag: 'Chèn 20 (10 < 20 < 30)',
+                tagPos: 'top',
+                tagTone: 'warn',
+                keys: [{ id: 'i7-20', label: '20', tone: 'active' }],
+              },
+              {
                 id: 'n7-leaf',
                 x: 340,
-                y: 175,
+                y: 204,
                 capacity: 3,
                 cellW: 72,
                 cellH: 52,
                 tag: 'Lá còn 1 ô trống (2 / 3 khóa)',
+                tagPos: 'bottom',
                 tagTone: 'cobalt',
                 keys: [
                   { id: 'i7-10', label: '10' },
@@ -362,21 +375,53 @@ const slide07: SlideDef = {
               },
             ],
             edges: [],
-            chips: [{ id: 'ch-20', x: 140, y: 74, text: 'Chèn 20', tone: 'active' }],
+            transfers: [
+              {
+                id: 't7-in20',
+                fromX: 304,
+                fromY: 90,
+                toX: 304,
+                toY: 169,
+                ctrlX: 304,
+                ctrlY: 130,
+                label: 'vào giữa 10 | 30',
+                tone: 'warn',
+              },
+            ],
+            overlaySvg: `
+              <line x1="304" y1="178" x2="304" y2="230" stroke="#D97706" stroke-width="3.5" stroke-dasharray="5 3" />
+              <circle cx="304" cy="178" r="4.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="1.5" />
+              <path d="M 352 164 Q 382 150 408 162" fill="none" stroke="#5284FF" stroke-width="2" stroke-dasharray="4 3" />
+              <polygon points="405,157 413,163 404,166" fill="#5284FF" />
+              <text x="444" y="158" text-anchor="middle" fill="#004AAD" font-size="11" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">30 dịch phải →</text>
+            `,
           }
         : step === 1
           ? {
               viewBox: [0, 0, 680, 310],
               nodes: [
                 {
+                  id: 'n7-in25',
+                  x: 376,
+                  y: 66,
+                  cellW: 64,
+                  cellH: 44,
+                  state: 'active',
+                  tag: 'Tiếp: chèn 25 (20 < 25 < 30)',
+                  tagPos: 'top',
+                  tagTone: 'warn',
+                  keys: [{ id: 'i7-25', label: '25', tone: 'active' }],
+                },
+                {
                   id: 'n7-leaf',
                   x: 340,
-                  y: 175,
+                  y: 204,
                   capacity: 3,
                   cellW: 72,
                   cellH: 52,
                   state: 'success',
                   tag: '3 / 3 khóa · Không tràn (chiều cao giữ nguyên)',
+                  tagPos: 'bottom',
                   tagTone: 'success',
                   keys: [
                     { id: 'i7-10', label: '10' },
@@ -386,7 +431,23 @@ const slide07: SlideDef = {
                 },
               ],
               edges: [],
-              chips: [{ id: 'ch-25', x: 540, y: 74, text: 'Tiếp: chèn 25?', tone: 'warn' as 'active' }],
+              transfers: [
+                {
+                  id: 't7-in25',
+                  fromX: 376,
+                  fromY: 90,
+                  toX: 376,
+                  toY: 169,
+                  ctrlX: 376,
+                  ctrlY: 130,
+                  label: 'vào giữa 20 | 30',
+                  tone: 'warn',
+                },
+              ],
+              overlaySvg: `
+                <line x1="376" y1="178" x2="376" y2="230" stroke="#D97706" stroke-width="3.5" stroke-dasharray="5 3" />
+                <circle cx="376" cy="178" r="4.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="1.5" />
+              `,
             }
           : step === 2
             ? {
@@ -395,11 +456,12 @@ const slide07: SlideDef = {
                   {
                     id: 'n7-leaf',
                     x: 340,
-                    y: 175,
+                    y: 204,
                     cellW: 72,
                     cellH: 52,
                     state: 'overflow',
                     tag: 'TRÀN KHÓA: 4 > 3 · Chọn mid = 4//2 = 2 (khóa 25)',
+                    tagPos: 'bottom',
                     tagTone: 'error',
                     keys: [
                       { id: 'i7-10', label: '10' },
@@ -410,11 +472,24 @@ const slide07: SlideDef = {
                   },
                 ],
                 edges: [],
+                transfers: [
+                  {
+                    id: 't7-mid25',
+                    fromX: 376,
+                    fromY: 152,
+                    toX: 376,
+                    toY: 74,
+                    ctrlX: 376,
+                    ctrlY: 112,
+                    label: 'đẩy 25 lên gốc mới',
+                    tone: 'error',
+                  },
+                ],
                 overlaySvg: `
-                  <line x1="340" y1="128" x2="340" y2="218" stroke="#DC2626" stroke-width="2.5" stroke-dasharray="5 3" />
-                  <line x1="412" y1="128" x2="412" y2="218" stroke="#DC2626" stroke-width="2.5" stroke-dasharray="5 3" />
-                  <rect x="412" y="138" width="78" height="72" rx="6" fill="none" stroke="#DC2626" stroke-width="2" stroke-dasharray="4 3" />
-                  <text x="451" y="232" text-anchor="middle" fill="#B91C1C" font-size="12" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Vượt giới hạn 3 ô!</text>
+                  <line x1="340" y1="158" x2="340" y2="236" stroke="#DC2626" stroke-width="2.5" stroke-dasharray="5 3" />
+                  <line x1="412" y1="158" x2="412" y2="236" stroke="#DC2626" stroke-width="2.5" stroke-dasharray="5 3" />
+                  <rect x="412" y="166" width="78" height="70" rx="6" fill="none" stroke="#DC2626" stroke-width="2" stroke-dasharray="4 3" />
+                  <text x="558" y="208" text-anchor="middle" fill="#B91C1C" font-size="12" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Vượt giới hạn 3 ô!</text>
                 `,
               }
             : {

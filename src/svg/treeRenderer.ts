@@ -600,16 +600,62 @@ export function renderTreeScene(
         const dx = oldP.x - newP.x;
         const dy = oldP.y - newP.y;
         if (Math.hypot(dx, dy) > 2) {
-          const midX = dx * 0.45;
-          const midY = dy * 0.45 - 16;
+          if (dy < -30) {
+            // Smooth downward slide-in from external insert box into target node slot
+            anims.push(
+              el.animate(
+                [
+                  { transform: `translate(${dx}px, ${dy}px)` },
+                  { transform: `translate(${dx * 0.25}px, ${dy * 0.45}px)`, offset: 0.45 },
+                  { transform: 'translate(0px, 0px)' },
+                ],
+                { duration: Math.min(dur + 60, 580), easing },
+              ),
+            );
+          } else {
+            const midX = dx * 0.45;
+            const midY = dy * 0.45 - 16;
+            anims.push(
+              el.animate(
+                [
+                  { transform: `translate(${dx}px, ${dy}px)` },
+                  { transform: `translate(${midX}px, ${midY}px)`, offset: 0.48 },
+                  { transform: 'translate(0px, 0px)' },
+                ],
+                { duration: Math.min(dur + 40, 500), easing },
+              ),
+            );
+          }
+        }
+      } else if (oldP && newP && oldP.nodeId === newP.nodeId) {
+        // Animate horizontal key shifts inside the same node (e.g. making room on insert)
+        const oldNode = prevPos.nodes.get(oldP.nodeId);
+        const newNode = nextPos.nodes.get(newP.nodeId);
+        const nodeDx = oldNode && newNode ? oldNode.x - newNode.x : 0;
+        const nodeDy = oldNode && newNode ? oldNode.y - newNode.y : 0;
+        const relDx = (oldP.x - newP.x) - nodeDx;
+        const relDy = (oldP.y - newP.y) - nodeDy;
+        if (Math.hypot(relDx, relDy) > 2) {
           anims.push(
             el.animate(
               [
-                { transform: `translate(${dx}px, ${dy}px)` },
-                { transform: `translate(${midX}px, ${midY}px)`, offset: 0.48 },
+                { transform: `translate(${relDx}px, ${relDy}px)` },
                 { transform: 'translate(0px, 0px)' },
               ],
-              { duration: Math.min(dur + 40, 500), easing },
+              { duration: Math.min(dur, 480), easing },
+            ),
+          );
+        } else if (oldP.tone !== newP.tone && (newP.tone === 'active' || newP.tone === 'success' || newP.tone === 'error')) {
+          el.style.transformBox = 'fill-box';
+          el.style.transformOrigin = 'center';
+          anims.push(
+            el.animate(
+              [
+                { transform: 'scale(1)' },
+                { transform: 'scale(1.09)', offset: 0.4 },
+                { transform: 'scale(1)' },
+              ],
+              { duration: 340, easing },
             ),
           );
         }
@@ -621,19 +667,6 @@ export function renderTreeScene(
               { opacity: 1, transform: 'translateY(0px)' },
             ],
             { duration: 320, easing },
-          ),
-        );
-      } else if (oldP && newP && oldP.tone !== newP.tone && (newP.tone === 'active' || newP.tone === 'success' || newP.tone === 'error')) {
-        el.style.transformBox = 'fill-box';
-        el.style.transformOrigin = 'center';
-        anims.push(
-          el.animate(
-            [
-              { transform: 'scale(1)' },
-              { transform: 'scale(1.09)', offset: 0.4 },
-              { transform: 'scale(1)' },
-            ],
-            { duration: 340, easing },
           ),
         );
       }
