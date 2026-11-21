@@ -1,6 +1,7 @@
 import type { SlideDef, TreeSceneSpec } from '../types';
 import { texInline, texBlock } from '../math';
 import { renderTreeScene, cancelTreeAnimations } from '../svg/treeRenderer';
+import { soundFx } from '../soundEffects';
 
 // ============================================================================
 // SLIDE 17 — Chiều cao h đến từ đâu? (Bố cục Canva chuẩn: 2 cây tổng quát theo M, h)
@@ -1113,6 +1114,20 @@ function startS18CompareLoop(slideEl: HTMLElement, opIdx: number, reducedMotion:
         tick += 1;
         if (tick <= bestLast) renderBest(tick);
         if (tick <= worstLast) renderWorst(tick);
+        if (s && s.classList.contains('present')) {
+          if (opIdx === 1) {
+            if (tick < worstLast) soundFx.playSearchHop(tick);
+            else soundFx.playSuccess();
+          } else if (opIdx === 2) {
+            if (tick === 1) soundFx.playInsertSlide();
+            else if (tick < worstLast) soundFx.playOverflow();
+            else soundFx.playSplit();
+          } else if (opIdx === 3) {
+            if (tick === 1) soundFx.playDeletePop();
+            else if (tick < worstLast) soundFx.playMergeFold();
+            else soundFx.playSuccess();
+          }
+        }
         scheduleNext();
       }, 1350),
     );

@@ -21,7 +21,12 @@ import { texBlock } from './math';
 import { renderPythonWindow } from './pythonCode';
 import { playSlideTransition, cancelSlideTransition, triggerSlideEntrance } from './transitions';
 import { initChapterStageSkins } from './stageThemes';
-import { soundFx } from './soundEffects';
+import {
+  soundFx,
+  getChapterThemeForSlide,
+  CHAPTER_THEME_LABELS,
+  type ChapterSoundTheme,
+} from './soundEffects';
 import type { SlideContext, SlideDef } from './types';
 
 function pad2(n: number): string {
@@ -55,13 +60,236 @@ function spawnRipple(clientX: number, clientY: number, tone: RippleTone = 'cobal
   ring.addEventListener('animationend', () => ring.remove(), { once: true });
 }
 
+let audioPulseTimer: number | null = null;
+soundFx.setOnPulse(() => {
+  if (!ghostAudioBtn || !soundFx.isEnabled()) return;
+  ghostAudioBtn.classList.add('is-sounding');
+  if (audioPulseTimer !== null) window.clearTimeout(audioPulseTimer);
+  audioPulseTimer = window.setTimeout(() => {
+    ghostAudioBtn.classList.remove('is-sounding');
+    audioPulseTimer = null;
+  }, 190);
+});
+
+function updateAudioButtonTitle(theme: ChapterSoundTheme): void {
+  if (!ghostAudioBtn) return;
+  const label = CHAPTER_THEME_LABELS[theme];
+  ghostAudioBtn.title = soundFx.isEnabled()
+    ? `Âm thanh BẬT · ${label} (A)`
+    : `Âm thanh TẮT · ${label} (A)`;
+}
+
 function toggleAudio(): void {
   const on = soundFx.toggle();
+  const theme = soundFx.getChapterTheme();
   if (ghostAudioBtn) {
     ghostAudioBtn.setAttribute('aria-pressed', String(on));
     ghostAudioBtn.classList.toggle('is-muted', !on);
+    if (!on) ghostAudioBtn.classList.remove('is-sounding');
   }
-  showShortcutToast(on ? 'Âm thanh: BẬT (nhấn A để tắt)' : 'Âm thanh: TẮT (nhấn A để bật)');
+  updateAudioButtonTitle(theme);
+  showShortcutToast(
+    on ? `Âm thanh: BẬT · ${CHAPTER_THEME_LABELS[theme]}` : 'Âm thanh: TẮT (nhấn A để bật)',
+  );
+}
+
+function playSemanticStepSound(
+  slideNumber: number,
+  step: number,
+  maxStep: number,
+  theme: ChapterSoundTheme,
+): void {
+  switch (slideNumber) {
+    case 6: // Search(17)
+      if (step === 1 || step === 2) {
+        soundFx.playSearchHop(step - 1);
+        return;
+      }
+      if (step === 3) {
+        soundFx.playSuccess();
+        return;
+      }
+      break;
+    case 7: // Insert & Split
+      if (step === 1) {
+        soundFx.playInsertSlide();
+        return;
+      }
+      if (step === 2) {
+        soundFx.playOverflow();
+        return;
+      }
+      if (step === 3) {
+        soundFx.playSplit();
+        return;
+      }
+      break;
+    case 8: // Cascading Split
+      if (step === 1 || step === 2) {
+        soundFx.playOverflow();
+        return;
+      }
+      if (step === 3) {
+        soundFx.playSplit();
+        return;
+      }
+      break;
+    case 9: // Delete Leaf / Internal
+      if (step === 1) {
+        soundFx.playDeletePop();
+        return;
+      }
+      if (step === 2) {
+        soundFx.playSearchHop(1);
+        return;
+      }
+      if (step === 3) {
+        soundFx.playBorrowRotate();
+        return;
+      }
+      break;
+    case 10: // Borrow & Merge
+      if (step === 1) {
+        soundFx.playDeletePop();
+        return;
+      }
+      if (step === 2) {
+        soundFx.playBorrowRotate();
+        return;
+      }
+      if (step === 3) {
+        soundFx.playOverflow();
+        return;
+      }
+      if (step === 4) {
+        soundFx.playMergeFold();
+        return;
+      }
+      break;
+    case 11: // Trace Delete(5)
+      if (step === 1) {
+        soundFx.playDeletePop();
+        return;
+      }
+      if (step === 2 || step === 4) {
+        soundFx.playMergeFold();
+        return;
+      }
+      if (step === 3) {
+        soundFx.playOverflow();
+        return;
+      }
+      if (step === 5) {
+        soundFx.playSuccess();
+        return;
+      }
+      break;
+    case 17: // Live Python typing handles its own mechanical keyboard & stdout sounds
+      return;
+    case 21: // RAM vs Disk I/O
+      if (step === 2) {
+        soundFx.playDiskSeek();
+        return;
+      }
+      break;
+    case 23: // B+ Tree Range Scan
+      if (step === 1) {
+        soundFx.playSearchHop(1);
+        return;
+      }
+      if (step === 2) {
+        soundFx.playRangeScan(5);
+        return;
+      }
+      if (step === 3) {
+        soundFx.playSuccess();
+        return;
+      }
+      break;
+    case 24: // B+ Tree Copy-up
+      if (step === 1) {
+        soundFx.playInsertSlide();
+        return;
+      }
+      if (step === 2) {
+        soundFx.playCopyUp();
+        return;
+      }
+      if (step === 3) {
+        soundFx.playSuccess();
+        return;
+      }
+      break;
+    case 25: // B* Tree Redistribute
+      if (step === 1) {
+        soundFx.playInsertSlide();
+        return;
+      }
+      if (step === 2) {
+        soundFx.playBorrowRotate();
+        return;
+      }
+      if (step === 3) {
+        soundFx.playSuccess();
+        return;
+      }
+      break;
+    case 26: // B* Tree Split 2->3
+      if (step === 1) {
+        soundFx.playOverflow();
+        return;
+      }
+      if (step === 2) {
+        soundFx.playSplit();
+        return;
+      }
+      if (step === 3) {
+        soundFx.playSuccess();
+        return;
+      }
+      break;
+    case 28: // XFS Free-space problem
+      if (step === 1) {
+        soundFx.playAlert();
+        return;
+      }
+      if (step === 2) {
+        soundFx.playDiskAlloc();
+        return;
+      }
+      break;
+    case 29: // XFS bnobt & cntbt
+      if (step === 1 || step === 3) {
+        soundFx.playDiskSeek();
+        return;
+      }
+      if (step === 2) {
+        soundFx.playDiskAlloc();
+        return;
+      }
+      if (step === 4) {
+        soundFx.playDiskCoalesce();
+        return;
+      }
+      break;
+    case 30: // XFS Alloc & Reclaim
+      if (step === 2) {
+        soundFx.playDiskAlloc();
+        return;
+      }
+      if (step === 3) {
+        soundFx.playDiskCoalesce();
+        return;
+      }
+      if (step === 4) {
+        soundFx.playSuccess();
+        return;
+      }
+      break;
+    default:
+      break;
+  }
+  soundFx.playStepTick(step, maxStep, theme);
 }
 
 // Podium controls
@@ -338,8 +566,11 @@ function syncCurrentSlide(playTransitionFrom?: number, forceEntrance = false): v
   lastRenderedStep.set(slide.number, step);
   currentSlideNumber = slide.number;
 
-  // Sync body canvas backdrop seamlessly to active slide theme (zero ugly bars on ultrawide/fullscreen)
+  // Sync body canvas backdrop & chapter acoustic theme seamlessly
   document.body.dataset.slideTheme = slide.theme;
+  const chapterSoundTheme = getChapterThemeForSlide(slide.number);
+  soundFx.setChapterTheme(chapterSoundTheme);
+  updateAudioButtonTitle(chapterSoundTheme);
 
   // Update top kinetic progress ribbon & podium bar
   topProgressFill.style.transform = `scaleX(${slide.number / ALL_SLIDES.length})`;
@@ -387,7 +618,14 @@ deck.on('slidechanged', (event: unknown) => {
   const prevNum = currentSlideNumber;
   const nextNum = (ev.indexh ?? 0) + 1;
   if (prevNum !== nextNum) {
-    soundFx.playSlideWhoosh(nextNum > prevNum ? 'next' : 'prev');
+    const prevTheme = getChapterThemeForSlide(prevNum);
+    const nextTheme = getChapterThemeForSlide(nextNum);
+    soundFx.setChapterTheme(nextTheme);
+    if (prevTheme !== nextTheme) {
+      soundFx.playChapterIdent(nextTheme);
+    } else {
+      soundFx.playSlideWhoosh(nextNum > prevNum ? 'next' : 'prev', nextTheme);
+    }
   }
   syncCurrentSlide(prevNum !== nextNum ? prevNum : undefined);
 });
@@ -398,7 +636,8 @@ deck.on('fragmentshown', () => {
   const slide = ALL_SLIDES[h];
   if (slide) {
     const step = getCurrentStepForSection(slideSections[h]);
-    soundFx.playStepTick(step, slide.stepCount);
+    const theme = getChapterThemeForSlide(slide.number);
+    playSemanticStepSound(slide.number, step, slide.stepCount, theme);
   }
 });
 
@@ -408,7 +647,8 @@ deck.on('fragmenthidden', () => {
   const slide = ALL_SLIDES[h];
   if (slide) {
     const step = getCurrentStepForSection(slideSections[h]);
-    soundFx.playStepTick(step, slide.stepCount);
+    const theme = getChapterThemeForSlide(slide.number);
+    soundFx.playStepTick(step, slide.stepCount, theme);
   }
 });
 
@@ -568,14 +808,70 @@ window.addEventListener(
       return;
     }
 
-    if (target.closest('[data-role="reveal-ans"], .s26-qbtn, .rec-pill, [data-s04-probe]')) {
+    const s26Btn = target.closest<HTMLElement>('.s26-qbtn');
+    if (s26Btn) {
+      spawnRipple(ev.clientX, ev.clientY, 'emerald');
+      const app = s26Btn.dataset.qapp;
+      if (app === '1') soundFx.playRangeScan(3);
+      else if (app === '2') soundFx.playDiskSeek();
+      else soundFx.playRangeScan(4);
+      return;
+    }
+
+    const s29Sim = target.closest<HTMLElement>('[data-s29-sim]');
+    if (s29Sim) {
+      const sim = s29Sim.dataset.s29Sim;
+      if (sim === '2') {
+        spawnRipple(ev.clientX, ev.clientY, 'amber');
+        soundFx.playDiskAlloc();
+      } else if (sim === '3') {
+        spawnRipple(ev.clientX, ev.clientY, 'emerald');
+        soundFx.playDiskCoalesce();
+      } else {
+        spawnRipple(ev.clientX, ev.clientY, 'cobalt');
+        soundFx.playClick();
+      }
+      return;
+    }
+
+    if (target.closest('.s11-card-borrow')) {
+      spawnRipple(ev.clientX, ev.clientY, 'emerald');
+      soundFx.playBorrowRotate();
+      return;
+    }
+
+    if (target.closest('.s11-card-merge')) {
+      spawnRipple(ev.clientX, ev.clientY, 'amber');
+      soundFx.playMergeFold();
+      return;
+    }
+
+    if (target.closest('[data-mval]')) {
+      spawnRipple(ev.clientX, ev.clientY, 'cobalt');
+      soundFx.playInsertSlide();
+      return;
+    }
+
+    if (target.closest('[data-s04-probe]')) {
+      spawnRipple(ev.clientX, ev.clientY, 'emerald');
+      soundFx.playSearchHop(1);
+      return;
+    }
+
+    if (target.closest('.xfs-cell')) {
+      spawnRipple(ev.clientX, ev.clientY, 'cobalt');
+      soundFx.playDiskSeek();
+      return;
+    }
+
+    if (target.closest('[data-role="reveal-ans"], .rec-pill')) {
       spawnRipple(ev.clientX, ev.clientY, 'emerald');
       soundFx.playSuccess();
       return;
     }
 
     const interactive = target.closest(
-      'button:not(#ghost-audio-btn), .toc-bar, .tr-key--clickable, .xfs-cell, .s05-card, .s11-card-borrow, .s11-card-merge, .s18-click-row, [data-zoom-code]',
+      'button:not(#ghost-audio-btn), .toc-bar, .tr-key--clickable, .s05-card, .s18-click-row, [data-zoom-code]',
     );
     if (interactive) {
       spawnRipple(ev.clientX, ev.clientY, 'cobalt');

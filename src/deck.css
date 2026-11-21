@@ -135,6 +135,14 @@ body.podium-hidden .podium-bar {
   display: none;
 }
 
+#ghost-audio-btn.is-sounding {
+  opacity: 0.92;
+  border-color: var(--title-blue);
+  background: rgba(238, 247, 255, 0.96);
+  box-shadow: 0 0 0 3px rgba(82, 132, 255, 0.28);
+  transform: scale(1.07);
+}
+
 #ghost-audio-btn.is-muted {
   color: #b91c1c;
   border-color: rgba(220, 38, 38, 0.45);

@@ -1153,19 +1153,23 @@ function playPyDemoStep(
     if (charIdx < curLine.length) {
       const ch = curLine[charIdx];
       charIdx++;
-      if (ch !== ' ') soundFx.playKeystroke();
-      const delay = ch === ' ' ? 14 : 21;
-      rt.timerId = window.setTimeout(tick, delay);
+      soundFx.playKeystroke(ch);
+      const isPunct = /[\[\](){}=:,.'"\+\-\*\/]/.test(ch);
+      const base = ch === ' ' ? 20 : isPunct ? 27 : 21;
+      const jitter = Math.floor(Math.random() * 9);
+      rt.timerId = window.setTimeout(tick, base + jitter);
     } else if (lineIdx < linesToType.length - 1) {
+      soundFx.playKeystroke('\n');
       lineIdx++;
       charIdx = 0;
-      rt.timerId = window.setTimeout(tick, 90);
+      rt.timerId = window.setTimeout(tick, 120);
     } else {
+      if (step > 0) soundFx.playKeystroke('\n');
       rt.timerId = window.setTimeout(() => {
         rt.timerId = null;
-        if (step > 0) soundFx.playSuccess();
+        if (step > 0) soundFx.playTerminalRun();
         finishStep();
-      }, 160);
+      }, 170);
     }
   };
 
