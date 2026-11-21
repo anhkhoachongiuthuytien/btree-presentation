@@ -743,6 +743,305 @@ class SoundEngine {
       gain: 0.1,
     });
   }
+
+  // ==========================================================================
+  // 5. BESPOKE SIGNATURE EFFECTS TAILORED TO EACH B-TREE CONCEPT & SLIDE
+  // ==========================================================================
+
+  /** Slide 01: Loading a 4 KB disk page into RAM (actuator click + spin-up + RAM lock) */
+  public playPageLoad(): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    this.playNoise({ duration: 0.02, attack: 0.002, filterType: 'bandpass', freq: 1550, q: 3.4, gain: 0.16, pan: -0.35 });
+    this.playTone({ freq: 165, endFreq: 520, glide: 0.16, duration: 0.2, type: 'triangle', gain: 0.14, lpFreq: 1600, delay: 0.03, pan: -0.3, endPan: 0.3 });
+    this.playTone({ freq: 783.99, duration: 0.28, type: 'sine', gain: 0.12, delay: 0.15, pan: 0.3 });
+    this.playTone({ freq: 1046.5, duration: 0.34, type: 'sine', gain: 0.1, delay: 0.21, pan: 0 });
+  }
+
+  /** Slide 03: Billion-key scale collapsing into 3 clean disk reads */
+  public playScaleCollapse(): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    for (let i = 0; i < 6; i++) {
+      this.playTone({
+        freq: 1400 - i * 115,
+        attack: 0.002,
+        duration: 0.032,
+        type: 'triangle',
+        gain: 0.07,
+        delay: i * 0.028,
+        pan: -0.45 + i * 0.18,
+      });
+    }
+    // 3 solid resonant beats (= ≤ 3 disk reads)
+    [329.63, 392.0, 523.25].forEach((f, i) => {
+      this.playTone({ freq: f, duration: 0.24, type: 'triangle', gain: 0.13, delay: 0.2 + i * 0.095 });
+    });
+  }
+
+  /** Slide 04: Spatial 4-gate M-way partition ping (ports 0..3 left->right, or direct key hit) */
+  public playIntervalGate(portIdx: number, isDirectHit = false): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    if (isDirectHit) {
+      this.playTone({ freq: 659.25, duration: 0.2, type: 'triangle', gain: 0.14, pan: 0 });
+      this.playTone({ freq: 1318.51, duration: 0.32, type: 'sine', gain: 0.12, delay: 0.05, pan: 0 });
+      return;
+    }
+    const clamped = Math.max(0, Math.min(3, portIdx));
+    const pans = [-0.66, -0.22, 0.22, 0.66];
+    const freqs = [440.0, 523.25, 659.25, 783.99];
+    this.playTone({ freq: 1750, attack: 0.002, duration: 0.035, type: 'triangle', gain: 0.075, pan: pans[clamped] });
+    this.playTone({
+      freq: freqs[clamped],
+      endFreq: freqs[clamped] * 0.96,
+      glide: 0.12,
+      duration: 0.22,
+      type: 'triangle',
+      gain: 0.14,
+      delay: 0.025,
+      pan: pans[clamped],
+    });
+  }
+
+  /** Slide 05: All leaves aligned at identical depth (symmetric stereo equilibrium chord) */
+  public playBalanceLevel(): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    this.playTone({ freq: 392.0, duration: 0.42, type: 'sine', gain: 0.11, pan: -0.55 });
+    this.playTone({ freq: 587.33, duration: 0.42, type: 'triangle', gain: 0.11, delay: 0.04, pan: 0 });
+    this.playTone({ freq: 783.99, duration: 0.46, type: 'sine', gain: 0.11, delay: 0.08, pan: 0.55 });
+  }
+
+  /** Slide 06: Binary search halving micro-ping (L/R compare) + child port dive */
+  public playBisectProbe(depth = 0): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    const pitch = 720 + depth * 140;
+    this.playTone({ freq: 1950, attack: 0.002, duration: 0.032, type: 'triangle', gain: 0.07, pan: -0.28 });
+    this.playTone({ freq: 2250, attack: 0.002, duration: 0.032, type: 'triangle', gain: 0.07, delay: 0.045, pan: 0.28 });
+    this.playTone({ freq: pitch, endFreq: pitch * 0.8, glide: 0.1, duration: 0.15, type: 'sine', gain: 0.12, delay: 0.085, pan: 0 });
+  }
+
+  /** Slide 07: Horizontal key-shift zip + magnetic slot drop-in clack */
+  public playSlotShiftSlide(): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    // Neighbor key sliding right
+    this.playNoise({
+      duration: 0.1,
+      attack: 0.01,
+      filterType: 'bandpass',
+      freq: 900,
+      endFreq: 2100,
+      q: 2.2,
+      gain: 0.11,
+      pan: -0.15,
+      endPan: 0.35,
+    });
+    // New key sliding down and locking cleanly into the seam
+    this.playTone({ freq: 580, endFreq: 340, glide: 0.08, duration: 0.11, type: 'triangle', gain: 0.13, delay: 0.055 });
+    this.playTone({ freq: 740, endFreq: 1020, glide: 0.05, duration: 0.14, type: 'sine', gain: 0.16, delay: 0.12 });
+  }
+
+  /** Slide 07 & 08: Escalating cascading split (level 1 = leaf, level 2 = internal, level 3 = new root crown) */
+  public playCascadeSplit(level = 1): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    const mult = 1 + (Math.max(1, level) - 1) * 0.15;
+    // Physical split thud
+    this.playTone({ freq: 132 * mult, endFreq: 48, glide: 0.26, attack: 0.004, duration: 0.32, type: 'sine', gain: 0.32 });
+    this.playNoise({ duration: 0.13, attack: 0.005, filterType: 'lowpass', freq: 420, gain: 0.14 });
+    // Left & right halves separate in stereo
+    this.playTone({ freq: 440 * mult, endFreq: 587 * mult, glide: 0.12, duration: 0.22, type: 'triangle', gain: 0.11, pan: -0.5 });
+    this.playTone({ freq: 523 * mult, endFreq: 784 * mult, glide: 0.14, duration: 0.26, type: 'sine', gain: 0.11, delay: 0.045, pan: 0.5 });
+    // New Root Crown shimmer when height increases h -> h+1
+    if (level >= 3) {
+      [783.99, 1046.5, 1318.51, 1567.98].forEach((f, i) => {
+        this.playTone({
+          freq: f,
+          duration: 0.4,
+          type: 'sine',
+          gain: 0.09,
+          delay: 0.11 + i * 0.055,
+          pan: i % 2 ? 0.38 : -0.38,
+        });
+      });
+    }
+  }
+
+  /** Slide 09 & 15: Predecessor dive to rightmost leaf + upward crane swap into internal node */
+  public playPredecessorSwap(): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    this.playTone({ freq: 640, endFreq: 310, glide: 0.12, duration: 0.14, type: 'triangle', gain: 0.13, pan: -0.35 });
+    this.playTone({ freq: 340, endFreq: 740, glide: 0.16, duration: 0.24, type: 'sine', gain: 0.14, delay: 0.12, pan: -0.3, endPan: 0 });
+  }
+
+  /** Slide 11 step 5: Empty root removed, tree height shrinks h -> h-1 */
+  public playRootCollapse(): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    // Smooth downward gravity shrink
+    this.playTone({ freq: 230, endFreq: 66, glide: 0.28, attack: 0.006, duration: 0.36, type: 'sine', gain: 0.28 });
+    this.playNoise({ duration: 0.18, attack: 0.01, filterType: 'lowpass', freq: 520, endFreq: 160, gain: 0.11 });
+    // Balanced settling triad at the new shorter root
+    this.playTone({ freq: 392.0, duration: 0.34, type: 'triangle', gain: 0.11, delay: 0.18, pan: -0.25 });
+    this.playTone({ freq: 523.25, duration: 0.4, type: 'sine', gain: 0.11, delay: 0.24, pan: 0.25 });
+  }
+
+  /** Slide 12: Flowchart Q1/Q2/Q3 electro-mechanical logic relay branch click */
+  public playDecisionRelay(branch = 1): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    const tones = [523.25, 659.25, 783.99, 987.77];
+    const f = tones[Math.max(0, Math.min(tones.length - 1, branch - 1))];
+    this.playNoise({ duration: 0.016, attack: 0.0015, filterType: 'bandpass', freq: 2600, q: 2.5, gain: 0.11 });
+    this.playTone({ freq: f, duration: 0.14, type: 'triangle', gain: 0.12, delay: 0.015 });
+  }
+
+  /** Slide 13: Metallic precision knob detent click for selecting order M = 3..6 */
+  public playOrderDial(mVal: number): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    const idx = Math.max(0, Math.min(3, mVal - 3));
+    const freqs = [480, 580, 700, 840];
+    this.playNoise({ duration: 0.014, attack: 0.001, filterType: 'highpass', freq: 2800, gain: 0.1 });
+    this.playTone({ freq: freqs[idx], endFreq: freqs[idx] * 1.08, glide: 0.04, attack: 0.002, duration: 0.09, type: 'triangle', gain: 0.13 });
+  }
+
+  /** Code Zoom modal macro lens focus click */
+  public playCodeZoom(open: boolean): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    this.playNoise({
+      duration: 0.032,
+      attack: 0.002,
+      filterType: 'bandpass',
+      freq: open ? 1800 : 2800,
+      endFreq: open ? 3200 : 1400,
+      q: 2.2,
+      gain: 0.12,
+    });
+    this.playTone({
+      freq: open ? 520 : 760,
+      endFreq: open ? 860 : 440,
+      glide: 0.075,
+      duration: 0.12,
+      type: 'sine',
+      gain: 0.1,
+    });
+  }
+
+  /** Slide 18: Exponential fan-out bloom (N_max) vs sparse minimum skeleton (N_min) */
+  public playTreeGrowth(mode: 'max' | 'min'): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    if (mode === 'max') {
+      const notes = [392.0, 523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((f, i) => {
+        this.playTone({
+          freq: f,
+          duration: 0.3,
+          type: 'triangle',
+          gain: 0.1,
+          delay: i * 0.045,
+          pan: -0.55 + i * 0.275,
+        });
+      });
+    } else {
+      const notes = [329.63, 440.0, 523.25];
+      notes.forEach((f, i) => {
+        this.playTone({
+          freq: f,
+          duration: 0.2,
+          type: 'sine',
+          gain: 0.1,
+          delay: i * 0.08,
+          pan: i === 0 ? 0 : i === 1 ? -0.35 : 0.35,
+        });
+      });
+    }
+  }
+
+  /** Slide 20: Geometric probability tail decay bells (each level rings softer & higher) */
+  public playDecayProbability(level = 1): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    const notes = [587.33, 739.99, 880.0, 1174.66];
+    const startIdx = Math.max(0, Math.min(2, level - 1));
+    for (let i = startIdx; i < notes.length; i++) {
+      const step = i - startIdx;
+      this.playTone({
+        freq: notes[i],
+        duration: 0.36,
+        type: 'sine',
+        gain: 0.12 * Math.pow(0.62, step),
+        delay: step * 0.075,
+        pan: -0.3 + step * 0.25,
+      });
+    }
+  }
+
+  /** Slide 21: Ultra-fast silicon RAM pulse vs heavy mechanical HDD disk seek */
+  public playRamVsDisk(mode: 'ram' | 'disk'): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    if (mode === 'ram') {
+      // Crisp nanosecond silicon burst
+      [1480, 1975, 2637].forEach((f, i) => {
+        this.playTone({ freq: f, attack: 0.0015, duration: 0.055, type: 'sine', gain: 0.09, delay: i * 0.025, pan: -0.2 + i * 0.2 });
+      });
+    } else {
+      // Heavy mechanical actuator seek + low platter inertia
+      this.playDiskSeek();
+      this.playTone({ freq: 92, endFreq: 76, glide: 0.22, duration: 0.28, type: 'triangle', gain: 0.15, lpFreq: 340, delay: 0.04 });
+    }
+  }
+
+  /** Slide 22: Recursion call-stack frame push / pop chirp */
+  public playStackFrame(action: 'push' | 'pop'): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    const seq = action === 'push' ? [440, 554.37, 659.25] : [659.25, 554.37, 440];
+    seq.forEach((f, i) => {
+      this.playTone({ freq: f, attack: 0.003, duration: 0.11, type: 'triangle', gain: 0.1, delay: i * 0.045 });
+    });
+  }
+
+  /** Slide 26: Signature B* Tree 2-into-3 Tri-Split (thud + 3 stereo voices Left/Center/Right) */
+  public playBStarSplit2to3(): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    // Deep split impulse
+    this.playTone({ freq: 128, endFreq: 50, glide: 0.26, attack: 0.004, duration: 0.32, type: 'sine', gain: 0.32 });
+    this.playNoise({ duration: 0.12, attack: 0.005, filterType: 'lowpass', freq: 400, gain: 0.13 });
+    // 3 balanced nodes locking in stereo: Left (-0.68), Center (0), Right (+0.68)
+    this.playTone({ freq: 440.0, duration: 0.28, type: 'triangle', gain: 0.12, delay: 0.05, pan: -0.68 });
+    this.playTone({ freq: 554.37, duration: 0.3, type: 'triangle', gain: 0.12, delay: 0.11, pan: 0 });
+    this.playTone({ freq: 659.25, duration: 0.34, type: 'sine', gain: 0.12, delay: 0.17, pan: 0.68 });
+  }
+
+  /** Slides 29 & 30: XFS dual B+ tree (bnobt left + cntbt right) lockstep sync */
+  public playXfsDualIndexSync(action: 'alloc' | 'coalesce'): void {
+    if (!this.isReady()) return;
+    this.notifyPulse();
+    if (action === 'alloc') {
+      // Crisp 10-block slice cut
+      this.playNoise({ duration: 0.02, attack: 0.002, filterType: 'bandpass', freq: 2250, q: 2.8, gain: 0.15 });
+      // Left channel: bnobt in-place update tap
+      this.playTone({ freq: 493.88, duration: 0.14, type: 'triangle', gain: 0.13, delay: 0.04, pan: -0.58 });
+      // Right channel: cntbt cross-leaf jump downward glide (length 12 -> 2)
+      this.playTone({ freq: 740.0, endFreq: 370.0, glide: 0.16, duration: 0.22, type: 'sine', gain: 0.13, delay: 0.1, pan: 0.58 });
+    } else {
+      // Two adjacent free extents magnetically snapping together
+      this.playNoise({ duration: 0.018, attack: 0.002, filterType: 'bandpass', freq: 1850, q: 2.5, gain: 0.13 });
+      // Left bnobt & right cntbt jumping back into synchronized harmony
+      this.playTone({ freq: 392.0, endFreq: 523.25, glide: 0.13, duration: 0.22, type: 'triangle', gain: 0.13, delay: 0.03, pan: -0.52 });
+      this.playTone({ freq: 440.0, endFreq: 659.25, glide: 0.15, duration: 0.26, type: 'sine', gain: 0.13, delay: 0.085, pan: 0.52 });
+      this.playTone({ freq: 783.99, duration: 0.36, type: 'sine', gain: 0.11, delay: 0.15, pan: 0 });
+    }
+  }
 }
 
 export const soundFx = new SoundEngine();

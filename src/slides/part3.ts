@@ -1167,7 +1167,10 @@ function playPyDemoStep(
       if (step > 0) soundFx.playKeystroke('\n');
       rt.timerId = window.setTimeout(() => {
         rt.timerId = null;
-        if (step > 0) soundFx.playTerminalRun();
+        if (step === 1) soundFx.playCascadeSplit(1);
+        else if (step === 2) soundFx.playCascadeSplit(2);
+        else if (step === 3) soundFx.playTerminalRun();
+        else if (step === 4) soundFx.playBorrowRotate();
         finishStep();
       }, 170);
     }

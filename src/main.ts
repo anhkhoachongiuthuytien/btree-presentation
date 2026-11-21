@@ -103,9 +103,37 @@ function playSemanticStepSound(
   theme: ChapterSoundTheme,
 ): void {
   switch (slideNumber) {
-    case 6: // Search(17)
+    case 1: // Cover: 4 KB Disk Page -> RAM
+      if (step === 1) {
+        soundFx.playPageLoad();
+        return;
+      }
+      if (step === 2) {
+        soundFx.playSparkleChime();
+        return;
+      }
+      break;
+    case 3: // Problem scale: 1 billion keys -> few disk reads
+      if (step === 3) {
+        soundFx.playScaleCollapse();
+        return;
+      }
+      break;
+    case 4: // M-way Search Tree 4-gate partition
+      if (step === 2) {
+        soundFx.playIntervalGate(2);
+        return;
+      }
+      break;
+    case 5: // B-tree balanced leaves at identical depth
+      if (step === 3) {
+        soundFx.playBalanceLevel();
+        return;
+      }
+      break;
+    case 6: // Search(17) binary-halving radar
       if (step === 1 || step === 2) {
-        soundFx.playSearchHop(step - 1);
+        soundFx.playBisectProbe(step - 1);
         return;
       }
       if (step === 3) {
@@ -113,9 +141,9 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 7: // Insert & Split
+    case 7: // Insert slot-shift drop-in -> Overflow -> Split
       if (step === 1) {
-        soundFx.playInsertSlide();
+        soundFx.playSlotShiftSlide();
         return;
       }
       if (step === 2) {
@@ -123,27 +151,31 @@ function playSemanticStepSound(
         return;
       }
       if (step === 3) {
-        soundFx.playSplit();
+        soundFx.playCascadeSplit(1);
         return;
       }
       break;
-    case 8: // Cascading Split
-      if (step === 1 || step === 2) {
-        soundFx.playOverflow();
+    case 8: // Cascading Split up to New Root Crown
+      if (step === 1) {
+        soundFx.playCascadeSplit(1);
+        return;
+      }
+      if (step === 2) {
+        soundFx.playCascadeSplit(2);
         return;
       }
       if (step === 3) {
-        soundFx.playSplit();
+        soundFx.playCascadeSplit(3);
         return;
       }
       break;
-    case 9: // Delete Leaf / Internal
+    case 9: // Delete Leaf / Internal Predecessor swap
       if (step === 1) {
         soundFx.playDeletePop();
         return;
       }
       if (step === 2) {
-        soundFx.playSearchHop(1);
+        soundFx.playPredecessorSwap();
         return;
       }
       if (step === 3) {
@@ -169,7 +201,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 11: // Trace Delete(5)
+    case 11: // Trace Delete(5) -> Root Collapse (h -> h-1)
       if (step === 1) {
         soundFx.playDeletePop();
         return;
@@ -183,21 +215,67 @@ function playSemanticStepSound(
         return;
       }
       if (step === 5) {
-        soundFx.playSuccess();
+        soundFx.playRootCollapse();
         return;
       }
       break;
-    case 17: // Live Python typing handles its own mechanical keyboard & stdout sounds
-      return;
-    case 21: // RAM vs Disk I/O
+    case 12: // Delete decision flowchart Q1/Q2/Q3
+      if (step >= 1) {
+        soundFx.playDecisionRelay(step);
+        return;
+      }
+      break;
+    case 15: // Python delete & predecessor
       if (step === 2) {
-        soundFx.playDiskSeek();
+        soundFx.playPredecessorSwap();
+        return;
+      }
+      break;
+    case 17: // Live Python typing handles its own mechanical keyboard & semantic stdout sounds
+      return;
+    case 18: // Tree height N_max vs N_min fan-out
+      if (step === 1) {
+        soundFx.playTreeGrowth('max');
+        return;
+      }
+      if (step === 2) {
+        soundFx.playTreeGrowth('min');
+        return;
+      }
+      if (step === 3) {
+        soundFx.playBalanceLevel();
+        return;
+      }
+      break;
+    case 20: // Average complexity geometric probability decay
+      if (step >= 1 && step <= 3) {
+        soundFx.playDecayProbability(step);
+        return;
+      }
+      break;
+    case 21: // RAM silicon burst vs HDD mechanical seek
+      if (step === 1) {
+        soundFx.playRamVsDisk('ram');
+        return;
+      }
+      if (step === 2) {
+        soundFx.playRamVsDisk('disk');
+        return;
+      }
+      break;
+    case 22: // Space complexity recursion stack push/pop
+      if (step === 2) {
+        soundFx.playStackFrame('push');
+        return;
+      }
+      if (step === 3) {
+        soundFx.playStackFrame('pop');
         return;
       }
       break;
     case 23: // B+ Tree Range Scan
       if (step === 1) {
-        soundFx.playSearchHop(1);
+        soundFx.playBisectProbe(1);
         return;
       }
       if (step === 2) {
@@ -211,7 +289,7 @@ function playSemanticStepSound(
       break;
     case 24: // B+ Tree Copy-up
       if (step === 1) {
-        soundFx.playInsertSlide();
+        soundFx.playSlotShiftSlide();
         return;
       }
       if (step === 2) {
@@ -225,7 +303,7 @@ function playSemanticStepSound(
       break;
     case 25: // B* Tree Redistribute
       if (step === 1) {
-        soundFx.playInsertSlide();
+        soundFx.playSlotShiftSlide();
         return;
       }
       if (step === 2) {
@@ -233,7 +311,7 @@ function playSemanticStepSound(
         return;
       }
       if (step === 3) {
-        soundFx.playSuccess();
+        soundFx.playBalanceLevel();
         return;
       }
       break;
@@ -243,7 +321,7 @@ function playSemanticStepSound(
         return;
       }
       if (step === 2) {
-        soundFx.playSplit();
+        soundFx.playBStarSplit2to3();
         return;
       }
       if (step === 3) {
@@ -267,25 +345,25 @@ function playSemanticStepSound(
         return;
       }
       if (step === 2) {
-        soundFx.playDiskAlloc();
+        soundFx.playXfsDualIndexSync('alloc');
         return;
       }
       if (step === 4) {
-        soundFx.playDiskCoalesce();
+        soundFx.playXfsDualIndexSync('coalesce');
         return;
       }
       break;
-    case 30: // XFS Alloc & Reclaim
+    case 30: // XFS Alloc & Reclaim dual B+ tree sync
       if (step === 2) {
-        soundFx.playDiskAlloc();
+        soundFx.playXfsDualIndexSync('alloc');
         return;
       }
       if (step === 3) {
-        soundFx.playDiskCoalesce();
+        soundFx.playXfsDualIndexSync('coalesce');
         return;
       }
       if (step === 4) {
-        soundFx.playSuccess();
+        soundFx.playSparkleChime();
         return;
       }
       break;
@@ -387,13 +465,13 @@ function openCodeZoom(title: string, startLine: number, endLine: number, highlig
     zoomable: false,
   });
   codeZoomModal.hidden = false;
-  soundFx.playModal(true);
+  soundFx.playCodeZoom(true);
   codeZoomBody.focus();
 }
 
 function closeCodeZoom(): void {
   codeZoomModal.hidden = true;
-  soundFx.playModal(false);
+  soundFx.playCodeZoom(false);
   if (!isAnyModalOpen() && savedFocusBeforeModal) {
     savedFocusBeforeModal.focus();
     savedFocusBeforeModal = null;
@@ -826,10 +904,10 @@ window.addEventListener(
       const sim = s29Sim.dataset.s29Sim;
       if (sim === '2') {
         spawnRipple(ev.clientX, ev.clientY, 'amber');
-        soundFx.playDiskAlloc();
+        soundFx.playXfsDualIndexSync('alloc');
       } else if (sim === '3') {
         spawnRipple(ev.clientX, ev.clientY, 'emerald');
-        soundFx.playDiskCoalesce();
+        soundFx.playXfsDualIndexSync('coalesce');
       } else {
         spawnRipple(ev.clientX, ev.clientY, 'cobalt');
         soundFx.playClick();
@@ -849,15 +927,20 @@ window.addEventListener(
       return;
     }
 
-    if (target.closest('[data-mval]')) {
+    const mBtn = target.closest<HTMLElement>('[data-mval]');
+    if (mBtn) {
       spawnRipple(ev.clientX, ev.clientY, 'cobalt');
-      soundFx.playInsertSlide();
+      soundFx.playOrderDial(Number(mBtn.dataset.mval ?? 4));
       return;
     }
 
-    if (target.closest('[data-s04-probe]')) {
-      spawnRipple(ev.clientX, ev.clientY, 'emerald');
-      soundFx.playSearchHop(1);
+    const s04Btn = target.closest<HTMLElement>('.s04-probe-btn');
+    if (s04Btn) {
+      const val = Number(s04Btn.dataset.probe ?? 65);
+      const isDirect = val === 50;
+      const port = val < 20 ? 0 : val < 50 ? 1 : val < 80 ? 2 : 3;
+      spawnRipple(ev.clientX, ev.clientY, isDirect ? 'emerald' : 'cobalt');
+      soundFx.playIntervalGate(port, isDirect);
       return;
     }
 
