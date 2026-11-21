@@ -36,8 +36,8 @@ const slide01: SlideDef = {
       <div class="cover-layout">
         <div class="cover-left">
           <div class="cover-left-top">
-            <span class="cover-chip-top">DATA STRUCTURE</span>
-            <span class="cover-chip-sec">INDEXING &amp; EXTERNAL MEMORY</span>
+            <span class="cover-chip-top">NHÓM 10 · CTDL &amp; GT</span>
+            <span class="cover-chip-sec">EXTERNAL MEMORY INDEX</span>
           </div>
           <div class="cover-illus" data-role="illus"></div>
           <div class="cover-left-foot">
@@ -50,136 +50,33 @@ const slide01: SlideDef = {
           <div class="cover-title-block">
             <div class="cover-eyebrow">
               <span class="cover-eyebrow__dot"></span>
-              <span>NHÓM 10 · CẤU TRÚC DỮ LIỆU</span>
+              <span>CẤU TRÚC DỮ LIỆU &amp; GIẢI THUẬT</span>
             </div>
             <h1 class="cover-title">B-tree,<br/><span>Các cải tiến và ứng dụng</span></h1>
-            <div class="cover-rule" aria-hidden="true"></div>
+            <div class="cover-rule" aria-hidden="true"><span></span></div>
           </div>
           <div class="cover-tree-stage" data-role="tree"></div>
-          <div class="cover-caption" data-role="caption">Nhấn <strong>→</strong> hoặc click nền để mở trang đĩa thành cây B-tree</div>
+          <div class="cover-bottom">
+            <div class="cover-caption" data-role="caption">Nhấn <strong>→</strong> để mở một trang dữ liệu từ ổ đĩa.</div>
+            <div class="cover-step-pills" data-role="cover-pills">
+              <button type="button" class="cov-pill is-on" data-cstep="0">01 Trang đĩa</button>
+              <button type="button" class="cov-pill" data-cstep="1">02 Nút gốc</button>
+              <button type="button" class="cov-pill" data-cstep="2">03 Cây B-tree</button>
+            </div>
+          </div>
         </div>
       </div>
     `;
+
+    ctx.slideEl.querySelectorAll<HTMLButtonElement>('.cov-pill').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        renderCoverStep(ctx.slideEl, Number(btn.dataset.cstep), ctx.getReducedMotion());
+      });
+    });
   },
   renderStep(step, _prev, ctx) {
-    const illus = ctx.slideEl.querySelector<HTMLElement>('[data-role="illus"]')!;
-    const treeBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
-    const cap = ctx.slideEl.querySelector<HTMLElement>('[data-role="caption"]')!;
-
-    illus.innerHTML = coverHardwareSvg(step >= 1);
-
-    const scene: TreeSceneSpec =
-      step === 0
-        ? {
-            viewBox: [0, 0, 560, 260],
-            nodes: [],
-            edges: [],
-            overlaySvg: `
-              <g transform="translate(88, 42)">
-                <!-- 3D Page block -->
-                <polygon points="0,18 12,6 396,6 384,18" fill="#93C5FD" stroke="#004AAD" stroke-width="1.8" stroke-linejoin="round" />
-                <polygon points="384,18 396,6 396,158 384,170" fill="#5284FF" stroke="#004AAD" stroke-width="1.8" stroke-linejoin="round" />
-                <rect x="0" y="18" width="384" height="152" fill="#FFFFFF" stroke="#004AAD" stroke-width="2.2" />
-                <!-- Header strip -->
-                <rect x="0" y="18" width="384" height="34" fill="#EEF7FF" stroke="#004AAD" stroke-width="1.6" />
-                <text x="16" y="40" fill="#004AAD" font-size="13" font-weight="800" font-family="'IBM Plex Mono', monospace">PAGE #001 · 4 KB</text>
-                <text x="368" y="40" text-anchor="end" fill="#5284FF" font-size="12" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Sẵn sàng mở</text>
-                <!-- Preview key slots inside page -->
-                <rect x="24" y="72" width="104" height="44" rx="4" fill="#EEF7FF" stroke="#004AAD" stroke-width="1.6" />
-                <rect x="140" y="72" width="104" height="44" rx="4" fill="#EEF7FF" stroke="#004AAD" stroke-width="1.6" />
-                <rect x="256" y="72" width="104" height="44" rx="4" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="4 3" />
-                <text x="76" y="99" text-anchor="middle" fill="#004AAD" font-size="16" font-weight="800" font-family="'IBM Plex Mono', monospace">10</text>
-                <text x="192" y="99" text-anchor="middle" fill="#004AAD" font-size="16" font-weight="800" font-family="'IBM Plex Mono', monospace">20</text>
-                <text x="308" y="99" text-anchor="middle" fill="#94A3B8" font-size="12.5" font-weight="600" font-family="'IBM Plex Mono', monospace">trống</text>
-                <text x="192" y="148" text-anchor="middle" fill="#334155" font-size="13.5" font-weight="600" font-family="'Be Vietnam Pro', sans-serif">Một nút B-tree ánh xạ trực tiếp một trang dữ liệu trên đĩa</text>
-              </g>
-            `,
-          }
-        : step === 1
-          ? {
-              viewBox: [0, 0, 560, 260],
-              nodes: [
-                {
-                  id: 'root',
-                  x: 280,
-                  y: 72,
-                  cellW: 66,
-                  cellH: 48,
-                  showPorts: true,
-                  state: 'active',
-                  tag: 'Gốc · 1 trang đĩa',
-                  tagTone: 'cobalt',
-                  keys: [
-                    { id: 'c-10', label: '10', tone: 'active' },
-                    { id: 'c-20', label: '20', tone: 'active' },
-                  ],
-                },
-              ],
-              edges: [],
-            }
-          : {
-              viewBox: [0, 0, 560, 260],
-              nodes: [
-                {
-                  id: 'root',
-                  x: 280,
-                  y: 66,
-                  cellW: 64,
-                  cellH: 46,
-                  showPorts: true,
-                  tag: 'Gốc [10 | 20]',
-                  tagTone: 'cobalt',
-                  keys: [
-                    { id: 'c-10', label: '10' },
-                    { id: 'c-20', label: '20' },
-                  ],
-                },
-                {
-                  id: 'l0',
-                  x: 105,
-                  y: 184,
-                  cellW: 56,
-                  cellH: 44,
-                  keys: [
-                    { id: 'c-5', label: '5', tone: 'success' },
-                    { id: 'c-6', label: '6', tone: 'success' },
-                  ],
-                },
-                {
-                  id: 'l1',
-                  x: 280,
-                  y: 184,
-                  cellW: 56,
-                  cellH: 44,
-                  keys: [
-                    { id: 'c-12', label: '12', tone: 'success' },
-                    { id: 'c-17', label: '17', tone: 'success' },
-                  ],
-                },
-                {
-                  id: 'l2',
-                  x: 455,
-                  y: 184,
-                  cellW: 56,
-                  cellH: 44,
-                  keys: [{ id: 'c-30', label: '30', tone: 'success' }],
-                },
-              ],
-              edges: [
-                { id: 'e0', fromNode: 'root', portIndex: 0, toNode: 'l0', state: 'active', arrow: true },
-                { id: 'e1', fromNode: 'root', portIndex: 1, toNode: 'l1', state: 'active', arrow: true },
-                { id: 'e2', fromNode: 'root', portIndex: 2, toNode: 'l2', state: 'active', arrow: true },
-              ],
-              baselineY: { y: 222, x1: 35, x2: 525, label: 'Mọi nút lá nằm cùng một mức' },
-            };
-
-    renderTreeScene(treeBox, scene, { reducedMotion: ctx.getReducedMotion() });
-    cap.innerHTML =
-      step === 0
-        ? 'Nhấn <strong>→</strong> để mở một trang dữ liệu từ ổ đĩa.'
-        : step === 1
-          ? 'Đường bus truyền 1 trang dữ liệu lên RAM thành nút gốc <code>[10 | 20]</code> với 3 cổng con.'
-          : 'Ba nhánh dẫn tới <code>[5|6]</code>, <code>[12|17]</code>, <code>[30]</code> nằm thẳng hàng trên cùng độ sâu.';
+    renderCoverStep(ctx.slideEl, step, ctx.getReducedMotion());
   },
   cancelAnimations(slideEl) {
     const t = slideEl.querySelector<HTMLElement>('[data-role="tree"]');
@@ -187,15 +84,140 @@ const slide01: SlideDef = {
   },
 };
 
+function renderCoverStep(slideEl: HTMLElement, step: number, reducedMotion: boolean): void {
+  const illus = slideEl.querySelector<HTMLElement>('[data-role="illus"]')!;
+  const treeBox = slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
+  const cap = slideEl.querySelector<HTMLElement>('[data-role="caption"]')!;
+
+  illus.innerHTML = coverHardwareSvg(step >= 1);
+  slideEl.querySelectorAll<HTMLElement>('.cov-pill').forEach((p) => {
+    p.classList.toggle('is-on', Number(p.dataset.cstep) === step);
+  });
+
+  const scene: TreeSceneSpec =
+    step === 0
+      ? {
+          viewBox: [0, 0, 560, 260],
+          nodes: [],
+          edges: [],
+          overlaySvg: `
+            <g transform="translate(50, 34)">
+              <!-- 3D Page block (wide, well-padded) -->
+              <polygon points="0,18 14,4 468,4 454,18" fill="#93C5FD" stroke="#004AAD" stroke-width="1.8" stroke-linejoin="round" />
+              <polygon points="454,18 468,4 468,166 454,180" fill="#3B82F6" stroke="#004AAD" stroke-width="1.8" stroke-linejoin="round" />
+              <rect x="0" y="18" width="454" height="162" fill="#FFFFFF" stroke="#004AAD" stroke-width="2" />
+              <!-- Header strip -->
+              <rect x="0" y="18" width="454" height="36" fill="#E6F0FF" stroke="#004AAD" stroke-width="1.5" />
+              <text x="18" y="41" fill="#0B1B59" font-size="13.5" font-weight="800" font-family="'IBM Plex Mono', monospace">PAGE #001 · 4 KB</text>
+              <rect x="344" y="25" width="96" height="22" rx="3" fill="#004AAD" />
+              <text x="392" y="40" text-anchor="middle" fill="#FEF08A" font-size="11.2" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Sẵn sàng mở</text>
+              <!-- Preview key slots inside page -->
+              <rect x="26" y="74" width="124" height="48" rx="3" fill="#EEF7FF" stroke="#004AAD" stroke-width="1.8" />
+              <rect x="165" y="74" width="124" height="48" rx="3" fill="#EEF7FF" stroke="#004AAD" stroke-width="1.8" />
+              <rect x="304" y="74" width="124" height="48" rx="3" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.6" stroke-dasharray="5 3" />
+              <text x="88" y="104" text-anchor="middle" fill="#004AAD" font-size="17" font-weight="800" font-family="'IBM Plex Mono', monospace">10</text>
+              <text x="227" y="104" text-anchor="middle" fill="#004AAD" font-size="17" font-weight="800" font-family="'IBM Plex Mono', monospace">20</text>
+              <text x="366" y="103" text-anchor="middle" fill="#94A3B8" font-size="13" font-weight="700" font-family="'IBM Plex Mono', monospace">ô trống</text>
+              <text x="227" y="156" text-anchor="middle" fill="#334155" font-size="13.5" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Một nút B-tree ánh xạ trực tiếp 1 trang dữ liệu (4–16 KB)</text>
+            </g>
+          `,
+        }
+      : step === 1
+        ? {
+            viewBox: [0, 0, 560, 260],
+            nodes: [
+              {
+                id: 'root',
+                x: 280,
+                y: 88,
+                cellW: 72,
+                cellH: 50,
+                showPorts: true,
+                state: 'active',
+                tag: 'Nút gốc · nạp từ 1 trang đĩa (3 cổng con)',
+                tagTone: 'cobalt',
+                keys: [
+                  { id: 'c-10', label: '10', tone: 'active' },
+                  { id: 'c-20', label: '20', tone: 'active' },
+                ],
+              },
+            ],
+            edges: [],
+          }
+        : {
+            viewBox: [0, 0, 560, 260],
+            nodes: [
+              {
+                id: 'root',
+                x: 280,
+                y: 66,
+                cellW: 64,
+                cellH: 46,
+                showPorts: true,
+                tag: 'Gốc [10 | 20]',
+                tagTone: 'cobalt',
+                keys: [
+                  { id: 'c-10', label: '10' },
+                  { id: 'c-20', label: '20' },
+                ],
+              },
+              {
+                id: 'l0',
+                x: 105,
+                y: 184,
+                cellW: 56,
+                cellH: 44,
+                keys: [
+                  { id: 'c-5', label: '5', tone: 'success' },
+                  { id: 'c-6', label: '6', tone: 'success' },
+                ],
+              },
+              {
+                id: 'l1',
+                x: 280,
+                y: 184,
+                cellW: 56,
+                cellH: 44,
+                keys: [
+                  { id: 'c-12', label: '12', tone: 'success' },
+                  { id: 'c-17', label: '17', tone: 'success' },
+                ],
+              },
+              {
+                id: 'l2',
+                x: 455,
+                y: 184,
+                cellW: 56,
+                cellH: 44,
+                keys: [{ id: 'c-30', label: '30', tone: 'success' }],
+              },
+            ],
+            edges: [
+              { id: 'e0', fromNode: 'root', portIndex: 0, toNode: 'l0', state: 'active', arrow: true },
+              { id: 'e1', fromNode: 'root', portIndex: 1, toNode: 'l1', state: 'active', arrow: true },
+              { id: 'e2', fromNode: 'root', portIndex: 2, toNode: 'l2', state: 'active', arrow: true },
+            ],
+            baselineY: { y: 222, x1: 35, x2: 525, label: 'Mọi nút lá nằm cùng một mức' },
+          };
+
+  renderTreeScene(treeBox, scene, { reducedMotion });
+  cap.innerHTML =
+    step === 0
+      ? 'Nhấn <strong>→</strong> để mở 1 trang dữ liệu từ ổ đĩa lên RAM.'
+      : step === 1
+        ? 'Bus dữ liệu nạp 1 trang thành nút gốc <code>[10 | 20]</code> với 3 cổng con.'
+        : '3 lá <code>[5|6]</code>, <code>[12|17]</code>, <code>[30]</code> thẳng hàng trên cùng độ sâu.';
+}
+
 // ============================================================================
-// SLIDE 02 — Nội dung trình bày (TOC)
+// SLIDE 02 — Nội dung trình bày (TOC — Editorial Roadmap)
 // ============================================================================
 const TOC_ITEMS = [
-  { num: '01', title: 'Bài toán và cơ sở lý thuyết', target: 3, range: 'Trang 03–05' },
-  { num: '02', title: 'Tìm kiếm, chèn và xóa trên B-tree', target: 6, range: 'Trang 06–12' },
-  { num: '03', title: 'Cài đặt Python và trực quan hóa', target: 13, range: 'Trang 13–17' },
-  { num: '04', title: 'Độ phức tạp thời gian và không gian', target: 18, range: 'Trang 18–22' },
-  { num: '05', title: 'Các biến thể và ứng dụng', target: 23, range: 'Trang 23–30', dest: 'Đích: XFS (2 cây B+)' },
+  { num: '01', title: 'Bài toán và cơ sở lý thuyết', sub: 'Bộ nhớ ngoài, M-way Search Tree & 4 tính chất B-tree', target: 3, range: 'Trang 03–05' },
+  { num: '02', title: 'Tìm kiếm, chèn và xóa trên B-tree', sub: 'Search(17), Insert + Split, Delete + Borrow / Merge', target: 6, range: 'Trang 06–12' },
+  { num: '03', title: 'Cài đặt Python và trực quan hóa', sub: 'Lớp BTreeNode, BTree, xử lý tách/gộp & chạy thử live', target: 13, range: 'Trang 13–17' },
+  { num: '04', title: 'Độ phức tạp thời gian và không gian', sub: 'Chiều cao h, thao tác, kỳ vọng trung bình, RAM/I/O & bộ nhớ', target: 18, range: 'Trang 18–22' },
+  { num: '05', title: 'Các biến thể và ứng dụng', sub: 'B+ Tree, B* Tree, InnoDB, HFS+ & bài toán XFS (2 cây B+)', target: 23, range: 'Trang 23–30', dest: 'Đích: XFS' },
 ];
 
 const slide02: SlideDef = {
@@ -226,34 +248,40 @@ const slide02: SlideDef = {
   },
   mount(ctx) {
     ctx.slideEl.innerHTML = `
-      <div class="toc-corner-tl" aria-hidden="true"></div>
-      <div class="toc-corner-br" aria-hidden="true"></div>
       <div class="toc-layout">
-        <div class="toc-left">
-          <div class="toc-kicker">
-            <span class="toc-kicker__tag">Data Structure</span>
-            <span class="toc-kicker__sub">Triển khai cấu trúc dữ liệu B-tree</span>
+        <aside class="toc-left">
+          <div class="toc-hero-head">
+            <span class="toc-kicker__tag">LỘ TRÌNH BÀI GIẢNG</span>
+            <h1 class="toc-heading">NỘI DUNG<br/><span>TRÌNH BÀY</span></h1>
           </div>
           <div class="toc-server">${tocServerSvg()}</div>
-        </div>
+          <div class="toc-stats">
+            <div><strong>05</strong><span>Chương</span></div>
+            <div><strong>30</strong><span>Trang</span></div>
+            <div><strong>Live</strong><span>Demo Python</span></div>
+          </div>
+        </aside>
+
         <div class="toc-right">
-          <h1 class="toc-heading">NỘI DUNG<br/>TRÌNH BÀY</h1>
           <div class="toc-list" data-role="list">
             <div class="toc-rail" data-role="rail" aria-hidden="true"></div>
             ${TOC_ITEMS.map(
               (item, idx) => `
               <button type="button" class="toc-bar" data-toc-idx="${idx}" data-target-slide="${item.target}">
-                <span class="toc-bar__num">${item.num}.</span>
+                <span class="toc-bar__num">${item.num}</span>
                 <span class="toc-bar__body">
                   <span class="toc-bar__title">${item.title}</span>
-                  <span class="toc-bar__meta">${item.range}${item.dest ? ` · <strong class="toc-dest" data-role="xfs-dest">${item.dest}</strong>` : ''}</span>
+                  <span class="toc-bar__sub">${item.sub}</span>
                 </span>
-                <span class="toc-bar__line" aria-hidden="true"></span>
+                <span class="toc-bar__right">
+                  ${item.dest ? `<strong class="toc-dest" data-role="xfs-dest">${item.dest}</strong>` : ''}
+                  <span class="toc-bar__range">${item.range}</span>
+                </span>
               </button>
             `,
             ).join('')}
           </div>
-          <p class="toc-hint">Mẹo: nhấn trực tiếp vào một phần để nhảy thẳng tới trang đầu phần đó.</p>
+          <p class="toc-hint">Nhấn trực tiếp vào bất kỳ chương nào để nhảy thẳng tới trang đầu chương đó.</p>
         </div>
       </div>
     `;
@@ -278,7 +306,7 @@ const slide02: SlideDef = {
       if ((step === 1 && idx === 1) || (step === 2 && idx === 4)) b.classList.add('is-focus');
     });
 
-    rail.style.height = step === 0 ? '0%' : step === 1 ? '40%' : '96%';
+    rail.style.height = step === 0 ? '0%' : step === 1 ? '44%' : '94%';
     if (dest) dest.classList.toggle('is-visible', step >= 2);
   },
 };

@@ -287,7 +287,8 @@ interface S18CompareSpec {
 function buildS18Compare(opIdx: number): S18CompareSpec {
   if (opIdx === 2) {
     // INSERT (M = 3: 1..2 khóa/nút, tràn ở 3 khóa)
-    // Best: 2 bước (1/2 -> 2/2) · Worst: 4 bước (1/4 -> 4/4, 15 nút hợp lệ hoàn toàn ở h = 3!)
+    // Best: 3 bước (Search + ô 35 bên ngoài -> cho vào lá -> hợp lệ)
+    // Worst: 5 bước (Search + ô 24 bên ngoài -> cho vào làm tràn lá -> tràn cha -> tràn gốc -> tách gốc h=3 hợp lệ)
     return {
       opName: 'Insert',
       bestTitle: 'Thuận lợi · Chèn cuối lá còn chỗ (M = 3)',
@@ -296,17 +297,18 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
       worstCost: 'O(M(h + 1))',
       bestPhases: [
         {
-          label: '1/2 · Tìm xuống lá [25 | _] còn chỗ',
+          label: '1/3 · Search tìm lá [25 | _] · khóa 35 chờ chèn',
           scene: {
-            viewBox: [0, 0, 520, 206],
+            viewBox: [0, 0, 520, 212],
             nodes: [
-              { id: 'ib-r', x: 260, y: 32, cellW: 44, cellH: 26, state: 'active', keys: [{ id: 'ib-40', label: '40', tone: 'active' }] },
-              { id: 'ib-i0', x: 145, y: 92, cellW: 40, cellH: 25, state: 'active', keys: [{ id: 'ib-20', label: '20', tone: 'active' }] },
-              { id: 'ib-i1', x: 375, y: 92, cellW: 40, cellH: 25, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
-              { id: 'ib-l0', x: 74, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'ib-10', label: '10', tone: 'muted' }] },
-              { id: 'ib-l1', x: 205, y: 152, capacity: 2, cellW: 40, cellH: 25, tag: 'Còn 1 ô trống cuối lá', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'ib-25', label: '25' }] },
-              { id: 'ib-l2', x: 325, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'ib-55', label: '55', tone: 'muted' }] },
-              { id: 'ib-l3', x: 435, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
+              { id: 'ib-r', x: 260, y: 26, cellW: 42, cellH: 25, state: 'active', keys: [{ id: 'ib-40', label: '40', tone: 'active' }] },
+              { id: 'ib-i0', x: 145, y: 84, cellW: 38, cellH: 24, state: 'active', keys: [{ id: 'ib-20', label: '20', tone: 'active' }] },
+              { id: 'ib-i1', x: 385, y: 84, cellW: 38, cellH: 24, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
+              { id: 'ib-l0', x: 68, y: 142, cellW: 34, cellH: 23, state: 'muted', keys: [{ id: 'ib-10', label: '10', tone: 'muted' }] },
+              { id: 'ib-l1', x: 205, y: 142, capacity: 2, cellW: 38, cellH: 24, state: 'active', keys: [{ id: 'ib-25', label: '25' }] },
+              { id: 'ib-l2', x: 342, y: 142, cellW: 34, cellH: 23, state: 'muted', keys: [{ id: 'ib-55', label: '55', tone: 'muted' }] },
+              { id: 'ib-l3', x: 446, y: 142, cellW: 34, cellH: 23, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
+              { id: 'ib-ext', x: 224, y: 194, cellW: 38, cellH: 23, state: 'highlight-box', tag: 'Khóa mới 35 → vào ô trống', tagPos: 'right', tagTone: 'warn', keys: [{ id: 'ib-35', label: '35', tone: 'active' }] },
             ],
             edges: [
               { id: 'ibe0', fromNode: 'ib-r', portIndex: 0, toNode: 'ib-i0', state: 'active', arrow: true },
@@ -316,21 +318,46 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'ibe4', fromNode: 'ib-i1', portIndex: 0, toNode: 'ib-l2', state: 'muted' },
               { id: 'ibe5', fromNode: 'ib-i1', portIndex: 1, toNode: 'ib-l3', state: 'muted' },
             ],
-            chips: [{ id: 'ib-ch', x: 350, y: 34, text: 'Chèn 35', tone: 'active' }],
+            transfers: [
+              { id: 'ib-in', fromX: 224, fromY: 180, toX: 224, toY: 156, ctrlX: 224, ctrlY: 168, tone: 'warn' },
+            ],
           },
         },
         {
-          label: '2/2 · Đặt 35 cuối lá → Hợp lệ ngay!',
+          label: '2/3 · Đưa 35 vào ô trống cuối lá (0 dịch mảng)',
           scene: {
-            viewBox: [0, 0, 520, 206],
+            viewBox: [0, 0, 520, 212],
             nodes: [
-              { id: 'ib-r', x: 260, y: 32, cellW: 44, cellH: 26, keys: [{ id: 'ib-40', label: '40' }] },
-              { id: 'ib-i0', x: 145, y: 92, cellW: 40, cellH: 25, keys: [{ id: 'ib-20', label: '20' }] },
-              { id: 'ib-i1', x: 375, y: 92, cellW: 40, cellH: 25, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
-              { id: 'ib-l0', x: 74, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'ib-10', label: '10', tone: 'muted' }] },
-              { id: 'ib-l1', x: 205, y: 152, capacity: 2, cellW: 40, cellH: 25, state: 'success', tag: '0 dịch mảng · 0 split · Hợp lệ', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-35', label: '35', tone: 'success' }] },
-              { id: 'ib-l2', x: 325, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'ib-55', label: '55', tone: 'muted' }] },
-              { id: 'ib-l3', x: 435, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
+              { id: 'ib-r', x: 260, y: 26, cellW: 42, cellH: 25, keys: [{ id: 'ib-40', label: '40' }] },
+              { id: 'ib-i0', x: 145, y: 84, cellW: 38, cellH: 24, keys: [{ id: 'ib-20', label: '20' }] },
+              { id: 'ib-i1', x: 385, y: 84, cellW: 38, cellH: 24, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
+              { id: 'ib-l0', x: 68, y: 142, cellW: 34, cellH: 23, state: 'muted', keys: [{ id: 'ib-10', label: '10', tone: 'muted' }] },
+              { id: 'ib-l1', x: 205, y: 142, capacity: 2, cellW: 38, cellH: 24, state: 'active', tag: 'Đã chèn 35 vào cuối lá', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-35', label: '35', tone: 'active' }] },
+              { id: 'ib-l2', x: 342, y: 142, cellW: 34, cellH: 23, state: 'muted', keys: [{ id: 'ib-55', label: '55', tone: 'muted' }] },
+              { id: 'ib-l3', x: 446, y: 142, cellW: 34, cellH: 23, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
+            ],
+            edges: [
+              { id: 'ibe0', fromNode: 'ib-r', portIndex: 0, toNode: 'ib-i0' },
+              { id: 'ibe1', fromNode: 'ib-r', portIndex: 1, toNode: 'ib-i1', state: 'muted' },
+              { id: 'ibe2', fromNode: 'ib-i0', portIndex: 0, toNode: 'ib-l0', state: 'muted' },
+              { id: 'ibe3', fromNode: 'ib-i0', portIndex: 1, toNode: 'ib-l1', state: 'active' },
+              { id: 'ibe4', fromNode: 'ib-i1', portIndex: 0, toNode: 'ib-l2', state: 'muted' },
+              { id: 'ibe5', fromNode: 'ib-i1', portIndex: 1, toNode: 'ib-l3', state: 'muted' },
+            ],
+          },
+        },
+        {
+          label: '3/3 · Cây hợp lệ ngay · 0 split · O(log N)',
+          scene: {
+            viewBox: [0, 0, 520, 212],
+            nodes: [
+              { id: 'ib-r', x: 260, y: 26, cellW: 42, cellH: 25, keys: [{ id: 'ib-40', label: '40' }] },
+              { id: 'ib-i0', x: 145, y: 84, cellW: 38, cellH: 24, keys: [{ id: 'ib-20', label: '20' }] },
+              { id: 'ib-i1', x: 385, y: 84, cellW: 38, cellH: 24, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
+              { id: 'ib-l0', x: 68, y: 142, cellW: 34, cellH: 23, state: 'muted', keys: [{ id: 'ib-10', label: '10', tone: 'muted' }] },
+              { id: 'ib-l1', x: 205, y: 142, capacity: 2, cellW: 38, cellH: 24, state: 'success', tag: '0 dịch mảng · 0 split · Hợp lệ', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-35', label: '35', tone: 'success' }] },
+              { id: 'ib-l2', x: 342, y: 142, cellW: 34, cellH: 23, state: 'muted', keys: [{ id: 'ib-55', label: '55', tone: 'muted' }] },
+              { id: 'ib-l3', x: 446, y: 142, cellW: 34, cellH: 23, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
             ],
             edges: [
               { id: 'ibe0', fromNode: 'ib-r', portIndex: 0, toNode: 'ib-i0' },
@@ -345,7 +372,42 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
       ],
       worstPhases: [
         {
-          label: '1/4 · Chèn 24 → Lá [20|22|24] tràn (> 2 khóa)',
+          label: '1/5 · Search tìm lá [20|22] · khóa 24 chờ chèn',
+          scene: {
+            viewBox: [0, 0, 520, 212],
+            nodes: [
+              { id: 'iw-r', x: 280, y: 26, cellW: 38, cellH: 25, state: 'active', keys: [{ id: 'iw-30', label: '30', tone: 'active' }, { id: 'iw-60', label: '60' }] },
+              { id: 'iw-i0', x: 132, y: 84, cellW: 36, cellH: 24, state: 'active', keys: [{ id: 'iw-15', label: '15' }, { id: 'iw-25', label: '25', tone: 'active' }] },
+              { id: 'iw-i1', x: 318, y: 84, cellW: 34, cellH: 23, state: 'muted', keys: [{ id: 'iw-45', label: '45', tone: 'muted' }] },
+              { id: 'iw-i2', x: 448, y: 84, cellW: 34, cellH: 23, state: 'muted', keys: [{ id: 'iw-75', label: '75', tone: 'muted' }] },
+              { id: 'iw-l0', x: 36, y: 144, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-10', label: '10', tone: 'muted' }] },
+              { id: 'iw-l1', x: 134, y: 144, cellW: 34, cellH: 23, state: 'active', keys: [{ id: 'iw-20', label: '20' }, { id: 'iw-22', label: '22', tone: 'active' }] },
+              { id: 'iw-l2', x: 232, y: 144, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-28', label: '28', tone: 'muted' }] },
+              { id: 'iw-l3', x: 290, y: 144, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-40', label: '40', tone: 'muted' }] },
+              { id: 'iw-l4', x: 346, y: 144, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-50', label: '50', tone: 'muted' }] },
+              { id: 'iw-l5', x: 420, y: 144, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-70', label: '70', tone: 'muted' }] },
+              { id: 'iw-l6', x: 478, y: 144, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-80', label: '80', tone: 'muted' }] },
+              { id: 'iw-ext', x: 134, y: 194, cellW: 36, cellH: 22, state: 'highlight-box', tag: 'Chèn 24 → lá đã đầy!', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-24', label: '24', tone: 'active' }] },
+            ],
+            edges: [
+              { id: 'iwe-r0', fromNode: 'iw-r', portIndex: 0, toNode: 'iw-i0', state: 'active', arrow: true },
+              { id: 'iwe-r1', fromNode: 'iw-r', portIndex: 1, toNode: 'iw-i1', state: 'muted' },
+              { id: 'iwe-r2', fromNode: 'iw-r', portIndex: 2, toNode: 'iw-i2', state: 'muted' },
+              { id: 'iwe-00', fromNode: 'iw-i0', portIndex: 0, toNode: 'iw-l0', state: 'muted' },
+              { id: 'iwe-01', fromNode: 'iw-i0', portIndex: 1, toNode: 'iw-l1', state: 'active', arrow: true },
+              { id: 'iwe-02', fromNode: 'iw-i0', portIndex: 2, toNode: 'iw-l2', state: 'muted' },
+              { id: 'iwe-10', fromNode: 'iw-i1', portIndex: 0, toNode: 'iw-l3', state: 'muted' },
+              { id: 'iwe-11', fromNode: 'iw-i1', portIndex: 1, toNode: 'iw-l4', state: 'muted' },
+              { id: 'iwe-20', fromNode: 'iw-i2', portIndex: 0, toNode: 'iw-l5', state: 'muted' },
+              { id: 'iwe-21', fromNode: 'iw-i2', portIndex: 1, toNode: 'iw-l6', state: 'muted' },
+            ],
+            transfers: [
+              { id: 'iw-in', fromX: 134, fromY: 181, toX: 134, toY: 158, ctrlX: 134, ctrlY: 170, tone: 'error' },
+            ],
+          },
+        },
+        {
+          label: '2/5 · Đưa 24 vào lá → Lá [20|22|24] tràn (> 2 khóa)!',
           scene: {
             viewBox: [0, 0, 520, 212],
             nodes: [
@@ -362,11 +424,11 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'iw-l6', x: 478, y: 158, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-80', label: '80', tone: 'muted' }] },
             ],
             edges: [
-              { id: 'iwe-r0', fromNode: 'iw-r', portIndex: 0, toNode: 'iw-i0', state: 'active', arrow: true },
+              { id: 'iwe-r0', fromNode: 'iw-r', portIndex: 0, toNode: 'iw-i0', state: 'active' },
               { id: 'iwe-r1', fromNode: 'iw-r', portIndex: 1, toNode: 'iw-i1', state: 'muted' },
               { id: 'iwe-r2', fromNode: 'iw-r', portIndex: 2, toNode: 'iw-i2', state: 'muted' },
               { id: 'iwe-00', fromNode: 'iw-i0', portIndex: 0, toNode: 'iw-l0', state: 'muted' },
-              { id: 'iwe-01', fromNode: 'iw-i0', portIndex: 1, toNode: 'iw-l1', state: 'error', arrow: true },
+              { id: 'iwe-01', fromNode: 'iw-i0', portIndex: 1, toNode: 'iw-l1', state: 'error' },
               { id: 'iwe-02', fromNode: 'iw-i0', portIndex: 2, toNode: 'iw-l2', state: 'muted' },
               { id: 'iwe-10', fromNode: 'iw-i1', portIndex: 0, toNode: 'iw-l3', state: 'muted' },
               { id: 'iwe-11', fromNode: 'iw-i1', portIndex: 1, toNode: 'iw-l4', state: 'muted' },
@@ -376,7 +438,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
           },
         },
         {
-          label: '2/4 · Tách lá, đẩy 22 ↑ → Cha [15|22|25] tràn!',
+          label: '3/5 · Tách lá, đẩy 22 ↑ → Cha [15|22|25] tràn!',
           scene: {
             viewBox: [0, 0, 520, 212],
             nodes: [
@@ -409,7 +471,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
           },
         },
         {
-          label: '3/4 · Tách Cha, đẩy 22 ↑ → Gốc [22|30|60] tràn!',
+          label: '4/5 · Tách Cha, đẩy 22 ↑ → Gốc [22|30|60] tràn!',
           scene: {
             viewBox: [0, 0, 520, 212],
             nodes: [
@@ -444,7 +506,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
           },
         },
         {
-          label: '4/4 · Tách Gốc → Gốc mới [30] · Cây hợp lệ (h + 1)',
+          label: '5/5 · Tách Gốc → Gốc mới [30] · Cây hợp lệ (h + 1)',
           scene: {
             viewBox: [0, 0, 520, 212],
             nodes: [
@@ -488,7 +550,8 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
 
   if (opIdx === 3) {
     // DELETE (M = 3: 1..2 khóa/nút, thiếu khóa ở 0 khóa)
-    // Best: 2 bước (1/2 -> 2/2) · Worst: 4 bước (1/4 -> 4/4, gộp lan lên gốc -> hạ tầng h = 1 hợp lệ!)
+    // Best: 3 bước (Search 30 -> xóa 30 cuối lá -> cây hợp lệ)
+    // Worst: 5 bước (Search 40 + tiền nhiệm 30 -> đổi 30 lên tạo LÁ RỖNG ∅ -> gộp tạo CHA RỖNG ∅ -> gộp tạo GỐC RỖNG ∅ -> hạ tầng h=1 hợp lệ)
     return {
       opName: 'Delete',
       bestTitle: 'Thuận lợi · Xóa cuối lá còn đủ khóa (M = 3)',
@@ -497,7 +560,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
       worstCost: 'O(M(h + 1))',
       bestPhases: [
         {
-          label: '1/2 · Tìm xuống lá [25 | 30] (có 2 khóa)',
+          label: '1/3 · Search khóa 30 từ gốc xuống lá [25|30]',
           scene: {
             viewBox: [0, 0, 520, 206],
             nodes: [
@@ -505,7 +568,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'db-i0', x: 145, y: 92, cellW: 40, cellH: 25, state: 'active', keys: [{ id: 'db-20', label: '20', tone: 'active' }] },
               { id: 'db-i1', x: 375, y: 92, cellW: 40, cellH: 25, state: 'muted', keys: [{ id: 'db-70', label: '70', tone: 'muted' }] },
               { id: 'db-l0', x: 74, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'db-10', label: '10', tone: 'muted' }] },
-              { id: 'db-l1', x: 205, y: 152, cellW: 40, cellH: 25, tag: 'Chuẩn bị xóa 30 cuối lá', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'db-25', label: '25' }, { id: 'db-30', label: '30', tone: 'error' }] },
+              { id: 'db-l1', x: 205, y: 152, cellW: 40, cellH: 25, state: 'active', tag: 'Tìm thấy 30 ở cuối lá', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'db-25', label: '25' }, { id: 'db-30', label: '30', tone: 'error' }] },
               { id: 'db-l2', x: 325, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'db-55', label: '55', tone: 'muted' }] },
               { id: 'db-l3', x: 435, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'db-80', label: '80', tone: 'muted' }] },
             ],
@@ -520,7 +583,30 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
           },
         },
         {
-          label: '2/2 · Xóa 30 cuối lá → Hợp lệ ngay!',
+          label: '2/3 · Xóa 30 cuối lá (0 dịch mảng)',
+          scene: {
+            viewBox: [0, 0, 520, 206],
+            nodes: [
+              { id: 'db-r', x: 260, y: 32, cellW: 44, cellH: 26, keys: [{ id: 'db-40', label: '40' }] },
+              { id: 'db-i0', x: 145, y: 92, cellW: 40, cellH: 25, keys: [{ id: 'db-20', label: '20' }] },
+              { id: 'db-i1', x: 375, y: 92, cellW: 40, cellH: 25, state: 'muted', keys: [{ id: 'db-70', label: '70', tone: 'muted' }] },
+              { id: 'db-l0', x: 74, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'db-10', label: '10', tone: 'muted' }] },
+              { id: 'db-l1', x: 205, y: 152, cellW: 42, cellH: 25, state: 'active', tag: 'Đã xóa 30 · còn [25] ≥ min', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'db-25', label: '25', tone: 'active' }] },
+              { id: 'db-l2', x: 325, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'db-55', label: '55', tone: 'muted' }] },
+              { id: 'db-l3', x: 435, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'db-80', label: '80', tone: 'muted' }] },
+            ],
+            edges: [
+              { id: 'dbe0', fromNode: 'db-r', portIndex: 0, toNode: 'db-i0' },
+              { id: 'dbe1', fromNode: 'db-r', portIndex: 1, toNode: 'db-i1', state: 'muted' },
+              { id: 'dbe2', fromNode: 'db-i0', portIndex: 0, toNode: 'db-l0', state: 'muted' },
+              { id: 'dbe3', fromNode: 'db-i0', portIndex: 1, toNode: 'db-l1', state: 'active' },
+              { id: 'dbe4', fromNode: 'db-i1', portIndex: 0, toNode: 'db-l2', state: 'muted' },
+              { id: 'dbe5', fromNode: 'db-i1', portIndex: 1, toNode: 'db-l3', state: 'muted' },
+            ],
+          },
+        },
+        {
+          label: '3/3 · Cây hợp lệ ngay · 0 mượn/gộp · O(log N)',
           scene: {
             viewBox: [0, 0, 520, 206],
             nodes: [
@@ -545,7 +631,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
       ],
       worstPhases: [
         {
-          label: '1/4 · Xóa 40 ở gốc → tìm tiền nhiệm 30',
+          label: '1/5 · Search 40 ở gốc → tìm tiền nhiệm 30 ở lá',
           scene: {
             viewBox: [0, 0, 520, 206],
             nodes: [
@@ -568,14 +654,40 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
           },
         },
         {
-          label: '2/4 · Đổi 30 ↑ gốc → Lá rỗng, gộp [10|20]',
+          label: '2/5 · Đổi 30 ↑ gốc, xóa ở lá → Nút lá RỖNG ∅!',
           scene: {
             viewBox: [0, 0, 520, 206],
             nodes: [
               { id: 'dw-r', x: 260, y: 32, cellW: 44, cellH: 26, state: 'active', tag: 'Gốc nhận 30', tagPos: 'right', tagTone: 'warn', keys: [{ id: 'dw-30', label: '30', tone: 'active' }] },
+              { id: 'dw-i0', x: 145, y: 92, cellW: 40, cellH: 25, state: 'active', keys: [{ id: 'dw-20', label: '20', tone: 'active' }] },
+              { id: 'dw-i1', x: 375, y: 92, cellW: 40, cellH: 25, state: 'muted', keys: [{ id: 'dw-70', label: '70', tone: 'muted' }] },
+              { id: 'dw-l0', x: 74, y: 152, cellW: 36, cellH: 24, keys: [{ id: 'dw-10', label: '10' }] },
+              { id: 'dw-l1', x: 205, y: 152, cellW: 42, cellH: 25, state: 'underflow', tag: 'Lá rỗng (0 khóa)!', tagPos: 'bottom', tagTone: 'error', keys: [] },
+              { id: 'dw-l2', x: 325, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'dw-55', label: '55', tone: 'muted' }] },
+              { id: 'dw-l3', x: 435, y: 152, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'dw-85', label: '85', tone: 'muted' }] },
+            ],
+            edges: [
+              { id: 'dwe0', fromNode: 'dw-r', portIndex: 0, toNode: 'dw-i0', state: 'active' },
+              { id: 'dwe1', fromNode: 'dw-r', portIndex: 1, toNode: 'dw-i1', state: 'muted' },
+              { id: 'dwe2', fromNode: 'dw-i0', portIndex: 0, toNode: 'dw-l0' },
+              { id: 'dwe3', fromNode: 'dw-i0', portIndex: 1, toNode: 'dw-l1', state: 'error' },
+              { id: 'dwe4', fromNode: 'dw-i1', portIndex: 0, toNode: 'dw-l2', state: 'muted' },
+              { id: 'dwe5', fromNode: 'dw-i1', portIndex: 1, toNode: 'dw-l3', state: 'muted' },
+            ],
+            transfers: [
+              { id: 'dw-pr', fromX: 222, fromY: 138, toX: 256, toY: 46, ctrlX: 282, ctrlY: 94, label: '30 ↑', tone: 'warn' },
+            ],
+          },
+        },
+        {
+          label: '3/5 · Gộp lá rỗng + [10] + 20 ↓ → Nút Cha RỖNG ∅!',
+          scene: {
+            viewBox: [0, 0, 520, 206],
+            nodes: [
+              { id: 'dw-r', x: 260, y: 32, cellW: 44, cellH: 26, state: 'active', keys: [{ id: 'dw-30', label: '30', tone: 'active' }] },
               { id: 'dw-i0', x: 145, y: 94, cellW: 44, cellH: 25, state: 'underflow', tag: 'Cha rỗng (0 khóa)!', tagPos: 'right', tagTone: 'error', keys: [] },
               { id: 'dw-i1', x: 385, y: 94, cellW: 40, cellH: 25, state: 'muted', keys: [{ id: 'dw-70', label: '70', tone: 'muted' }] },
-              { id: 'dw-l0', x: 145, y: 154, cellW: 40, cellH: 25, state: 'underflow', tag: 'Gộp [10|20] O(M)', tagPos: 'bottom', tagTone: 'error', keys: [{ id: 'dw-10', label: '10' }, { id: 'dw-20', label: '20', tone: 'active' }] },
+              { id: 'dw-l0', x: 145, y: 154, cellW: 40, cellH: 25, state: 'active', tag: 'Gộp [10|20] O(M)', tagPos: 'bottom', tagTone: 'error', keys: [{ id: 'dw-10', label: '10' }, { id: 'dw-20', label: '20', tone: 'active' }] },
               { id: 'dw-l2', x: 330, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'dw-55', label: '55', tone: 'muted' }] },
               { id: 'dw-l3', x: 440, y: 154, cellW: 36, cellH: 24, state: 'muted', keys: [{ id: 'dw-85', label: '85', tone: 'muted' }] },
             ],
@@ -586,13 +698,10 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'dwe4', fromNode: 'dw-i1', portIndex: 0, toNode: 'dw-l2', state: 'muted' },
               { id: 'dwe5', fromNode: 'dw-i1', portIndex: 1, toNode: 'dw-l3', state: 'muted' },
             ],
-            transfers: [
-              { id: 'dw-pr', fromX: 192, fromY: 140, toX: 235, toY: 34, ctrlX: 52, ctrlY: 56, label: '30 ↑', tone: 'warn' },
-            ],
           },
         },
         {
-          label: '3/4 · Cha rỗng → Gộp [30|70] → Gốc rỗng!',
+          label: '4/5 · Gộp Cha rỗng + [70] + 30 ↓ → Gốc RỖNG ∅!',
           scene: {
             viewBox: [0, 0, 520, 206],
             nodes: [
@@ -611,7 +720,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
           },
         },
         {
-          label: '4/4 · Xóa gốc rỗng → Cây hợp lệ (h − 1)',
+          label: '5/5 · Xóa gốc rỗng → Cây hợp lệ (h − 1)',
           scene: {
             viewBox: [0, 0, 520, 206],
             nodes: [
