@@ -315,6 +315,14 @@ export function renderTreeScene(
 
     parts.push(`<g class="tr-node" data-node-id="${escapeXml(n.id)}" opacity="${nodeOpacity}" filter="url(#${markerPrefix}-shadow)">`);
 
+    // Arrival shockwave ring for key milestone states (success / overflow / highlight-box)
+    if (!opts?.reducedMotion && (isSuccessNode || isOverflow || n.state === 'highlight-box')) {
+      const ringTone = isSuccessNode ? 'success' : isOverflow ? 'overflow' : 'highlight';
+      parts.push(
+        `<rect class="tr-arrival-ring tr-arrival-ring--${ringTone}" x="${g.left - 4}" y="${g.top - BEVEL - 4}" width="${g.width + BEVEL + 8}" height="${g.height + BEVEL + 8}" rx="8" fill="none" pointer-events="none" />`,
+      );
+    }
+
     // Highlight halo around node if overflow / underflow / active / highlight-box
     if (isOverflow || isUnderflow || n.state === 'highlight-box') {
       const haloStroke = isOverflow || isUnderflow ? '#DC2626' : '#5284FF';
@@ -599,30 +607,37 @@ export function renderTreeScene(
       if (oldP && newP && oldP.nodeId !== newP.nodeId) {
         const dx = oldP.x - newP.x;
         const dy = oldP.y - newP.y;
-        if (Math.hypot(dx, dy) > 2) {
+        const dist = Math.hypot(dx, dy);
+        if (dist > 2) {
+          el.style.transformBox = 'fill-box';
+          el.style.transformOrigin = 'center';
           if (dy < -30) {
-            // Smooth downward slide-in from external insert box into target node slot
+            // Smooth curved drop-in from external insert box into target node slot
+            const lift = Math.min(18, Math.max(8, dist * 0.1));
             anims.push(
               el.animate(
                 [
-                  { transform: `translate(${dx}px, ${dy}px)` },
-                  { transform: `translate(${dx * 0.25}px, ${dy * 0.45}px)`, offset: 0.45 },
-                  { transform: 'translate(0px, 0px)' },
+                  { transform: `translate(${dx}px, ${dy}px) scale(1)` },
+                  { transform: `translate(${dx * 0.62}px, ${dy * 0.72 - lift * 0.6}px) scale(1.07)`, offset: 0.3 },
+                  { transform: `translate(${dx * 0.22}px, ${dy * 0.38}px) scale(1.05)`, offset: 0.65 },
+                  { transform: 'translate(0px, 0px) scale(1)' },
                 ],
-                { duration: Math.min(dur + 60, 580), easing },
+                { duration: Math.min(dur + 60, 560), easing },
               ),
             );
           } else {
-            const midX = dx * 0.45;
-            const midY = dy * 0.45 - 16;
+            // 5-Keyframe Parabolic Arc FLIP flight with dynamic elevation scale
+            const arcLift = Math.min(34, Math.max(14, dist * 0.18));
             anims.push(
               el.animate(
                 [
-                  { transform: `translate(${dx}px, ${dy}px)` },
-                  { transform: `translate(${midX}px, ${midY}px)`, offset: 0.48 },
-                  { transform: 'translate(0px, 0px)' },
+                  { transform: `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(1)` },
+                  { transform: `translate(${(0.75 * dx).toFixed(1)}px, ${(0.75 * dy - 0.75 * arcLift).toFixed(1)}px) scale(1.08)`, offset: 0.25 },
+                  { transform: `translate(${(0.5 * dx).toFixed(1)}px, ${(0.5 * dy - arcLift).toFixed(1)}px) scale(1.12)`, offset: 0.5 },
+                  { transform: `translate(${(0.25 * dx).toFixed(1)}px, ${(0.25 * dy - 0.75 * arcLift).toFixed(1)}px) scale(1.06)`, offset: 0.75 },
+                  { transform: 'translate(0px, 0px) scale(1)' },
                 ],
-                { duration: Math.min(dur + 40, 500), easing },
+                { duration: Math.min(dur + 50, 520), easing },
               ),
             );
           }
@@ -755,6 +770,21 @@ export function renderTreeScene(
             { opacity: 1, strokeDashoffset: '0' },
           ],
           { duration: 380, easing },
+        ),
+      );
+    });
+
+    // Arrival shockwave ring pulse on milestone nodes
+    svg.querySelectorAll<SVGRectElement>('.tr-arrival-ring').forEach((ring) => {
+      ring.style.transformBox = 'fill-box';
+      ring.style.transformOrigin = 'center';
+      anims.push(
+        ring.animate(
+          [
+            { opacity: 0.92, transform: 'scale(0.95)' },
+            { opacity: 0, transform: 'scale(1.13)' },
+          ],
+          { duration: 440, delay: 90, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' },
         ),
       );
     });

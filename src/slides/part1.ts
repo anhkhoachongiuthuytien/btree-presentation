@@ -119,6 +119,7 @@ function renderCoverStep(slideEl: HTMLElement, step: number, reducedMotion: bool
               <text x="227" y="104" text-anchor="middle" fill="#004AAD" font-size="17" font-weight="800" font-family="'IBM Plex Mono', monospace">20</text>
               <text x="366" y="103" text-anchor="middle" fill="#94A3B8" font-size="13" font-weight="700" font-family="'IBM Plex Mono', monospace">ô trống</text>
               <text x="227" y="156" text-anchor="middle" fill="#334155" font-size="13.5" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Một nút B-tree ánh xạ trực tiếp 1 trang dữ liệu (4–16 KB)</text>
+              ${!reducedMotion ? `<defs><clipPath id="s01-page-clip"><rect x="0" y="18" width="454" height="162" /></clipPath></defs><g clip-path="url(#s01-page-clip)"><rect class="s01-page-sheen" x="-90" y="18" width="76" height="162" fill="rgba(255,255,255,0.46)" pointer-events="none" /></g>` : ''}
             </g>
           `,
         }

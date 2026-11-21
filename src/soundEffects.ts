@@ -59,6 +59,7 @@ class SoundEngine {
   private unlocked = false;
   private currentTheme: ChapterSoundTheme = 'intro';
   private lastKeystrokeAt = 0;
+  private lastHoverAt = 0;
   private onPulseCallback: (() => void) | null = null;
 
   public setOnPulse(cb: (() => void) | null): void {
@@ -450,7 +451,7 @@ class SoundEngine {
    * - Spacebar (' '): deeper, wider hollow stabilizer thock
    * - Enter ('\n'): heavy return thump + crisp actuation double-impulse
    */
-  public playKeystroke(ch = 'a'): void {
+  public playKeystroke(ch = 'a', colRatio?: number): void {
     if (!this.isReady() || !this.ctx) return;
 
     const nowMs = performance.now();
@@ -459,7 +460,10 @@ class SoundEngine {
     this.notifyPulse();
 
     const jitter = 0.91 + Math.random() * 0.18;
-    const subtlePan = (Math.random() - 0.5) * 0.24;
+    const subtlePan =
+      colRatio !== undefined
+        ? -0.24 + Math.max(0, Math.min(1, colRatio)) * 0.48
+        : (Math.random() - 0.5) * 0.24;
 
     if (ch === '\n') {
       // Heavy mechanical Return key
@@ -558,6 +562,21 @@ class SoundEngine {
     });
   }
 
+  /** Brief Python interpreter execution hum right after pressing Enter on Slide 17 */
+  public playPythonExecHum(): void {
+    if (!this.isReady()) return;
+    this.playTone({ freq: 112, endFreq: 224, glide: 0.055, attack: 0.004, duration: 0.065, type: 'sine', gain: 0.085 });
+  }
+
+  /** Ultra-subtle mechanical hover micro-tick with 90ms anti-spam cooldown */
+  public playHoverTick(): void {
+    if (!this.isReady()) return;
+    const nowMs = performance.now();
+    if (nowMs - this.lastHoverAt < 90) return;
+    this.lastHoverAt = nowMs;
+    this.playTone({ freq: 1650, endFreq: 1200, glide: 0.015, attack: 0.001, duration: 0.018, type: 'sine', gain: 0.022 });
+  }
+
   /** Crisp terminal stdout print confirmation chime */
   public playTerminalRun(): void {
     if (!this.isReady()) return;
@@ -614,21 +633,31 @@ class SoundEngine {
     this.playTone({ freq: 480, endFreq: 196, glide: 0.14, attack: 0.004, duration: 0.18, type: 'triangle', gain: 0.16, lpFreq: 1400 });
   }
 
-  /** Spatial stereo seesaw for Borrow / B* Redistribution (left sibling -> parent -> right) */
+  /** Spatial 3-phase stereo seesaw for Borrow / B* Redistribution (parent demote -> sibling promote -> equilibrium lock) */
   public playBorrowRotate(): void {
     if (!this.isReady()) return;
     this.notifyPulse();
-    this.playTone({ freq: 440.0, endFreq: 660.0, glide: 0.12, duration: 0.16, type: 'triangle', gain: 0.13, pan: -0.4 });
-    this.playTone({ freq: 660.0, endFreq: 494.0, glide: 0.12, duration: 0.2, type: 'triangle', gain: 0.11, delay: 0.11, pan: 0.4 });
+    // Phase 1 (0ms): separator pulled down from parent
+    this.playTone({ freq: 659.25, endFreq: 440.0, glide: 0.11, duration: 0.15, type: 'triangle', gain: 0.13, pan: 0, endPan: -0.44 });
+    // Phase 2 (145ms): sibling boundary key rises into parent
+    this.playTone({ freq: 440.0, endFreq: 659.25, glide: 0.12, duration: 0.17, type: 'sine', gain: 0.13, delay: 0.145, pan: 0.44, endPan: 0 });
+    // Phase 3 (310ms): subtle equilibrium fifth lock
+    this.playTone({ freq: 440.0, duration: 0.2, type: 'sine', gain: 0.075, delay: 0.31, pan: -0.24 });
+    this.playTone({ freq: 659.25, duration: 0.22, type: 'sine', gain: 0.075, delay: 0.31, pan: 0.24 });
   }
 
-  /** Warm stereo fold-together for Merge (left & right nodes converging to center) */
+  /** Warm 3-phase stereo fold-together for Merge (separator drop -> left/right converge -> magnetic snap) */
   public playMergeFold(): void {
     if (!this.isReady()) return;
     this.notifyPulse();
-    this.playTone({ freq: 330.0, endFreq: 200.0, glide: 0.15, duration: 0.18, type: 'sine', gain: 0.15, pan: -0.45, endPan: 0 });
-    this.playTone({ freq: 293.66, endFreq: 200.0, glide: 0.15, duration: 0.18, type: 'triangle', gain: 0.14, pan: 0.45, endPan: 0 });
-    this.playTone({ freq: 200.0, duration: 0.26, type: 'sine', gain: 0.14, delay: 0.1, pan: 0 });
+    // Phase 1 (0ms): parent separator drops down
+    this.playTone({ freq: 587.33, endFreq: 293.66, glide: 0.11, duration: 0.14, type: 'triangle', gain: 0.125, pan: 0 });
+    // Phase 2 (135ms): left & right siblings converge in stereo
+    this.playTone({ freq: 330.0, endFreq: 220.0, glide: 0.15, duration: 0.17, type: 'sine', gain: 0.14, delay: 0.135, pan: -0.52, endPan: 0 });
+    this.playTone({ freq: 293.66, endFreq: 220.0, glide: 0.15, duration: 0.17, type: 'triangle', gain: 0.13, delay: 0.135, pan: 0.52, endPan: 0 });
+    // Phase 3 (305ms): crisp magnetic snap at center
+    this.playNoise({ duration: 0.018, attack: 0.002, filterType: 'bandpass', freq: 1950, q: 3.0, gain: 0.13, delay: 0.305 });
+    this.playTone({ freq: 220.0, duration: 0.25, type: 'sine', gain: 0.14, delay: 0.305, pan: 0 });
   }
 
   /** B+ Tree rapid sequential leaf-scan stereo arpeggio (sweeps left -> right) */
@@ -650,12 +679,18 @@ class SoundEngine {
     }
   }
 
-  /** B+ Copy-up dual-echo (leaf stays warm, copy echoes high octave to parent) */
+  /** B+ Copy-up 3-phase dual-echo (leaf split -> upward clone flight -> octave dual-presence echo) */
   public playCopyUp(): void {
     if (!this.isReady()) return;
     this.notifyPulse();
-    this.playTone({ freq: 440.0, duration: 0.22, type: 'triangle', gain: 0.12 });
-    this.playTone({ freq: 880.0, duration: 0.32, type: 'sine', gain: 0.11, delay: 0.08 });
+    // Phase 1 (0ms): leaf split thud + warm anchor stays in leaf
+    this.playTone({ freq: 135, endFreq: 54, glide: 0.18, duration: 0.22, type: 'sine', gain: 0.24 });
+    this.playTone({ freq: 440.0, duration: 0.24, type: 'triangle', gain: 0.12, pan: 0.26 });
+    // Phase 2 (130ms): copy glides upward toward parent index
+    this.playTone({ freq: 440.0, endFreq: 880.0, glide: 0.135, duration: 0.16, type: 'sine', gain: 0.11, delay: 0.13, pan: 0.26, endPan: 0 });
+    // Phase 3 (285ms): simultaneous leaf warmth + bright parent octave echo
+    this.playTone({ freq: 440.0, duration: 0.28, type: 'sine', gain: 0.08, delay: 0.285, pan: 0.35 });
+    this.playTone({ freq: 880.0, duration: 0.32, type: 'sine', gain: 0.13, delay: 0.285, pan: -0.15 });
   }
 
   /** Hardware disk-head seek click + low platter hum (RAM vs Disk, HFS+, XFS) */
@@ -823,59 +858,67 @@ class SoundEngine {
     this.playTone({ freq: pitch, endFreq: pitch * 0.8, glide: 0.1, duration: 0.15, type: 'sine', gain: 0.12, delay: 0.085, pan: 0 });
   }
 
-  /** Slide 07: Horizontal key-shift zip + magnetic slot drop-in clack */
+  /** Slide 07: 3-phase horizontal key-shift zip + magnetic slot drop-in clack */
   public playSlotShiftSlide(): void {
     if (!this.isReady()) return;
     this.notifyPulse();
-    // Neighbor key sliding right
+    // Phase 1 (0ms): external key glides toward seam
     this.playNoise({
-      duration: 0.1,
-      attack: 0.01,
+      duration: 0.095,
+      attack: 0.008,
       filterType: 'bandpass',
-      freq: 900,
-      endFreq: 2100,
+      freq: 950,
+      endFreq: 2150,
       q: 2.2,
       gain: 0.11,
-      pan: -0.15,
-      endPan: 0.35,
+      pan: -0.25,
+      endPan: 0,
     });
-    // New key sliding down and locking cleanly into the seam
-    this.playTone({ freq: 580, endFreq: 340, glide: 0.08, duration: 0.11, type: 'triangle', gain: 0.13, delay: 0.055 });
-    this.playTone({ freq: 740, endFreq: 1020, glide: 0.05, duration: 0.14, type: 'sine', gain: 0.16, delay: 0.12 });
+    // Phase 2 (130ms): larger neighbor key shifts right
+    this.playTone({ freq: 580, endFreq: 360, glide: 0.09, duration: 0.11, type: 'triangle', gain: 0.13, delay: 0.13, pan: 0, endPan: 0.35 });
+    // Phase 3 (290ms): magnetic lock clack into slot
+    this.playTone({ freq: 740, endFreq: 1046.5, glide: 0.055, attack: 0.002, duration: 0.14, type: 'sine', gain: 0.16, delay: 0.29 });
+    this.playNoise({ duration: 0.015, attack: 0.0015, filterType: 'highpass', freq: 3200, gain: 0.085, delay: 0.29 });
   }
 
-  /** Slide 07 & 08: Escalating cascading split (level 1 = leaf, level 2 = internal, level 3 = new root crown) */
+  /** Slide 07 & 08: 3-phase escalating cascading split (level 1 = leaf, level 2 = internal, level 3 = new root crown) */
   public playCascadeSplit(level = 1): void {
     if (!this.isReady()) return;
     this.notifyPulse();
     const mult = 1 + (Math.max(1, level) - 1) * 0.15;
-    // Physical split thud
-    this.playTone({ freq: 132 * mult, endFreq: 48, glide: 0.26, attack: 0.004, duration: 0.32, type: 'sine', gain: 0.32 });
-    this.playNoise({ duration: 0.13, attack: 0.005, filterType: 'lowpass', freq: 420, gain: 0.14 });
-    // Left & right halves separate in stereo
-    this.playTone({ freq: 440 * mult, endFreq: 587 * mult, glide: 0.12, duration: 0.22, type: 'triangle', gain: 0.11, pan: -0.5 });
-    this.playTone({ freq: 523 * mult, endFreq: 784 * mult, glide: 0.14, duration: 0.26, type: 'sine', gain: 0.11, delay: 0.045, pan: 0.5 });
-    // New Root Crown shimmer when height increases h -> h+1
+    // Phase 1 (0ms): physical split thud
+    this.playTone({ freq: 132 * mult, endFreq: 48, glide: 0.26, attack: 0.004, duration: 0.32, type: 'sine', gain: 0.33 });
+    this.playNoise({ duration: 0.125, attack: 0.005, filterType: 'lowpass', freq: 400, gain: 0.14 });
+    // Phase 2 (140ms): left & right halves separate in stereo
+    this.playTone({ freq: 440 * mult, endFreq: 587 * mult, glide: 0.12, duration: 0.21, type: 'triangle', gain: 0.11, delay: 0.14, pan: -0.52 });
+    this.playTone({ freq: 523 * mult, endFreq: 784 * mult, glide: 0.14, duration: 0.23, type: 'sine', gain: 0.11, delay: 0.155, pan: 0.52 });
+    // Phase 3 (305ms): median key locks into parent (or New Root Crown chord when h -> h+1)
+    this.playTone({ freq: 880 * mult, endFreq: Math.min(1568, 1174.66 * mult), glide: 0.08, duration: 0.24, type: 'sine', gain: 0.12, delay: 0.305, pan: 0 });
     if (level >= 3) {
       [783.99, 1046.5, 1318.51, 1567.98].forEach((f, i) => {
         this.playTone({
           freq: f,
           duration: 0.4,
           type: 'sine',
-          gain: 0.09,
-          delay: 0.11 + i * 0.055,
-          pan: i % 2 ? 0.38 : -0.38,
+          gain: 0.095,
+          delay: 0.32 + i * 0.055,
+          pan: i % 2 ? 0.4 : -0.4,
         });
       });
     }
   }
 
-  /** Slide 09 & 15: Predecessor dive to rightmost leaf + upward crane swap into internal node */
+  /** Slide 09 & 15: 3-phase Predecessor dive -> rightmost hop -> upward crane overwrite */
   public playPredecessorSwap(): void {
     if (!this.isReady()) return;
     this.notifyPulse();
-    this.playTone({ freq: 640, endFreq: 310, glide: 0.12, duration: 0.14, type: 'triangle', gain: 0.13, pan: -0.35 });
-    this.playTone({ freq: 340, endFreq: 740, glide: 0.16, duration: 0.24, type: 'sine', gain: 0.14, delay: 0.12, pan: -0.3, endPan: 0 });
+    // Phase 1 (0ms): left subtree dive
+    this.playTone({ freq: 660, endFreq: 310, glide: 0.115, duration: 0.135, type: 'triangle', gain: 0.13, pan: -0.38 });
+    // Phase 2 (130ms): rightmost leaf micro-radar
+    this.playTone({ freq: 1480, attack: 0.002, duration: 0.042, type: 'triangle', gain: 0.07, delay: 0.13, pan: -0.32 });
+    this.playTone({ freq: 1760, attack: 0.002, duration: 0.045, type: 'triangle', gain: 0.075, delay: 0.185, pan: -0.1 });
+    // Phase 3 (260ms): predecessor promoted to overwrite internal separator
+    this.playTone({ freq: 349.23, endFreq: 783.99, glide: 0.15, duration: 0.24, type: 'sine', gain: 0.14, delay: 0.26, pan: -0.1, endPan: 0 });
   }
 
   /** Slide 11 step 5: Empty root removed, tree height shrinks h -> h-1 */

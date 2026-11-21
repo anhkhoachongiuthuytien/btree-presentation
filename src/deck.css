@@ -7246,6 +7246,138 @@ button.stack-frame:hover {
   filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.55));
 }
 
+/* ============================================================================
+   FINAL POLISH: ARRIVAL SHOCKWAVE, SHEEN SWEEP, VAR-WATCH FLASH, PHASE BARS & XFS DOMINO
+   ============================================================================ */
+.tr-arrival-ring {
+  stroke-width: 2.8px;
+}
+
+.tr-arrival-ring--success {
+  stroke: #16a34a;
+}
+
+.tr-arrival-ring--overflow {
+  stroke: #dc2626;
+}
+
+.tr-arrival-ring--highlight {
+  stroke: #2563eb;
+}
+
+.s01-page-sheen {
+  animation: s01SheenSweep 2.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@keyframes s01SheenSweep {
+  0%,
+  35% {
+    transform: translateX(-80px) skewX(-20deg);
+    opacity: 0;
+  }
+  52% {
+    opacity: 0.72;
+  }
+  78%,
+  100% {
+    transform: translateX(620px) skewX(-20deg);
+    opacity: 0;
+  }
+}
+
+.var-watch code.is-var-changed {
+  animation: varWatchFlash 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes varWatchFlash {
+  0% {
+    background: #fef08a;
+    color: #0f1d3a;
+    box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.55);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(217, 119, 6, 0);
+  }
+}
+
+.s18-phase-track {
+  height: 3px;
+  width: 100%;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: -2px;
+}
+
+.s18-phase-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  transition: width 360ms cubic-bezier(0.22, 1, 0.36, 1), background 240ms ease;
+}
+
+.s18-phase-fill--best {
+  background: linear-gradient(90deg, #16a34a, #4ade80);
+}
+
+.s18-phase-fill--worst {
+  background: linear-gradient(90deg, #dc2626, #f59e0b);
+}
+
+.s18-phase-fill--worst.is-done-ok {
+  background: linear-gradient(90deg, #16a34a, #2563eb);
+}
+
+.xfs-cell.is-domino {
+  animation: xfsDominoPop 340ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--di, 0) * 18ms) both;
+}
+
+@keyframes xfsDominoPop {
+  0% {
+    transform: scale(0.86) translateY(-3px);
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.45);
+  }
+  55% {
+    transform: scale(1.07) translateY(-1px);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
+}
+
+/* 3-Tier Staggered Slide Entrance Choreography (0ms -> 55ms -> 110ms) */
+.slide-section.slide-entering .slide-header,
+.slide-section.slide-entering .s17-header,
+.slide-section.slide-entering .toc-left {
+  animation: tierRise 340ms cubic-bezier(0.22, 1, 0.36, 1) 0ms both;
+}
+
+.slide-section.slide-entering .stage-skinned,
+.slide-section.slide-entering .code-window,
+.slide-section.slide-entering .complexity-table,
+.slide-section.slide-entering .xfs-band-card {
+  animation: tierRise 380ms cubic-bezier(0.22, 1, 0.36, 1) 55ms both;
+}
+
+.slide-section.slide-entering .canva-card,
+.slide-section.slide-entering .ch3-trace-card,
+.slide-section.slide-entering .s18-case-card {
+  animation: tierRise 380ms cubic-bezier(0.22, 1, 0.36, 1) 110ms both;
+}
+
+@keyframes tierRise {
+  from {
+    opacity: 0;
+    transform: translateY(11px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Reduced Motion (placed last so it cleanly disables every on-slide animation) */
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -973,6 +973,26 @@ window.addEventListener(
   true,
 );
 
+// Subtle mechanical hover micro-tick on key interactive presentation controls (90ms anti-spam cooldown)
+let lastHoverTarget: Element | null = null;
+window.addEventListener(
+  'pointerover',
+  (ev) => {
+    const target = ev.target as HTMLElement | null;
+    if (!target) return;
+    const hit = target.closest(
+      '.s04-probe-btn, .tr-key--clickable, [data-mval], .s18-tab, .s26-qbtn, .ext-card, .xfs-cell, [data-s29-sim], .toc-bar, .s11-card-borrow, .s11-card-merge',
+    );
+    if (hit && hit !== lastHoverTarget) {
+      lastHoverTarget = hit;
+      soundFx.playHoverTick();
+    } else if (!hit) {
+      lastHoverTarget = null;
+    }
+  },
+  { passive: true },
+);
+
 function togglePodiumBar(): void {
   const hidden = document.body.classList.toggle('podium-hidden');
   deck?.layout();

@@ -1991,6 +1991,14 @@ function renderSlide29State(step: number, slideEl: HTMLElement, reducedMotion: b
       void row.offsetWidth;
       row.classList.add('step-flash');
     });
+    const activeRow = step === 2 ? r2 : r3;
+    activeRow.querySelectorAll<HTMLElement>('.xfs-cell').forEach((cell, idx) => {
+      if (idx >= 10) return;
+      cell.style.setProperty('--di', String(idx));
+      cell.classList.remove('is-domino');
+      void cell.offsetWidth;
+      cell.classList.add('is-domino');
+    });
   }
 }
 

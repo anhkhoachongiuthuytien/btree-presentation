@@ -456,6 +456,13 @@ const slide15: SlideDef = {
     ];
     vars.innerHTML = varHtml[step];
     triggerStepPulse(vars, ctx.getReducedMotion());
+    if (!ctx.getReducedMotion() && step > 0) {
+      vars.querySelectorAll<HTMLElement>('code').forEach((c) => {
+        c.classList.remove('is-var-changed');
+        void c.offsetWidth;
+        c.classList.add('is-var-changed');
+      });
+    }
 
     const notes = [
       'Cây ví dụ Trang 09 (M = 3): chuẩn bị chạy <code>delete(10)</code>.',
@@ -1152,8 +1159,9 @@ function playPyDemoStep(
     const curLine = linesToType[lineIdx];
     if (charIdx < curLine.length) {
       const ch = curLine[charIdx];
+      const colRatio = curLine.length > 1 ? charIdx / (curLine.length - 1) : 0.5;
       charIdx++;
-      soundFx.playKeystroke(ch);
+      soundFx.playKeystroke(ch, colRatio);
       const isPunct = /[\[\](){}=:,.'"\+\-\*\/]/.test(ch);
       const base = ch === ' ' ? 20 : isPunct ? 27 : 21;
       const jitter = Math.floor(Math.random() * 9);
@@ -1164,7 +1172,10 @@ function playPyDemoStep(
       charIdx = 0;
       rt.timerId = window.setTimeout(tick, 120);
     } else {
-      if (step > 0) soundFx.playKeystroke('\n');
+      if (step > 0) {
+        soundFx.playKeystroke('\n');
+        soundFx.playPythonExecHum();
+      }
       rt.timerId = window.setTimeout(() => {
         rt.timerId = null;
         if (step === 1) soundFx.playCascadeSplit(1);
@@ -1172,7 +1183,7 @@ function playPyDemoStep(
         else if (step === 3) soundFx.playTerminalRun();
         else if (step === 4) soundFx.playBorrowRotate();
         finishStep();
-      }, 170);
+      }, 175);
     }
   };
 

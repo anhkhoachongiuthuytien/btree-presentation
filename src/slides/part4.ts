@@ -968,6 +968,7 @@ const slide18: SlideDef = {
               </div>
               <span class="s18-cost-pill s18-cost-pill--best" data-role="best-cost"></span>
             </div>
+            <div class="s18-phase-track"><div class="s18-phase-fill s18-phase-fill--best" data-role="best-bar"></div></div>
             <div class="s18-op-tree" data-role="best-tree"></div>
           </div>
 
@@ -979,6 +980,7 @@ const slide18: SlideDef = {
               </div>
               <span class="s18-cost-pill s18-cost-pill--worst" data-role="worst-cost"></span>
             </div>
+            <div class="s18-phase-track"><div class="s18-phase-fill s18-phase-fill--worst" data-role="worst-bar"></div></div>
             <div class="s18-op-tree" data-role="worst-tree"></div>
           </div>
         </div>
@@ -1065,6 +1067,8 @@ function startS18CompareLoop(slideEl: HTMLElement, opIdx: number, reducedMotion:
 
   const bestPhaseEl = slideEl.querySelector<HTMLElement>('[data-role="best-phase"]')!;
   const worstPhaseEl = slideEl.querySelector<HTMLElement>('[data-role="worst-phase"]')!;
+  const bestBar = slideEl.querySelector<HTMLElement>('[data-role="best-bar"]');
+  const worstBar = slideEl.querySelector<HTMLElement>('[data-role="worst-bar"]');
   const bestTree = slideEl.querySelector<HTMLElement>('[data-role="best-tree"]')!;
   const worstTree = slideEl.querySelector<HTMLElement>('[data-role="worst-tree"]')!;
 
@@ -1075,12 +1079,17 @@ function startS18CompareLoop(slideEl: HTMLElement, opIdx: number, reducedMotion:
   const renderBest = (idx: number) => {
     const f = spec.bestPhases[idx];
     bestPhaseEl.textContent = f.label;
+    if (bestBar) bestBar.style.width = `${(((idx + 1) / spec.bestPhases.length) * 100).toFixed(1)}%`;
     renderTreeScene(bestTree, f.scene, { reducedMotion, durationMs: 420 });
   };
   const renderWorst = (idx: number) => {
     const f = spec.worstPhases[idx];
     worstPhaseEl.textContent = f.label;
     worstPhaseEl.classList.toggle('is-done-ok', idx === worstLast);
+    if (worstBar) {
+      worstBar.style.width = `${(((idx + 1) / spec.worstPhases.length) * 100).toFixed(1)}%`;
+      worstBar.classList.toggle('is-done-ok', idx === worstLast);
+    }
     renderTreeScene(worstTree, f.scene, { reducedMotion, durationMs: 420 });
   };
 
@@ -1116,16 +1125,16 @@ function startS18CompareLoop(slideEl: HTMLElement, opIdx: number, reducedMotion:
         if (tick <= worstLast) renderWorst(tick);
         if (s && s.classList.contains('present')) {
           if (opIdx === 1) {
-            if (tick < worstLast) soundFx.playSearchHop(tick);
+            if (tick < worstLast) soundFx.playBisectProbe(tick);
             else soundFx.playSuccess();
           } else if (opIdx === 2) {
-            if (tick === 1) soundFx.playInsertSlide();
-            else if (tick < worstLast) soundFx.playOverflow();
-            else soundFx.playSplit();
+            if (tick === 1) soundFx.playSlotShiftSlide();
+            else if (tick < worstLast) soundFx.playCascadeSplit(Math.min(2, tick - 1));
+            else soundFx.playCascadeSplit(3);
           } else if (opIdx === 3) {
             if (tick === 1) soundFx.playDeletePop();
             else if (tick < worstLast) soundFx.playMergeFold();
-            else soundFx.playSuccess();
+            else soundFx.playRootCollapse();
           }
         }
         scheduleNext();
