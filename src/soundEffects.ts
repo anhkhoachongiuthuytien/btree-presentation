@@ -109,6 +109,27 @@ class SoundEngine {
     return this.enabled;
   }
 
+  private connectWithPan(
+    ctx: AudioContext,
+    source: AudioNode,
+    now: number,
+    duration: number,
+    pan?: number,
+    endPan?: number,
+  ): void {
+    if (pan !== undefined && typeof ctx.createStereoPanner === 'function') {
+      const panner = ctx.createStereoPanner();
+      panner.pan.setValueAtTime(Math.max(-1, Math.min(1, pan)), now);
+      if (endPan !== undefined && endPan !== pan) {
+        panner.pan.linearRampToValueAtTime(Math.max(-1, Math.min(1, endPan)), now + duration);
+      }
+      source.connect(panner);
+      panner.connect(ctx.destination);
+    } else {
+      source.connect(ctx.destination);
+    }
+  }
+
   private playTone(opts: {
     freq: number;
     endFreq?: number;
@@ -118,6 +139,8 @@ class SoundEngine {
     delay?: number;
     lpFreq?: number;
     attack?: number;
+    pan?: number;
+    endPan?: number;
   }): void {
     if (!this.unlocked) return;
     const ctx = this.ensureContext();
@@ -144,7 +167,7 @@ class SoundEngine {
 
     osc.connect(filter);
     filter.connect(g);
-    g.connect(ctx.destination);
+    this.connectWithPan(ctx, g, now, opts.duration, opts.pan, opts.endPan);
 
     osc.start(now);
     osc.stop(now + opts.duration + 0.025);
@@ -154,10 +177,13 @@ class SoundEngine {
     duration: number;
     filterType: BiquadFilterType;
     freq: number;
+    midFreq?: number;
     endFreq?: number;
     q?: number;
     gain: number;
     delay?: number;
+    pan?: number;
+    endPan?: number;
   }): void {
     if (!this.unlocked) return;
     const ctx = this.ensureContext();
@@ -171,40 +197,46 @@ class SoundEngine {
     filter.type = opts.filterType;
     filter.Q.setValueAtTime(opts.q ?? 1.6, now);
     filter.frequency.setValueAtTime(opts.freq, now);
-    if (opts.endFreq && opts.endFreq !== opts.freq) {
+    if (opts.midFreq && opts.endFreq) {
+      filter.frequency.exponentialRampToValueAtTime(opts.midFreq, now + opts.duration * 0.44);
+      filter.frequency.exponentialRampToValueAtTime(opts.endFreq, now + opts.duration);
+    } else if (opts.endFreq && opts.endFreq !== opts.freq) {
       filter.frequency.exponentialRampToValueAtTime(opts.endFreq, now + opts.duration);
     }
 
     const g = ctx.createGain();
     g.gain.setValueAtTime(0.0001, now);
-    g.gain.linearRampToValueAtTime(opts.gain, now + Math.min(0.004, opts.duration * 0.2));
+    g.gain.linearRampToValueAtTime(opts.gain, now + Math.min(0.045, opts.duration * 0.25));
     g.gain.exponentialRampToValueAtTime(0.0001, now + opts.duration);
 
     src.connect(filter);
     filter.connect(g);
-    g.connect(ctx.destination);
+    this.connectWithPan(ctx, g, now, opts.duration, opts.pan, opts.endPan);
 
-    src.start(now, Math.random() * 0.12, opts.duration + 0.01);
+    src.start(now, Math.random() * 0.12, opts.duration + 0.02);
   }
 
   // ==========================================================================
   // 1. CHAPTER-THEMED SLIDE & CHAPTER TRANSITIONS
   // ==========================================================================
 
-  /** Chapter-colored slide transition whoosh */
+  /** Spatial stereo-panned slide transition whoosh tailored to chapter theme */
   public playSlideWhoosh(direction: 'next' | 'prev' = 'next', theme: ChapterSoundTheme = this.currentTheme): void {
     if (!this.unlocked) return;
     this.notifyPulse();
 
-    const startF = direction === 'next' ? 480 : 1220;
-    const endF = direction === 'next' ? 1420 : 440;
+    const dir = direction === 'next' ? 1 : -1;
+    // Spatial left-to-right (or right-to-left) curved bandpass air whoosh
     this.playNoiseBurst({
-      duration: 0.13,
+      duration: 0.34,
       filterType: 'bandpass',
-      freq: startF,
-      endFreq: endF,
-      q: theme === 'ch4' ? 2.6 : 1.7,
-      gain: 0.042,
+      freq: direction === 'next' ? 280 : 680,
+      midFreq: direction === 'next' ? 2150 : 1850,
+      endFreq: direction === 'next' ? 620 : 260,
+      q: theme === 'ch4' ? 1.4 : 0.95,
+      gain: 0.068,
+      pan: -0.58 * dir,
+      endPan: 0.58 * dir,
     });
 
     const pitchMap: Record<ChapterSoundTheme, [number, number]> = {
@@ -219,11 +251,32 @@ class SoundEngine {
     this.playTone({
       freq: direction === 'next' ? lo : hi,
       endFreq: direction === 'next' ? hi : lo,
-      duration: 0.11,
+      duration: 0.15,
       type: theme === 'ch3' ? 'triangle' : 'sine',
-      gain: 0.036,
-      lpFreq: 2200,
+      gain: 0.034,
+      lpFreq: 2100,
+      pan: -0.35 * dir,
+      endPan: 0.35 * dir,
     });
+  }
+
+  /** Alternating stereo sparkle chime for constellation settle & timeline jumps */
+  public playSparkleChime(): void {
+    if (!this.unlocked) return;
+    this.notifyPulse();
+    const notes = [1318.5, 1567.98, 2093.0, 2637.02, 2349.32];
+    notes.forEach((f, i) => {
+      this.playTone({
+        freq: f,
+        duration: 0.42,
+        type: 'sine',
+        gain: 0.022,
+        delay: i * 0.055,
+        lpFreq: 3800,
+        pan: i % 2 === 0 ? -0.42 : 0.42,
+      });
+    });
+    this.playTone({ freq: 783.99, duration: 0.55, type: 'triangle', gain: 0.026, lpFreq: 1800 });
   }
 
   /** Distinct signature sonic ident when crossing into a new chapter */
@@ -451,14 +504,17 @@ class SoundEngine {
     this.playTone({ freq: 440.0, endFreq: 415.3, duration: 0.14, type: 'triangle', gain: 0.04, delay: 0.04 });
   }
 
-  /** Crystalline node split chord (middle rises + halves separate) */
+  /** Physical split thud + stereo crystalline node split chord (halves separate left/right) */
   public playSplit(): void {
     if (!this.unlocked) return;
     this.notifyPulse();
-    this.playNoiseBurst({ duration: 0.028, filterType: 'highpass', freq: 2800, gain: 0.035 });
-    this.playTone({ freq: 440.0, endFreq: 587.33, duration: 0.14, type: 'triangle', gain: 0.052 });
-    this.playTone({ freq: 523.25, endFreq: 783.99, duration: 0.18, type: 'sine', gain: 0.05, delay: 0.045 });
-    this.playTone({ freq: 659.25, endFreq: 1046.5, duration: 0.22, type: 'sine', gain: 0.045, delay: 0.09 });
+    // Low-end physical weight of node splitting
+    this.playTone({ freq: 138, endFreq: 52, duration: 0.24, type: 'sine', gain: 0.085, lpFreq: 420 });
+    this.playNoiseBurst({ duration: 0.09, filterType: 'lowpass', freq: 420, gain: 0.045 });
+    // Stereo halves + middle rising
+    this.playTone({ freq: 440.0, endFreq: 587.33, duration: 0.15, type: 'triangle', gain: 0.048, pan: -0.46 });
+    this.playTone({ freq: 523.25, endFreq: 783.99, duration: 0.18, type: 'sine', gain: 0.048, delay: 0.045, pan: 0 });
+    this.playTone({ freq: 659.25, endFreq: 1046.5, duration: 0.22, type: 'sine', gain: 0.045, delay: 0.09, pan: 0.46 });
   }
 
   /** Clean downward pull pop when deleting a key (leaving empty node) */
@@ -468,36 +524,38 @@ class SoundEngine {
     this.playTone({ freq: 460, endFreq: 190, duration: 0.11, type: 'triangle', gain: 0.06, lpFreq: 1400 });
   }
 
-  /** Seesaw dual-glide for Borrow / B* Redistribution (one key down, one key up) */
+  /** Spatial stereo seesaw for Borrow / B* Redistribution (left -> parent -> right) */
   public playBorrowRotate(): void {
     if (!this.unlocked) return;
     this.notifyPulse();
-    this.playTone({ freq: 587.33, endFreq: 440.0, duration: 0.11, type: 'triangle', gain: 0.05 });
-    this.playTone({ freq: 493.88, endFreq: 698.46, duration: 0.14, type: 'sine', gain: 0.052, delay: 0.06 });
+    this.playTone({ freq: 440.0, endFreq: 659.25, duration: 0.13, type: 'triangle', gain: 0.054, pan: -0.44 });
+    this.playTone({ freq: 659.25, endFreq: 493.88, duration: 0.16, type: 'sine', gain: 0.052, delay: 0.085, pan: 0.44 });
   }
 
-  /** Resonant fold-together for Merge (two nodes converging into one) */
+  /** Resonant stereo fold-together for Merge (left & right nodes converging to center) */
   public playMergeFold(): void {
     if (!this.unlocked) return;
     this.notifyPulse();
-    this.playTone({ freq: 523.25, endFreq: 392.0, duration: 0.16, type: 'triangle', gain: 0.052 });
-    this.playTone({ freq: 293.66, endFreq: 392.0, duration: 0.16, type: 'sine', gain: 0.052 });
-    this.playTone({ freq: 392.0, duration: 0.18, type: 'sine', gain: 0.045, delay: 0.1 });
+    this.playTone({ freq: 523.25, endFreq: 392.0, duration: 0.17, type: 'triangle', gain: 0.052, pan: -0.48, endPan: 0 });
+    this.playTone({ freq: 293.66, endFreq: 392.0, duration: 0.17, type: 'sine', gain: 0.052, pan: 0.48, endPan: 0 });
+    this.playTone({ freq: 392.0, duration: 0.2, type: 'sine', gain: 0.045, delay: 0.1, pan: 0 });
   }
 
-  /** B+ Tree rapid sequential leaf-scan arpeggio */
+  /** B+ Tree rapid sequential leaf-scan stereo arpeggio (sweeps left -> right) */
   public playRangeScan(hops = 4): void {
     if (!this.unlocked) return;
     this.notifyPulse();
     const notes = [523.25, 587.33, 659.25, 783.99, 880.0];
     const n = Math.min(hops, notes.length);
     for (let i = 0; i < n; i++) {
+      const pan = n > 1 ? -0.55 + (1.1 * i) / (n - 1) : 0;
       this.playTone({
         freq: notes[i],
-        duration: 0.085,
+        duration: 0.095,
         type: 'triangle',
-        gain: 0.046,
+        gain: 0.048,
         delay: i * 0.055,
+        pan,
       });
     }
   }
