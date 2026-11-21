@@ -58,9 +58,9 @@ const slide06: SlideDef = {
             </div>
 
             <div class="s06-crumbs" data-role="crumbs">
-              <div class="crumb-card" data-crumb="1"><strong>Mốc 1 · Gốc [10]</strong><span>17 &gt; 10 → <code>i = 1</code>, rẽ phải</span></div>
-              <div class="crumb-card" data-crumb="2"><strong>Mốc 2 · Nút [20]</strong><span>17 &lt; 20 → <code>i = 0</code>, rẽ trái</span></div>
-              <div class="crumb-card" data-crumb="3"><strong>Mốc 3 · Lá [12|17]</strong><span><code>i = 1</code>, <code>keys[1] = 17</code></span></div>
+              <button type="button" class="crumb-card" data-crumb="1"><strong>Mốc 1 · Gốc [10]</strong><span>17 &gt; 10 → <code>i = 1</code>, rẽ phải</span></button>
+              <button type="button" class="crumb-card" data-crumb="2"><strong>Mốc 2 · Nút [20]</strong><span>17 &lt; 20 → <code>i = 0</code>, rẽ trái</span></button>
+              <button type="button" class="crumb-card" data-crumb="3"><strong>Mốc 3 · Lá [12|17]</strong><span><code>i = 1</code>, <code>keys[1] = 17</code></span></button>
             </div>
           </div>
 
@@ -134,34 +134,56 @@ const slide06: SlideDef = {
       if (t16Step < 3) { t16Step++; render16(); }
     });
     drawer.addEventListener('click', (e) => e.stopPropagation());
+
+    // Clickable search milestones (replay/jump without advancing deck)
+    ctx.slideEl.querySelectorAll<HTMLButtonElement>('.crumb-card').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const targetStep = Number(btn.dataset.crumb);
+        renderSlide06State(targetStep, ctx.slideEl, ctx.getReducedMotion());
+      });
+    });
   },
   renderStep(step, _prev, ctx) {
-    const treeBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
-    const res = ctx.slideEl.querySelector<HTMLElement>('[data-role="result"]')!;
-    const crumbs = ctx.slideEl.querySelectorAll<HTMLElement>('.crumb-card');
-
-    crumbs.forEach((c) => {
-      const n = Number(c.dataset.crumb);
-      c.classList.toggle('is-shown', step >= n);
-      c.classList.toggle('is-current', step === n);
-    });
-
-    renderTreeScene(treeBox, buildSearchScene(step, 17), { reducedMotion: ctx.getReducedMotion() });
-
-    const messages = [
-      'Khung mở: Cây tìm kiếm bậc M = 3, xuất phát tại gốc <code>[10]</code> với khóa <code>k = 17</code>.',
-      'Tại <code>[10]</code>: vị trí chèn trái của 17 là <code>i = 1</code> → đi xuống <code>children[1] = [20]</code>.',
-      'Tại <code>[20]</code>: <code>17 &lt; 20</code> nên <code>i = 0</code> → đi xuống <code>children[0] = [12 | 17]</code>.',
-      '<strong>Tìm thấy:</strong> trả về <code>(lá [12 | 17], 1)</code> — ô thứ hai khi chỉ số bắt đầu từ 0.',
-    ];
-    res.innerHTML = messages[step];
-    res.classList.toggle('is-success', step === 3);
+    renderSlide06State(step, ctx.slideEl, ctx.getReducedMotion());
   },
   cancelAnimations(slideEl) {
     const t = slideEl.querySelector<HTMLElement>('[data-role="tree"]');
     if (t) cancelTreeAnimations(t);
   },
 };
+
+function renderSlide06State(step: number, slideEl: HTMLElement, reducedMotion: boolean): void {
+  const treeBox = slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
+  const res = slideEl.querySelector<HTMLElement>('[data-role="result"]')!;
+  const crumbs = slideEl.querySelectorAll<HTMLElement>('.crumb-card');
+  const rules = slideEl.querySelectorAll<HTMLElement>('[data-rule]');
+
+  crumbs.forEach((c) => {
+    const n = Number(c.dataset.crumb);
+    c.classList.toggle('is-shown', step >= n);
+    c.classList.toggle('is-current', step === n);
+  });
+
+  rules.forEach((r) => {
+    const idx = Number(r.dataset.rule);
+    const active =
+      (step === 1 || step === 2) ? (idx === 1 || idx === 3) :
+      step === 3 ? (idx === 1 || idx === 2) : false;
+    r.classList.toggle('is-active', active);
+  });
+
+  renderTreeScene(treeBox, buildSearchScene(step, 17), { reducedMotion });
+
+  const messages = [
+    'Khung mở: Cây tìm kiếm bậc M = 3, xuất phát tại gốc <code>[10]</code> với khóa <code>k = 17</code>.',
+    'Tại <code>[10]</code>: vị trí chèn trái của 17 là <code>i = 1</code> → đi xuống <code>children[1] = [20]</code>.',
+    'Tại <code>[20]</code>: <code>17 &lt; 20</code> nên <code>i = 0</code> → đi xuống <code>children[0] = [12 | 17]</code>.',
+    '<strong>Tìm thấy:</strong> trả về <code>(lá [12 | 17], 1)</code> — ô thứ hai khi chỉ số bắt đầu từ 0.',
+  ];
+  res.innerHTML = messages[step];
+  res.classList.toggle('is-success', step === 3);
+}
 
 function buildSearchScene(step: number, targetKey: number): TreeSceneSpec {
   const isMiss = targetKey === 16;
@@ -323,10 +345,10 @@ const slide07: SlideDef = {
             <div class="canva-card">
               <h3>Quy trình chèn khóa</h3>
               <ol class="compact-list">
-                <li>Đi từ gốc xuống nút lá thích hợp và chèn <code>k</code> theo thứ tự.</li>
-                <li>Không tràn (<code>≤ M−1</code>) → <strong>kết thúc</strong>.</li>
-                <li>Tràn (<code>&gt; M−1</code>) → <strong>Split</strong>, đẩy khóa <code>mid = len // 2</code> lên nút cha.</li>
-                <li>Lặp kiểm tra lên cha; nếu gốc tràn thì tách và tạo gốc mới.</li>
+                <li data-ins-step="0">Đi từ gốc xuống nút lá thích hợp và chèn <code>k</code> theo thứ tự.</li>
+                <li data-ins-step="1">Không tràn (<code>≤ M−1</code>) → <strong>kết thúc</strong>.</li>
+                <li data-ins-step="2">Tràn (<code>&gt; M−1</code>) → <strong>Split</strong>, đẩy khóa <code>mid = len // 2</code> lên nút cha.</li>
+                <li data-ins-step="3">Lặp kiểm tra lên cha; nếu gốc tràn thì tách và tạo gốc mới.</li>
               </ol>
             </div>
             <div class="canva-card s07-status" data-role="status">
@@ -340,6 +362,9 @@ const slide07: SlideDef = {
   renderStep(step, _prev, ctx) {
     const treeBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
     const status = ctx.slideEl.querySelector<HTMLElement>('[data-role="status"]')!;
+    ctx.slideEl.querySelectorAll<HTMLElement>('[data-ins-step]').forEach((li) => {
+      li.classList.toggle('is-active', Number(li.dataset.insStep) === step);
+    });
 
     const scene: TreeSceneSpec =
       step === 0
@@ -598,10 +623,10 @@ const slide08: SlideDef = {
             <p><strong>Chiều cao cây chỉ tăng khi nút gốc bị tách.</strong></p>
             <p>Sau xử lý, mọi khóa vẫn giữ đúng thứ tự và mọi nút lá nằm cùng độ sâu.</p>
             <div class="s08-milestones" data-role="milestones">
-              <div class="ms-pill" data-ms="0">0. Trước khi chèn (h=1)</div>
-              <div class="ms-pill" data-ms="1">1. Lá [52|60|65|72] tràn</div>
-              <div class="ms-pill" data-ms="2">2. Gốc [30|50|65|75] tràn</div>
-              <div class="ms-pill" data-ms="3">3. Tạo gốc mới [65] (h=2)</div>
+              <button type="button" class="ms-pill" data-ms="0">0. Trước khi chèn (h=1)</button>
+              <button type="button" class="ms-pill" data-ms="1">1. Lá [52|60|65|72] tràn</button>
+              <button type="button" class="ms-pill" data-ms="2">2. Gốc [30|50|65|75] tràn</button>
+              <button type="button" class="ms-pill" data-ms="3">3. Tạo gốc mới [65] (h=2)</button>
             </div>
           </aside>
 
@@ -612,24 +637,97 @@ const slide08: SlideDef = {
         </div>
       </div>
     `;
+
+    ctx.slideEl.querySelectorAll<HTMLButtonElement>('.ms-pill').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        renderSlide08State(Number(btn.dataset.ms), ctx.slideEl, ctx.getReducedMotion());
+      });
+    });
   },
   renderStep(step, _prev, ctx) {
-    const treeBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
-    const hPill = ctx.slideEl.querySelector<HTMLElement>('[data-role="h-pill"]')!;
-    const cap = ctx.slideEl.querySelector<HTMLElement>('[data-role="caption"]')!;
-    const pills = ctx.slideEl.querySelectorAll<HTMLElement>('.ms-pill');
+    renderSlide08State(step, ctx.slideEl, ctx.getReducedMotion());
+  },
+  cancelAnimations(slideEl) {
+    const t = slideEl.querySelector<HTMLElement>('[data-role="tree"]');
+    if (t) cancelTreeAnimations(t);
+  },
+};
 
-    pills.forEach((p) => {
-      const m = Number(p.dataset.ms);
-      p.classList.toggle('is-done', m < step);
-      p.classList.toggle('is-now', m === step);
-    });
+function renderSlide08State(step: number, slideEl: HTMLElement, reducedMotion: boolean): void {
+  const treeBox = slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
+  const hPill = slideEl.querySelector<HTMLElement>('[data-role="h-pill"]')!;
+  const cap = slideEl.querySelector<HTMLElement>('[data-role="caption"]')!;
+  const pills = slideEl.querySelectorAll<HTMLElement>('.ms-pill');
 
-    hPill.innerHTML = step === 3 ? 'Chiều cao: <strong>h = 2 (+1 tầng)</strong>' : 'Chiều cao: <strong>h = 1</strong>';
-    hPill.classList.toggle('is-changed', step === 3);
+  pills.forEach((p) => {
+    const m = Number(p.dataset.ms);
+    p.classList.toggle('is-done', m < step);
+    p.classList.toggle('is-now', m === step);
+  });
 
-    const scene: TreeSceneSpec =
-      step === 0
+  hPill.innerHTML = step === 3 ? 'Chiều cao: <strong>h = 2 (+1 tầng)</strong>' : 'Chiều cao: <strong>h = 1</strong>';
+  hPill.classList.toggle('is-changed', step === 3);
+
+  const scene: TreeSceneSpec =
+    step === 0
+      ? {
+          viewBox: [0, 0, 860, 380],
+          nodes: [
+            {
+              id: 'n8-in72',
+              x: 740,
+              y: 62,
+              cellW: 54,
+              cellH: 40,
+              state: 'active',
+              tag: 'Chèn 72',
+              tagPos: 'top',
+              tagTone: 'warn',
+              keys: [{ id: 'c8-72', label: '72', tone: 'active' }],
+            },
+            {
+              id: 'r8',
+              x: 430,
+              y: 120,
+              cellW: 56,
+              cellH: 44,
+              state: 'active',
+              tag: 'Gốc đã đầy (3 / 3 khóa)',
+              tagTone: 'warn',
+              keys: [
+                { id: 'c8-30', label: '30' },
+                { id: 'c8-50', label: '50', tone: 'active' },
+                { id: 'c8-75', label: '75', tone: 'active' },
+              ],
+            },
+            { id: 'l8-0', x: 110, y: 280, cellW: 48, cellH: 40, keys: [{ id: 'c8-10', label: '10' }, { id: 'c8-20', label: '20' }] },
+            { id: 'l8-1', x: 270, y: 280, cellW: 48, cellH: 40, keys: [{ id: 'c8-40', label: '40' }] },
+            {
+              id: 'l8-2',
+              x: 475,
+              y: 280,
+              cellW: 48,
+              cellH: 40,
+              state: 'highlight-box',
+              tag: 'Lá đích đã đầy (3 / 3)',
+              tagPos: 'bottom',
+              tagTone: 'warn',
+              keys: [{ id: 'c8-52', label: '52' }, { id: 'c8-60', label: '60' }, { id: 'c8-65', label: '65' }],
+            },
+            { id: 'l8-3', x: 720, y: 280, cellW: 48, cellH: 40, keys: [{ id: 'c8-80', label: '80' }, { id: 'c8-91', label: '91' }] },
+          ],
+          edges: [
+            { id: 'e8-0', fromNode: 'r8', portIndex: 0, toNode: 'l8-0' },
+            { id: 'e8-1', fromNode: 'r8', portIndex: 1, toNode: 'l8-1' },
+            { id: 'e8-2', fromNode: 'r8', portIndex: 2, toNode: 'l8-2', state: 'active', arrow: true, label: '50 < 72 < 75' },
+            { id: 'e8-3', fromNode: 'r8', portIndex: 3, toNode: 'l8-3' },
+          ],
+          transfers: [
+            { id: 't8-in72', fromX: 708, fromY: 72, toX: 522, toY: 112, ctrlX: 622, ctrlY: 66, label: 'Tìm từ gốc', tone: 'warn' },
+          ],
+        }
+      : step === 1
         ? {
             viewBox: [0, 0, 860, 380],
             nodes: [
@@ -639,28 +737,44 @@ const slide08: SlideDef = {
                 y: 120,
                 cellW: 56,
                 cellH: 44,
-                tag: 'Gốc đã đầy (3 / 3 khóa)',
-                tagTone: 'warn',
                 keys: [
                   { id: 'c8-30', label: '30' },
                   { id: 'c8-50', label: '50' },
                   { id: 'c8-75', label: '75' },
                 ],
               },
-              { id: 'l8-0', x: 110, y: 280, cellW: 48, cellH: 40, keys: [{ id: 'c8-10', label: '10' }, { id: 'c8-20', label: '20' }] },
-              { id: 'l8-1', x: 270, y: 280, cellW: 48, cellH: 40, keys: [{ id: 'c8-40', label: '40' }] },
-              { id: 'l8-2', x: 475, y: 280, cellW: 48, cellH: 40, keys: [{ id: 'c8-52', label: '52' }, { id: 'c8-60', label: '60' }, { id: 'c8-65', label: '65' }] },
-              { id: 'l8-3', x: 720, y: 280, cellW: 48, cellH: 40, keys: [{ id: 'c8-80', label: '80' }, { id: 'c8-91', label: '91' }] },
+              { id: 'l8-0', x: 100, y: 280, cellW: 48, cellH: 40, keys: [{ id: 'c8-10', label: '10' }, { id: 'c8-20', label: '20' }] },
+              { id: 'l8-1', x: 245, y: 280, cellW: 48, cellH: 40, keys: [{ id: 'c8-40', label: '40' }] },
+              {
+                id: 'l8-2',
+                x: 485,
+                y: 280,
+                cellW: 50,
+                cellH: 42,
+                state: 'overflow',
+                tag: 'Lá tràn (4 > 3) · mid = 65',
+                tagPos: 'bottom',
+                tagTone: 'error',
+                keys: [
+                  { id: 'c8-52', label: '52' },
+                  { id: 'c8-60', label: '60' },
+                  { id: 'c8-65', label: '65', tone: 'active', badge: 'mid' },
+                  { id: 'c8-72', label: '72', tone: 'active' },
+                ],
+              },
+              { id: 'l8-3', x: 745, y: 280, cellW: 48, cellH: 40, keys: [{ id: 'c8-80', label: '80' }, { id: 'c8-91', label: '91' }] },
             ],
             edges: [
               { id: 'e8-0', fromNode: 'r8', portIndex: 0, toNode: 'l8-0' },
               { id: 'e8-1', fromNode: 'r8', portIndex: 1, toNode: 'l8-1' },
-              { id: 'e8-2', fromNode: 'r8', portIndex: 2, toNode: 'l8-2' },
+              { id: 'e8-2', fromNode: 'r8', portIndex: 2, toNode: 'l8-2', state: 'active', arrow: true },
               { id: 'e8-3', fromNode: 'r8', portIndex: 3, toNode: 'l8-3' },
             ],
-            chips: [{ id: 'ch-72', x: 740, y: 60, text: 'Insert(72)', tone: 'active' }],
+            transfers: [
+              { id: 't8-up1', fromX: 522, fromY: 244, toX: 472, toY: 148, ctrlX: 564, ctrlY: 194, label: 'đẩy 65 ↑', tone: 'error' },
+            ],
           }
-        : step === 1
+        : step === 2
           ? {
               viewBox: [0, 0, 860, 380],
               nodes: [
@@ -670,141 +784,96 @@ const slide08: SlideDef = {
                   y: 120,
                   cellW: 56,
                   cellH: 44,
+                  state: 'overflow',
+                  tag: 'Gốc tràn (4 > 3)!',
+                  tagPos: 'left',
+                  tagTone: 'error',
                   keys: [
                     { id: 'c8-30', label: '30' },
                     { id: 'c8-50', label: '50' },
+                    { id: 'c8-65', label: '65', tone: 'active', badge: 'mid' },
                     { id: 'c8-75', label: '75' },
                   ],
                 },
-                { id: 'l8-0', x: 100, y: 280, cellW: 48, cellH: 40, keys: [{ id: 'c8-10', label: '10' }, { id: 'c8-20', label: '20' }] },
-                { id: 'l8-1', x: 245, y: 280, cellW: 48, cellH: 40, keys: [{ id: 'c8-40', label: '40' }] },
-                {
-                  id: 'l8-2',
-                  x: 485,
-                  y: 280,
-                  cellW: 50,
-                  cellH: 42,
-                  state: 'overflow',
-                  tag: 'Lá tràn (4 > 3) · mid = 65',
-                  tagPos: 'bottom',
-                  tagTone: 'error',
-                  keys: [
-                    { id: 'c8-52', label: '52' },
-                    { id: 'c8-60', label: '60' },
-                    { id: 'c8-65', label: '65', tone: 'active', badge: 'mid' },
-                    { id: 'c8-72', label: '72', tone: 'active' },
-                  ],
-                },
-                { id: 'l8-3', x: 745, y: 280, cellW: 48, cellH: 40, keys: [{ id: 'c8-80', label: '80' }, { id: 'c8-91', label: '91' }] },
+                { id: 'l8-0', x: 96, y: 280, cellW: 46, cellH: 40, keys: [{ id: 'c8-10', label: '10' }, { id: 'c8-20', label: '20' }] },
+                { id: 'l8-1', x: 245, y: 280, cellW: 46, cellH: 40, keys: [{ id: 'c8-40', label: '40' }] },
+                { id: 'l8-2', x: 410, y: 280, cellW: 46, cellH: 40, state: 'success', keys: [{ id: 'c8-52', label: '52' }, { id: 'c8-60', label: '60' }] },
+                { id: 'l8-2b', x: 575, y: 280, cellW: 46, cellH: 40, state: 'success', keys: [{ id: 'c8-72', label: '72' }] },
+                { id: 'l8-3', x: 740, y: 280, cellW: 46, cellH: 40, keys: [{ id: 'c8-80', label: '80' }, { id: 'c8-91', label: '91' }] },
               ],
               edges: [
                 { id: 'e8-0', fromNode: 'r8', portIndex: 0, toNode: 'l8-0' },
                 { id: 'e8-1', fromNode: 'r8', portIndex: 1, toNode: 'l8-1' },
-                { id: 'e8-2', fromNode: 'r8', portIndex: 2, toNode: 'l8-2', state: 'active', arrow: true, label: '50 < 72 < 75' },
-                { id: 'e8-3', fromNode: 'r8', portIndex: 3, toNode: 'l8-3' },
+                { id: 'e8-2', fromNode: 'r8', portIndex: 2, toNode: 'l8-2', state: 'active' },
+                { id: 'e8-2b', fromNode: 'r8', portIndex: 3, toNode: 'l8-2b', state: 'active' },
+                { id: 'e8-3', fromNode: 'r8', portIndex: 4, toNode: 'l8-3' },
+              ],
+              transfers: [
+                { id: 't8-up2', fromX: 458, fromY: 78, toX: 458, toY: 16, ctrlX: 458, ctrlY: 46, label: 'đẩy 65 ↑ tạo gốc mới', tone: 'error' },
               ],
             }
-          : step === 2
-            ? {
-                viewBox: [0, 0, 860, 380],
-                nodes: [
-                  {
-                    id: 'r8',
-                    x: 430,
-                    y: 120,
-                    cellW: 56,
-                    cellH: 44,
-                    state: 'overflow',
-                    tag: 'Gốc tràn (4 > 3)! Lớp dự đoán bước tiếp?',
-                    tagTone: 'error',
-                    keys: [
-                      { id: 'c8-30', label: '30' },
-                      { id: 'c8-50', label: '50' },
-                      { id: 'c8-65', label: '65', tone: 'active', badge: 'mid' },
-                      { id: 'c8-75', label: '75' },
-                    ],
-                  },
-                  { id: 'l8-0', x: 96, y: 280, cellW: 46, cellH: 40, keys: [{ id: 'c8-10', label: '10' }, { id: 'c8-20', label: '20' }] },
-                  { id: 'l8-1', x: 245, y: 280, cellW: 46, cellH: 40, keys: [{ id: 'c8-40', label: '40' }] },
-                  { id: 'l8-2', x: 410, y: 280, cellW: 46, cellH: 40, state: 'success', keys: [{ id: 'c8-52', label: '52' }, { id: 'c8-60', label: '60' }] },
-                  { id: 'l8-2b', x: 575, y: 280, cellW: 46, cellH: 40, state: 'success', keys: [{ id: 'c8-72', label: '72' }] },
-                  { id: 'l8-3', x: 740, y: 280, cellW: 46, cellH: 40, keys: [{ id: 'c8-80', label: '80' }, { id: 'c8-91', label: '91' }] },
-                ],
-                edges: [
-                  { id: 'e8-0', fromNode: 'r8', portIndex: 0, toNode: 'l8-0' },
-                  { id: 'e8-1', fromNode: 'r8', portIndex: 1, toNode: 'l8-1' },
-                  { id: 'e8-2', fromNode: 'r8', portIndex: 2, toNode: 'l8-2', state: 'active' },
-                  { id: 'e8-2b', fromNode: 'r8', portIndex: 3, toNode: 'l8-2b', state: 'active' },
-                  { id: 'e8-3', fromNode: 'r8', portIndex: 4, toNode: 'l8-3' },
-                ],
-              }
-            : {
-                viewBox: [0, 0, 860, 380],
-                nodes: [
-                  {
-                    id: 'r8-new',
-                    x: 430,
-                    y: 48,
-                    cellW: 58,
-                    cellH: 42,
-                    state: 'success',
-                    tag: 'Gốc mới · Tầng thêm phía trên',
-                    tagPos: 'right',
-                    tagTone: 'success',
-                    keys: [{ id: 'c8-65', label: '65', tone: 'success' }],
-                  },
-                  {
-                    id: 'r8',
-                    x: 245,
-                    y: 162,
-                    cellW: 54,
-                    cellH: 40,
-                    keys: [
-                      { id: 'c8-30', label: '30' },
-                      { id: 'c8-50', label: '50' },
-                    ],
-                  },
-                  {
-                    id: 'r8-right',
-                    x: 645,
-                    y: 162,
-                    cellW: 54,
-                    cellH: 40,
-                    keys: [{ id: 'c8-75', label: '75' }],
-                  },
-                  { id: 'l8-0', x: 96, y: 294, cellW: 46, cellH: 40, keys: [{ id: 'c8-10', label: '10' }, { id: 'c8-20', label: '20' }] },
-                  { id: 'l8-1', x: 245, y: 294, cellW: 46, cellH: 40, keys: [{ id: 'c8-40', label: '40' }] },
-                  { id: 'l8-2', x: 400, y: 294, cellW: 46, cellH: 40, keys: [{ id: 'c8-52', label: '52' }, { id: 'c8-60', label: '60' }] },
-                  { id: 'l8-2b', x: 565, y: 294, cellW: 46, cellH: 40, keys: [{ id: 'c8-72', label: '72' }] },
-                  { id: 'l8-3', x: 735, y: 294, cellW: 46, cellH: 40, keys: [{ id: 'c8-80', label: '80' }, { id: 'c8-91', label: '91' }] },
-                ],
-                edges: [
-                  { id: 'e8-nr0', fromNode: 'r8-new', portIndex: 0, toNode: 'r8', state: 'active', arrow: true },
-                  { id: 'e8-nr1', fromNode: 'r8-new', portIndex: 1, toNode: 'r8-right', state: 'active', arrow: true },
-                  { id: 'e8-0', fromNode: 'r8', portIndex: 0, toNode: 'l8-0' },
-                  { id: 'e8-1', fromNode: 'r8', portIndex: 1, toNode: 'l8-1' },
-                  { id: 'e8-2', fromNode: 'r8', portIndex: 2, toNode: 'l8-2' },
-                  { id: 'e8-2b', fromNode: 'r8-right', portIndex: 0, toNode: 'l8-2b' },
-                  { id: 'e8-3', fromNode: 'r8-right', portIndex: 1, toNode: 'l8-3' },
-                ],
-                baselineY: { y: 334, x1: 35, x2: 815, label: '5 lá giữ nguyên hàng · Cây tăng lên h = 2' },
-              };
+          : {
+              viewBox: [0, 0, 860, 380],
+              nodes: [
+                {
+                  id: 'r8-new',
+                  x: 430,
+                  y: 48,
+                  cellW: 58,
+                  cellH: 42,
+                  state: 'success',
+                  tag: 'Gốc mới · Tầng thêm phía trên',
+                  tagPos: 'right',
+                  tagTone: 'success',
+                  keys: [{ id: 'c8-65', label: '65', tone: 'success' }],
+                },
+                {
+                  id: 'r8',
+                  x: 245,
+                  y: 162,
+                  cellW: 54,
+                  cellH: 40,
+                  keys: [
+                    { id: 'c8-30', label: '30' },
+                    { id: 'c8-50', label: '50' },
+                  ],
+                },
+                {
+                  id: 'r8-right',
+                  x: 645,
+                  y: 162,
+                  cellW: 54,
+                  cellH: 40,
+                  keys: [{ id: 'c8-75', label: '75' }],
+                },
+                { id: 'l8-0', x: 96, y: 294, cellW: 46, cellH: 40, keys: [{ id: 'c8-10', label: '10' }, { id: 'c8-20', label: '20' }] },
+                { id: 'l8-1', x: 245, y: 294, cellW: 46, cellH: 40, keys: [{ id: 'c8-40', label: '40' }] },
+                { id: 'l8-2', x: 400, y: 294, cellW: 46, cellH: 40, keys: [{ id: 'c8-52', label: '52' }, { id: 'c8-60', label: '60' }] },
+                { id: 'l8-2b', x: 565, y: 294, cellW: 46, cellH: 40, keys: [{ id: 'c8-72', label: '72' }] },
+                { id: 'l8-3', x: 735, y: 294, cellW: 46, cellH: 40, keys: [{ id: 'c8-80', label: '80' }, { id: 'c8-91', label: '91' }] },
+              ],
+              edges: [
+                { id: 'e8-nr0', fromNode: 'r8-new', portIndex: 0, toNode: 'r8', state: 'active', arrow: true },
+                { id: 'e8-nr1', fromNode: 'r8-new', portIndex: 1, toNode: 'r8-right', state: 'active', arrow: true },
+                { id: 'e8-0', fromNode: 'r8', portIndex: 0, toNode: 'l8-0' },
+                { id: 'e8-1', fromNode: 'r8', portIndex: 1, toNode: 'l8-1' },
+                { id: 'e8-2', fromNode: 'r8', portIndex: 2, toNode: 'l8-2' },
+                { id: 'e8-2b', fromNode: 'r8-right', portIndex: 0, toNode: 'l8-2b' },
+                { id: 'e8-3', fromNode: 'r8-right', portIndex: 1, toNode: 'l8-3' },
+              ],
+              baselineY: { y: 334, x1: 35, x2: 815, label: '5 lá giữ nguyên hàng · Cây tăng lên h = 2' },
+            };
 
-    renderTreeScene(treeBox, scene, { reducedMotion: ctx.getReducedMotion(), durationMs: 560 });
+  renderTreeScene(treeBox, scene, { reducedMotion, durationMs: 560 });
 
-    const caps = [
-      'Gốc <code>[30|50|75]</code> đã đầy 3 khóa. Chuẩn bị chèn <code>72</code> (<code>h = 1</code>).',
-      'Khóa <code>72</code> vào khoảng <code>(50, 75)</code> làm lá thứ ba tràn: <code>[52|60|65|72]</code>.',
-      'Lá tách thành <code>[52|60]</code> và <code>[72]</code>; <strong>65</strong> lên gốc khiến gốc tràn <code>[30|50|65|75]</code> (vẫn <code>h = 1</code>!).',
-      'Tách gốc: <strong>65</strong> lên tạo gốc mới, <code>[30|50]</code> nhận 3 con đầu, <code>[75]</code> nhận 2 con cuối → <strong>h = 2</strong>.',
-    ];
-    cap.innerHTML = caps[step];
-  },
-  cancelAnimations(slideEl) {
-    const t = slideEl.querySelector<HTMLElement>('[data-role="tree"]');
-    if (t) cancelTreeAnimations(t);
-  },
-};
+  const caps = [
+    'Gốc <code>[30|50|75]</code> đã đầy 3 khóa. Tìm đường cho khóa <code>72</code> qua khoảng <code>(50, 75)</code> xuống lá <code>[52|60|65]</code> (<code>h = 1</code>).',
+    'Khóa <code>72</code> trượt vào lá thứ ba gây tràn: <code>[52|60|65|72]</code> (4 &gt; 3) → tách lá và đẩy <strong>65 ↑</strong> lên gốc.',
+    'Lá tách thành <code>[52|60]</code> và <code>[72]</code>; <strong>65</strong> lên gốc khiến gốc tràn <code>[30|50|65|75]</code> (vẫn <code>h = 1</code>!).',
+    'Tách gốc: <strong>65</strong> lên tạo gốc mới, <code>[30|50]</code> nhận 3 con đầu, <code>[75]</code> nhận 2 con cuối → <strong>h = 2</strong>.',
+  ];
+  cap.innerHTML = caps[step];
+}
 
 // ============================================================================
 // SLIDE 12 — Cây quyết định khi xóa (Tổng kết cuối phần xóa)
@@ -892,16 +961,21 @@ const slide09: SlideDef = {
       </div>
     `;
 
-    ctx.slideEl.querySelectorAll<HTMLButtonElement>('[data-branch]').forEach((btn) => {
+    const branchBtns = ctx.slideEl.querySelectorAll<HTMLButtonElement>('[data-branch]');
+    branchBtns.forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const mode = btn.dataset.branch as 'leaf' | 'borrow' | 'merge' | 'all';
+        branchBtns.forEach((b) => b.classList.toggle('inline-action-btn--primary', b === btn));
         renderFlowchart(ctx.slideEl.querySelector<HTMLElement>('[data-role="flow"]')!, 3, mode);
       });
     });
   },
   renderStep(step, prev, ctx) {
     const prevStep = prev ?? -1;
+    ctx.slideEl.querySelectorAll<HTMLButtonElement>('[data-branch]').forEach((b) => {
+      b.classList.toggle('inline-action-btn--primary', b.dataset.branch === 'all');
+    });
     renderFlowchart(
       ctx.slideEl.querySelector<HTMLElement>('[data-role="flow"]')!,
       step,
@@ -1012,13 +1086,13 @@ function renderFlowchart(
 
     <!-- Loop back arrow to parent check + Root shrink note -->
     <g opacity="${op('loop')}">
-      <path class="flow-loop-dash" d="M 690 417 L 786 417 L 786 230 L 594 230" fill="none" stroke="#DC2626" stroke-width="2.6" stroke-dasharray="7 5" marker-end="url(#fl-arr-r)"/>
-      <text x="772" y="328" text-anchor="middle" fill="#B91C1C" font-size="12" font-weight="800" transform="rotate(-90 772 328)">Kiểm tra ngược lên cha</text>
+      <path class="flow-loop-dash" d="M 690 417 L 796 417 L 796 230 L 594 230" fill="none" stroke="#DC2626" stroke-width="2.6" stroke-dasharray="7 5" marker-end="url(#fl-arr-r)"/>
+      <text x="778" y="362" text-anchor="middle" fill="#B91C1C" font-size="12" font-weight="800" transform="rotate(-90 778 362)">Lặp lên cha ↑</text>
     </g>
     <g opacity="${op('root')}">
-      <rect x="612" y="252" width="160" height="58" rx="10" fill="#004AAD"/>
-      <text x="692" y="276" text-anchor="middle" fill="#FFFFFF" font-size="12" font-weight="700">Nếu gốc rỗng còn</text>
-      <text x="692" y="295" text-anchor="middle" fill="#FEF08A" font-size="12.5" font-weight="800">1 con → Hạ chiều cao</text>
+      <rect x="610" y="246" width="160" height="54" rx="10" fill="#004AAD"/>
+      <text x="690" y="269" text-anchor="middle" fill="#FFFFFF" font-size="12" font-weight="700">Nếu gốc rỗng còn</text>
+      <text x="690" y="287" text-anchor="middle" fill="#FEF08A" font-size="12.5" font-weight="800">1 con → Hạ chiều cao</text>
     </g>
     </g>
     ` : ''}
@@ -1098,26 +1172,26 @@ const slide10: SlideDef = {
     const sceneTop: TreeSceneSpec =
       step === 0
         ? {
-            viewBox: [0, 0, 740, 200],
+            viewBox: [0, 0, 740, 210],
             nodes: [
-              { id: 't10r', x: 370, y: 44, cellW: 54, cellH: 38, keys: [{ id: 'a10', label: '10' }, { id: 'a20', label: '20' }] },
+              { id: 't10r', x: 370, y: 44, cellW: 54, cellH: 38, state: 'active', keys: [{ id: 'a10', label: '10', tone: 'active' }, { id: 'a20', label: '20' }] },
               { id: 't10l0', x: 165, y: 146, cellW: 52, cellH: 38, keys: [{ id: 'a5', label: '5' }, { id: 'a7', label: '7', tone: 'error', badge: 'xóa' }] },
               { id: 't10l1', x: 370, y: 146, cellW: 52, cellH: 38, keys: [{ id: 'a12', label: '12' }] },
               { id: 't10l2', x: 575, y: 146, cellW: 52, cellH: 38, keys: [{ id: 'a25', label: '25' }] },
             ],
             edges: [
-              { id: 'ta0', fromNode: 't10r', portIndex: 0, toNode: 't10l0' },
+              { id: 'ta0', fromNode: 't10r', portIndex: 0, toNode: 't10l0', state: 'active', arrow: true, label: '7 < 10' },
               { id: 'ta1', fromNode: 't10r', portIndex: 1, toNode: 't10l1' },
               { id: 'ta2', fromNode: 't10r', portIndex: 2, toNode: 't10l2' },
             ],
           }
         : {
-            viewBox: [0, 0, 740, 200],
+            viewBox: [0, 0, 740, 210],
             nodes: [
               { id: 't10r', x: 370, y: 44, cellW: 54, cellH: 38, keys: [{ id: 'a10', label: '10' }, { id: 'a20', label: '20' }] },
-              { id: 't10l0', x: 165, y: 146, cellW: 52, cellH: 38, state: 'success', tag: '1 ≥ min_keys · Kết thúc', tagPos: 'right', tagTone: 'success', keys: [{ id: 'a5', label: '5', tone: 'success' }] },
-              { id: 't10l1', x: 430, y: 146, cellW: 52, cellH: 38, keys: [{ id: 'a12', label: '12' }] },
-              { id: 't10l2', x: 605, y: 146, cellW: 52, cellH: 38, keys: [{ id: 'a25', label: '25' }] },
+              { id: 't10l0', x: 165, y: 146, cellW: 52, cellH: 38, state: 'success', tag: '1 ≥ min_keys · Kết thúc', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'a5', label: '5', tone: 'success' }] },
+              { id: 't10l1', x: 370, y: 146, cellW: 52, cellH: 38, keys: [{ id: 'a12', label: '12' }] },
+              { id: 't10l2', x: 575, y: 146, cellW: 52, cellH: 38, keys: [{ id: 'a25', label: '25' }] },
             ],
             edges: [
               { id: 'ta0', fromNode: 't10r', portIndex: 0, toNode: 't10l0' },
@@ -1165,6 +1239,9 @@ const slide10: SlideDef = {
               { id: 'tb1', fromNode: 'b10r', portIndex: 1, toNode: 'b10l1' },
               { id: 'tb2', fromNode: 'b10r', portIndex: 2, toNode: 'b10l2' },
             ],
+            transfers: step === 2
+              ? [{ id: 'tr-pred-pre', fromX: 185, fromY: 130, toX: 334, toY: 46, ctrlX: 186, ctrlY: 26, label: '7 ↑ thay 10', tone: 'warn' }]
+              : [],
           }
         : {
             viewBox: [0, 0, 740, 210],
@@ -1273,123 +1350,137 @@ const slide11: SlideDef = {
         </div>
       </div>
     `;
+
+    // Click Borrow or Merge card to jump straight to that scenario
+    ctx.slideEl.querySelector<HTMLElement>('[data-def="borrow"]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderSlide11State(1, ctx.slideEl, ctx.getReducedMotion());
+    });
+    ctx.slideEl.querySelector<HTMLElement>('[data-def="merge"]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderSlide11State(3, ctx.slideEl, ctx.getReducedMotion());
+    });
   },
   renderStep(step, _prev, ctx) {
-    const treeBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
-    const turn = ctx.slideEl.querySelector<HTMLElement>('[data-role="turn"]')!;
-    const cap = ctx.slideEl.querySelector<HTMLElement>('[data-role="cap"]')!;
-    const defB = ctx.slideEl.querySelector<HTMLElement>('[data-def="borrow"]')!;
-    const defM = ctx.slideEl.querySelector<HTMLElement>('[data-def="merge"]')!;
-
-    defB.classList.toggle('is-active-card', step === 1 || step === 2);
-    defM.classList.toggle('is-active-card', step === 3 || step === 4);
-
-    const scene: TreeSceneSpec =
-      step === 0
-        ? {
-            viewBox: [0, 0, 740, 320],
-            nodes: [
-              { id: 'r11', x: 370, y: 66, cellW: 60, cellH: 44, tag: 'Cha có 3 cạnh', keys: [{ id: 'm10', label: '10' }, { id: 'm20', label: '20' }] },
-              { id: 'l11-0', x: 155, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm5', label: '5', tone: 'error', badge: 'xóa' }] },
-              { id: 'l11-1', x: 370, y: 218, cellW: 56, cellH: 42, tag: 'Anh em có 2 khóa (dư)', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'm12', label: '12' }, { id: 'm17', label: '17' }] },
-              { id: 'l11-2', x: 585, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm25', label: '25' }] },
-            ],
-            edges: [
-              { id: 'e11-0', fromNode: 'r11', portIndex: 0, toNode: 'l11-0' },
-              { id: 'e11-1', fromNode: 'r11', portIndex: 1, toNode: 'l11-1' },
-              { id: 'e11-2', fromNode: 'r11', portIndex: 2, toNode: 'l11-2' },
-            ],
-          }
-        : step === 1
-          ? {
-              viewBox: [0, 0, 740, 320],
-              nodes: [
-                { id: 'r11', x: 370, y: 66, cellW: 60, cellH: 44, keys: [{ id: 'm10', label: '10', tone: 'active' }, { id: 'm20', label: '20' }] },
-                { id: 'l11-0', x: 155, y: 218, cellW: 56, cellH: 42, state: 'underflow', tag: 'Rỗng (0 < 1)', tagPos: 'bottom', tagTone: 'error', keys: [] },
-                { id: 'l11-1', x: 370, y: 218, cellW: 56, cellH: 42, state: 'active', tag: 'Dư khóa → cho mượn 12', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'm12', label: '12', tone: 'active' }, { id: 'm17', label: '17' }] },
-                { id: 'l11-2', x: 585, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm25', label: '25' }] },
-              ],
-              edges: [
-                { id: 'e11-0', fromNode: 'r11', portIndex: 0, toNode: 'l11-0', state: 'error' },
-                { id: 'e11-1', fromNode: 'r11', portIndex: 1, toNode: 'l11-1' },
-                { id: 'e11-2', fromNode: 'r11', portIndex: 2, toNode: 'l11-2' },
-              ],
-              transfers: [
-                { id: 't-10down', fromX: 332, fromY: 82, toX: 168, toY: 190, ctrlX: 210, ctrlY: 105, label: '10 ↓', tone: 'warn' },
-                { id: 't-12up', fromX: 344, fromY: 192, toX: 346, toY: 92, ctrlX: 392, ctrlY: 140, label: '12 ↑', tone: 'success' },
-              ],
-            }
-          : step === 2
-            ? {
-                viewBox: [0, 0, 740, 320],
-                nodes: [
-                  { id: 'r11', x: 370, y: 66, cellW: 60, cellH: 44, state: 'success', tag: 'Vẫn giữ nguyên 3 cạnh', tagTone: 'success', keys: [{ id: 'm12', label: '12', tone: 'success' }, { id: 'm20', label: '20' }] },
-                  { id: 'l11-0', x: 155, y: 218, cellW: 56, cellH: 42, state: 'success', keys: [{ id: 'm10', label: '10', tone: 'success' }] },
-                  { id: 'l11-1', x: 370, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm17', label: '17' }] },
-                  { id: 'l11-2', x: 585, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm25', label: '25' }] },
-                ],
-                edges: [
-                  { id: 'e11-0', fromNode: 'r11', portIndex: 0, toNode: 'l11-0', state: 'active' },
-                  { id: 'e11-1', fromNode: 'r11', portIndex: 1, toNode: 'l11-1', state: 'active' },
-                  { id: 'e11-2', fromNode: 'r11', portIndex: 2, toNode: 'l11-2' },
-                ],
-              }
-            : step === 3
-              ? {
-                  viewBox: [0, 0, 740, 320],
-                  nodes: [
-                    { id: 'r11', x: 370, y: 66, cellW: 60, cellH: 44, tag: 'Cha: 2 khóa, 3 cạnh', keys: [{ id: 'm10', label: '10', tone: 'active' }, { id: 'm20', label: '20' }] },
-                    { id: 'l11-0', x: 155, y: 218, cellW: 56, cellH: 42, state: 'underflow', tag: 'Rỗng sau xóa 5', tagPos: 'bottom', tagTone: 'error', keys: [] },
-                    { id: 'l11-1', x: 370, y: 218, cellW: 56, cellH: 42, state: 'highlight-box', tag: 'Chỉ 1 khóa — không thể cho mượn!', tagPos: 'bottom', tagTone: 'error', keys: [{ id: 'm12', label: '12', tone: 'error' }] },
-                    { id: 'l11-2', x: 585, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm25', label: '25' }] },
-                  ],
-                  edges: [
-                    { id: 'e11-0', fromNode: 'r11', portIndex: 0, toNode: 'l11-0', state: 'error' },
-                    { id: 'e11-1', fromNode: 'r11', portIndex: 1, toNode: 'l11-1', state: 'error' },
-                    { id: 'e11-2', fromNode: 'r11', portIndex: 2, toNode: 'l11-2' },
-                  ],
-                  transfers: [
-                    { id: 't-m10', fromX: 340, fromY: 90, toX: 262, toY: 196, ctrlX: 278, ctrlY: 120, label: 'Kéo 10 ↓ gộp', tone: 'error' },
-                  ],
-                  brackets: [{ x1: 118, x2: 404, y: 274, dir: 'down', label: 'Gộp [∅] + 10 + [12]', tone: 'error' }],
-                }
-              : {
-                  viewBox: [0, 0, 740, 320],
-                  nodes: [
-                    { id: 'r11', x: 370, y: 66, cellW: 60, cellH: 44, state: 'success', tag: 'Cha giảm còn 1 khóa, 2 cạnh', tagTone: 'cobalt', keys: [{ id: 'm20', label: '20' }] },
-                    { id: 'l11-merged', x: 245, y: 218, cellW: 60, cellH: 44, state: 'success', tag: 'Nút sau gộp [10 | 12]', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'm10', label: '10', tone: 'success' }, { id: 'm12', label: '12', tone: 'success' }] },
-                    { id: 'l11-2', x: 545, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm25', label: '25' }] },
-                  ],
-                  edges: [
-                    { id: 'e11-0', fromNode: 'r11', portIndex: 0, toNode: 'l11-merged', state: 'active', arrow: true },
-                    { id: 'e11-2', fromNode: 'r11', portIndex: 1, toNode: 'l11-2' },
-                  ],
-                };
-
-    renderTreeScene(treeBox, scene, { reducedMotion: ctx.getReducedMotion(), durationMs: 520 });
-
-    const turns = [
-      'Lượt A · Delete(5) khi lá giữa có [12 | 17]',
-      'Lượt A · Underflow → Borrow qua nút cha',
-      'Lượt A · Kết quả sau Borrow',
-      'Lượt B · Delete(5) khi lá giữa chỉ có [12]',
-      'Lượt B · Kết quả sau Merge',
-    ];
-    const caps = [
-      'Cùng xóa <code>5</code> khỏi gốc <code>[10 | 20]</code>. Ở lượt A, lá giữa có <code>[12 | 17]</code> (dư khóa).',
-      'Xóa 5 tạo ô rỗng. Hai cung đồng bộ qua cha: <strong>10 ↓</strong> xuống lá trái, <strong>12 ↑</strong> lên thay ở cha.',
-      'Sau Borrow: cha thành <code>[12 | 20]</code>, ba lá <code>[10], [17], [25]</code> — số cạnh giữ nguyên (3).',
-      'Đổi sang lượt B: lá giữa chỉ còn <code>[12]</code> (1 khóa, không thể cho mượn). Kéo <strong>10</strong> từ cha xuống để gộp.',
-      'Sau Merge: nút gộp <code>[10 | 12]</code>, cha chỉ còn <code>[20]</code> và giảm từ 3 cạnh xuống còn 2 cạnh.',
-    ];
-    turn.textContent = turns[step];
-    cap.innerHTML = caps[step];
+    renderSlide11State(step, ctx.slideEl, ctx.getReducedMotion());
   },
   cancelAnimations(slideEl) {
     const t = slideEl.querySelector<HTMLElement>('[data-role="tree"]');
     if (t) cancelTreeAnimations(t);
   },
 };
+
+function renderSlide11State(step: number, slideEl: HTMLElement, reducedMotion: boolean): void {
+  const treeBox = slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
+  const turn = slideEl.querySelector<HTMLElement>('[data-role="turn"]')!;
+  const cap = slideEl.querySelector<HTMLElement>('[data-role="cap"]')!;
+  const defB = slideEl.querySelector<HTMLElement>('[data-def="borrow"]')!;
+  const defM = slideEl.querySelector<HTMLElement>('[data-def="merge"]')!;
+
+  defB.classList.toggle('is-active-card', step === 1 || step === 2);
+  defM.classList.toggle('is-active-card', step === 3 || step === 4);
+
+  const scene: TreeSceneSpec =
+    step === 0
+      ? {
+          viewBox: [0, 0, 740, 320],
+          nodes: [
+            { id: 'r11', x: 370, y: 66, cellW: 60, cellH: 44, state: 'active', tag: 'Cha có 3 cạnh · Tìm 5 < 10', keys: [{ id: 'm10', label: '10', tone: 'active' }, { id: 'm20', label: '20' }] },
+            { id: 'l11-0', x: 155, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm5', label: '5', tone: 'error', badge: 'xóa' }] },
+            { id: 'l11-1', x: 370, y: 218, cellW: 56, cellH: 42, tag: 'Anh em có 2 khóa (dư)', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'm12', label: '12' }, { id: 'm17', label: '17' }] },
+            { id: 'l11-2', x: 585, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm25', label: '25' }] },
+          ],
+          edges: [
+            { id: 'e11-0', fromNode: 'r11', portIndex: 0, toNode: 'l11-0', state: 'active', arrow: true, label: '5 < 10' },
+            { id: 'e11-1', fromNode: 'r11', portIndex: 1, toNode: 'l11-1' },
+            { id: 'e11-2', fromNode: 'r11', portIndex: 2, toNode: 'l11-2' },
+          ],
+        }
+      : step === 1
+        ? {
+            viewBox: [0, 0, 740, 320],
+            nodes: [
+              { id: 'r11', x: 370, y: 66, cellW: 60, cellH: 44, keys: [{ id: 'm10', label: '10', tone: 'active' }, { id: 'm20', label: '20' }] },
+              { id: 'l11-0', x: 155, y: 218, cellW: 56, cellH: 42, state: 'underflow', tag: 'Rỗng (0 < 1)', tagPos: 'bottom', tagTone: 'error', keys: [] },
+              { id: 'l11-1', x: 370, y: 218, cellW: 56, cellH: 42, state: 'active', tag: 'Dư khóa → cho mượn 12', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'm12', label: '12', tone: 'active' }, { id: 'm17', label: '17' }] },
+              { id: 'l11-2', x: 585, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm25', label: '25' }] },
+            ],
+            edges: [
+              { id: 'e11-0', fromNode: 'r11', portIndex: 0, toNode: 'l11-0', state: 'error' },
+              { id: 'e11-1', fromNode: 'r11', portIndex: 1, toNode: 'l11-1' },
+              { id: 'e11-2', fromNode: 'r11', portIndex: 2, toNode: 'l11-2' },
+            ],
+            transfers: [
+              { id: 't-10down', fromX: 332, fromY: 76, toX: 162, toY: 186, ctrlX: 184, ctrlY: 84, label: '10 ↓', tone: 'warn' },
+              { id: 't-12up', fromX: 344, fromY: 192, toX: 346, toY: 92, ctrlX: 396, ctrlY: 140, label: '12 ↑', tone: 'success' },
+            ],
+          }
+        : step === 2
+          ? {
+              viewBox: [0, 0, 740, 320],
+              nodes: [
+                { id: 'r11', x: 370, y: 66, cellW: 60, cellH: 44, state: 'success', tag: 'Vẫn giữ nguyên 3 cạnh', tagTone: 'success', keys: [{ id: 'm12', label: '12', tone: 'success' }, { id: 'm20', label: '20' }] },
+                { id: 'l11-0', x: 155, y: 218, cellW: 56, cellH: 42, state: 'success', keys: [{ id: 'm10', label: '10', tone: 'success' }] },
+                { id: 'l11-1', x: 370, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm17', label: '17' }] },
+                { id: 'l11-2', x: 585, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm25', label: '25' }] },
+              ],
+              edges: [
+                { id: 'e11-0', fromNode: 'r11', portIndex: 0, toNode: 'l11-0', state: 'active' },
+                { id: 'e11-1', fromNode: 'r11', portIndex: 1, toNode: 'l11-1', state: 'active' },
+                { id: 'e11-2', fromNode: 'r11', portIndex: 2, toNode: 'l11-2' },
+              ],
+            }
+          : step === 3
+            ? {
+                viewBox: [0, 0, 740, 320],
+                nodes: [
+                  { id: 'r11', x: 370, y: 66, cellW: 60, cellH: 44, tag: 'Cha: 2 khóa, 3 cạnh', keys: [{ id: 'm10', label: '10', tone: 'active' }, { id: 'm20', label: '20' }] },
+                  { id: 'l11-0', x: 155, y: 218, cellW: 56, cellH: 42, state: 'underflow', tag: 'Rỗng sau xóa 5', tagPos: 'bottom', tagTone: 'error', keys: [] },
+                  { id: 'l11-1', x: 370, y: 218, cellW: 56, cellH: 42, state: 'highlight-box', tag: 'Chỉ 1 khóa — không thể cho mượn!', tagPos: 'bottom', tagTone: 'error', keys: [{ id: 'm12', label: '12', tone: 'error' }] },
+                  { id: 'l11-2', x: 585, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm25', label: '25' }] },
+                ],
+                edges: [
+                  { id: 'e11-0', fromNode: 'r11', portIndex: 0, toNode: 'l11-0', state: 'error' },
+                  { id: 'e11-1', fromNode: 'r11', portIndex: 1, toNode: 'l11-1', state: 'error' },
+                  { id: 'e11-2', fromNode: 'r11', portIndex: 2, toNode: 'l11-2' },
+                ],
+                transfers: [
+                  { id: 't-m10', fromX: 340, fromY: 90, toX: 262, toY: 196, ctrlX: 278, ctrlY: 120, label: 'Kéo 10 ↓ gộp', tone: 'error' },
+                ],
+                brackets: [{ x1: 118, x2: 404, y: 274, dir: 'down', label: 'Gộp [∅] + 10 + [12]', tone: 'error' }],
+              }
+            : {
+                viewBox: [0, 0, 740, 320],
+                nodes: [
+                  { id: 'r11', x: 370, y: 66, cellW: 60, cellH: 44, state: 'success', tag: 'Cha giảm còn 1 khóa, 2 cạnh', tagTone: 'cobalt', keys: [{ id: 'm20', label: '20' }] },
+                  { id: 'l11-merged', x: 245, y: 218, cellW: 60, cellH: 44, state: 'success', tag: 'Nút sau gộp [10 | 12]', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'm10', label: '10', tone: 'success' }, { id: 'm12', label: '12', tone: 'success' }] },
+                  { id: 'l11-2', x: 545, y: 218, cellW: 56, cellH: 42, keys: [{ id: 'm25', label: '25' }] },
+                ],
+                edges: [
+                  { id: 'e11-0', fromNode: 'r11', portIndex: 0, toNode: 'l11-merged', state: 'active', arrow: true },
+                  { id: 'e11-2', fromNode: 'r11', portIndex: 1, toNode: 'l11-2' },
+                ],
+              };
+
+  renderTreeScene(treeBox, scene, { reducedMotion, durationMs: 520 });
+
+  const turns = [
+    'Lượt A · Delete(5) khi lá giữa có [12 | 17]',
+    'Lượt A · Underflow → Borrow qua nút cha',
+    'Lượt A · Kết quả sau Borrow',
+    'Lượt B · Delete(5) khi lá giữa chỉ có [12]',
+    'Lượt B · Kết quả sau Merge',
+  ];
+  const caps = [
+    'Tìm <code>5 &lt; 10</code> xuống lá trái để xóa <code>5</code>. Ở lượt A, lá giữa có <code>[12 | 17]</code> (dư khóa).',
+    'Xóa 5 tạo ô rỗng. Hai cung đồng bộ qua cha: <strong>10 ↓</strong> xuống lá trái, <strong>12 ↑</strong> lên thay ở cha.',
+    'Sau Borrow: cha thành <code>[12 | 20]</code>, ba lá <code>[10], [17], [25]</code> — số cạnh giữ nguyên (3).',
+    'Đổi sang lượt B: lá giữa chỉ còn <code>[12]</code> (1 khóa, không thể cho mượn). Kéo <strong>10</strong> từ cha xuống để gộp.',
+    'Sau Merge: nút gộp <code>[10 | 12]</code>, cha chỉ còn <code>[20]</code> và giảm từ 3 cạnh xuống còn 2 cạnh.',
+  ];
+  turn.textContent = turns[step];
+  cap.innerHTML = caps[step];
+}
 
 // ============================================================================
 // SLIDE 12 — Trace Delete(5) và thu gọn gốc
@@ -1486,18 +1577,18 @@ function renderSlide12State(step: number, slideEl: HTMLElement, reducedMotion: b
       ? {
           viewBox: [0, 0, 880, 355],
           nodes: [
-            { id: 'd-root', x: 440, y: 48, cellW: 58, cellH: 40, keys: [{ id: 'dk-10', label: '10' }] },
-            { id: 'd-i0', x: 240, y: 158, cellW: 54, cellH: 40, keys: [{ id: 'dk-6', label: '6' }] },
-            { id: 'd-i1', x: 640, y: 158, cellW: 54, cellH: 40, keys: [{ id: 'dk-20', label: '20' }] },
+            { id: 'd-root', x: 440, y: 48, cellW: 58, cellH: 40, state: 'active', keys: [{ id: 'dk-10', label: '10', tone: 'active' }] },
+            { id: 'd-i0', x: 240, y: 158, cellW: 54, cellH: 40, state: 'active', keys: [{ id: 'dk-6', label: '6', tone: 'active' }] },
+            { id: 'd-i1', x: 620, y: 158, cellW: 54, cellH: 40, keys: [{ id: 'dk-20', label: '20' }] },
             { id: 'd-l0', x: 140, y: 282, cellW: 50, cellH: 40, keys: [{ id: 'dk-5', label: '5', tone: 'error', badge: 'xóa' }] },
             { id: 'd-l1', x: 340, y: 282, cellW: 50, cellH: 40, keys: [{ id: 'dk-7', label: '7' }] },
             { id: 'd-l2', x: 545, y: 282, cellW: 50, cellH: 40, keys: [{ id: 'dk-12', label: '12' }, { id: 'dk-17', label: '17' }] },
             { id: 'd-l3', x: 745, y: 282, cellW: 50, cellH: 40, keys: [{ id: 'dk-30', label: '30' }] },
           ],
           edges: [
-            { id: 'de-r0', fromNode: 'd-root', portIndex: 0, toNode: 'd-i0' },
+            { id: 'de-r0', fromNode: 'd-root', portIndex: 0, toNode: 'd-i0', state: 'active', arrow: true, label: '5 < 10' },
             { id: 'de-r1', fromNode: 'd-root', portIndex: 1, toNode: 'd-i1' },
-            { id: 'de-00', fromNode: 'd-i0', portIndex: 0, toNode: 'd-l0' },
+            { id: 'de-00', fromNode: 'd-i0', portIndex: 0, toNode: 'd-l0', state: 'active', arrow: true, label: '5 < 6' },
             { id: 'de-01', fromNode: 'd-i0', portIndex: 1, toNode: 'd-l1' },
             { id: 'de-10', fromNode: 'd-i1', portIndex: 0, toNode: 'd-l2' },
             { id: 'de-11', fromNode: 'd-i1', portIndex: 1, toNode: 'd-l3' },
@@ -1509,7 +1600,7 @@ function renderSlide12State(step: number, slideEl: HTMLElement, reducedMotion: b
             nodes: [
               { id: 'd-root', x: 440, y: 48, cellW: 58, cellH: 40, keys: [{ id: 'dk-10', label: '10' }] },
               { id: 'd-i0', x: 240, y: 158, cellW: 54, cellH: 40, keys: [{ id: 'dk-6', label: '6', tone: 'active' }] },
-              { id: 'd-i1', x: 640, y: 158, cellW: 54, cellH: 40, keys: [{ id: 'dk-20', label: '20' }] },
+              { id: 'd-i1', x: 620, y: 158, cellW: 54, cellH: 40, keys: [{ id: 'dk-20', label: '20' }] },
               { id: 'd-l0', x: 140, y: 282, cellW: 50, cellH: 40, state: 'underflow', tag: 'Underflow!', tagPos: 'bottom', tagTone: 'error', keys: [] },
               { id: 'd-l1', x: 340, y: 282, cellW: 50, cellH: 40, tag: '1 khóa (không mượn)', tagPos: 'bottom', tagTone: 'warn', keys: [{ id: 'dk-7', label: '7' }] },
               { id: 'd-l2', x: 545, y: 282, cellW: 50, cellH: 40, keys: [{ id: 'dk-12', label: '12' }, { id: 'dk-17', label: '17' }] },
@@ -1523,6 +1614,9 @@ function renderSlide12State(step: number, slideEl: HTMLElement, reducedMotion: b
               { id: 'de-10', fromNode: 'd-i1', portIndex: 0, toNode: 'd-l2' },
               { id: 'de-11', fromNode: 'd-i1', portIndex: 1, toNode: 'd-l3' },
             ],
+            transfers: [
+              { id: 'tr-6m', fromX: 240, fromY: 184, toX: 240, toY: 256, ctrlX: 240, ctrlY: 220, label: 'Kéo 6 ↓ gộp [6|7]', tone: 'error' },
+            ],
           }
         : step === 2
           ? {
@@ -1530,7 +1624,7 @@ function renderSlide12State(step: number, slideEl: HTMLElement, reducedMotion: b
               nodes: [
                 { id: 'd-root', x: 440, y: 48, cellW: 58, cellH: 40, keys: [{ id: 'dk-10', label: '10' }] },
                 { id: 'd-i0', x: 240, y: 158, cellW: 54, cellH: 40, state: 'underflow', tag: 'Cha trái bị rỗng!', tagPos: 'left', tagTone: 'error', keys: [] },
-                { id: 'd-i1', x: 640, y: 158, cellW: 54, cellH: 40, keys: [{ id: 'dk-20', label: '20' }] },
+                { id: 'd-i1', x: 620, y: 158, cellW: 54, cellH: 40, keys: [{ id: 'dk-20', label: '20' }] },
                 { id: 'd-l01', x: 240, y: 282, cellW: 54, cellH: 40, state: 'success', tag: 'Lá gộp [6|7]', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'dk-6', label: '6', tone: 'success' }, { id: 'dk-7', label: '7', tone: 'success' }] },
                 { id: 'd-l2', x: 545, y: 282, cellW: 50, cellH: 40, keys: [{ id: 'dk-12', label: '12' }, { id: 'dk-17', label: '17' }] },
                 { id: 'd-l3', x: 745, y: 282, cellW: 50, cellH: 40, keys: [{ id: 'dk-30', label: '30' }] },
@@ -1549,7 +1643,7 @@ function renderSlide12State(step: number, slideEl: HTMLElement, reducedMotion: b
                 nodes: [
                   { id: 'd-root', x: 440, y: 48, cellW: 58, cellH: 40, keys: [{ id: 'dk-10', label: '10', tone: 'active' }] },
                   { id: 'd-i0', x: 240, y: 158, cellW: 54, cellH: 40, state: 'underflow', tag: 'Kiểm tra tầng trên ↑', tagPos: 'left', tagTone: 'error', keys: [] },
-                  { id: 'd-i1', x: 640, y: 158, cellW: 54, cellH: 40, state: 'highlight-box', tag: '[20] chỉ 1 khóa → không mượn', tagPos: 'right', tagTone: 'error', keys: [{ id: 'dk-20', label: '20', tone: 'error' }] },
+                  { id: 'd-i1', x: 620, y: 158, cellW: 54, cellH: 40, state: 'highlight-box', tag: '1 khóa (không mượn)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'dk-20', label: '20', tone: 'error' }] },
                   { id: 'd-l01', x: 240, y: 282, cellW: 54, cellH: 40, keys: [{ id: 'dk-6', label: '6' }, { id: 'dk-7', label: '7' }] },
                   { id: 'd-l2', x: 545, y: 282, cellW: 50, cellH: 40, keys: [{ id: 'dk-12', label: '12' }, { id: 'dk-17', label: '17' }] },
                   { id: 'd-l3', x: 745, y: 282, cellW: 50, cellH: 40, keys: [{ id: 'dk-30', label: '30' }] },
