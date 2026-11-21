@@ -1823,7 +1823,7 @@ const slide29: SlideDef = {
             </div>
 
             <div class="canva-card s29-stage-row" data-s29-row="2">
-              <div class="s29-row-head"><strong>2. Cấp cho tệp 10 block (400–409)</strong><span>Xanh: đã cấp 400–409 · Vàng: 410–411 còn trống (nhấn 409 hoặc 410 để kiểm tra)</span></div>
+              <div class="s29-row-head"><strong>2. Cấp 10 block (400–409)</strong><span>Xanh: đã cấp · Vàng: dư 410–411 (nhấn 409 / 410 để thử)</span></div>
               ${xfsBlockRowHtml(
                 ADDR_400_411.map((a) => (a <= 409 ? 'used' : 'free')),
                 { labels: ADDR_400_411, highlightRange: [400, 409], cutAfterAddr: 409 },
@@ -1834,6 +1834,14 @@ const slide29: SlideDef = {
             <div class="canva-card s29-stage-row" data-s29-row="3">
               <div class="s29-row-head"><strong>3. Khi tệp trả lại 400–409</strong><span class="badge-ok">400 + 10 = 410 → Gộp thành 400–411</span></div>
               ${xfsBlockRowHtml(Array(12).fill('free'), { labels: ADDR_400_411 })}
+            </div>
+
+            <div class="canva-card s29-sync-card" data-role="s29-sync">
+              <div class="s29-sync-head">
+                <strong>Đồng bộ trực tiếp hai lá B+ Tree</strong>
+                <span class="s29-sync-pill" data-role="sync-pill">Cùng trỏ vào vùng (400, 12)</span>
+              </div>
+              <div class="s29-sync-svg" data-role="sync-svg"></div>
             </div>
           </div>
 
@@ -1857,20 +1865,22 @@ const slide29: SlideDef = {
               <button type="button" class="inline-action-btn inline-action-btn--primary" data-role="reveal-ans">Hiện đáp án</button>
               <div class="qa-ans" data-role="qa-ans" hidden>
                 <strong>Hai vùng trống liền kề trên đĩa (400–409 + 410–411 → 400–411)!</strong><br/>
-                <small>Gộp vùng trống là nối các block liền nhau. Gộp nút là thao tác cân bằng cây.</small>
+                <small>Gộp vùng trống là nối block liền nhau. Gộp nút là cân bằng cây.</small>
               </div>
+            </div>
+
+            <div class="s29-summary-card">
+              <div class="s29-sum-head"><span>TỔNG KẾT · B-TREE</span><span>NHÓM 10</span></div>
+              <div class="s29-sum-row"><i>01</i><span><strong>Cân bằng O(log<sub>M</sub> N)</strong> · mọi lá cùng độ sâu</span></div>
+              <div class="s29-sum-row"><i>02</i><span><strong>Tối ưu I/O đĩa</strong> · 1 nút = 1 trang (4–16 KB)</span></div>
+              <div class="s29-sum-row"><i>03</i><span><strong>Ứng dụng thực tế</strong> · InnoDB, HFS+, XFS</span></div>
             </div>
           </aside>
         </div>
 
         <div class="xfs-conclusion-strip s29-closing-strip">
-          <strong>Gộp vùng trống = nối block liền nhau · Gộp nút = cân bằng cây</strong>
-          <div class="s29-pillars">
-            <span>01 Cân bằng O(log N)</span>
-            <span>02 Tối ưu I/O trang đĩa</span>
-            <span>03 B+ / B* / XFS</span>
-          </div>
-          <span>Cảm ơn thầy cô &amp; các bạn!</span>
+          <strong>Gộp vùng trống = nối các block liền nhau trên đĩa · Gộp nút = thao tác cân bằng B-tree</strong>
+          <span>Nhóm 10 cảm ơn thầy cô &amp; các bạn đã lắng nghe!</span>
         </div>
       </div>
     `;
@@ -1889,10 +1899,16 @@ const slide29: SlideDef = {
 
     const ansBtn = ctx.slideEl.querySelector<HTMLButtonElement>('[data-role="reveal-ans"]')!;
     const ansBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="qa-ans"]')!;
+    const qaQ = ctx.slideEl.querySelector<HTMLElement>('.s29-qa .qa-q')!;
+    const qaBoxEl = ctx.slideEl.querySelector<HTMLElement>('[data-role="qa-box"]')!;
     ansBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      ansBox.hidden = !ansBox.hidden;
-      ansBtn.textContent = ansBox.hidden ? 'Hiện đáp án' : 'Ẩn đáp án';
+      const willShow = ansBox.hidden;
+      ansBox.hidden = !willShow;
+      qaQ.hidden = willShow;
+      qaBoxEl.classList.remove('is-dim');
+      qaBoxEl.classList.add('is-active-card');
+      ansBtn.textContent = willShow ? 'Xem lại câu hỏi' : 'Hiện đáp án';
     });
 
     // Click block 409 or 410 (or any block in row 2) to inspect status without advancing slide
@@ -1924,6 +1940,8 @@ function renderSlide29State(step: number, slideEl: HTMLElement, reducedMotion: b
   const qaBox = slideEl.querySelector<HTMLElement>('[data-role="qa-box"]')!;
   const ansBox = slideEl.querySelector<HTMLElement>('[data-role="qa-ans"]')!;
   const ansBtn = slideEl.querySelector<HTMLButtonElement>('[data-role="reveal-ans"]')!;
+  const syncPill = slideEl.querySelector<HTMLElement>('[data-role="sync-pill"]')!;
+  const syncSvg = slideEl.querySelector<HTMLElement>('[data-role="sync-svg"]')!;
 
   slideEl.querySelectorAll<HTMLButtonElement>('[data-s29-sim]').forEach((btn) => {
     const s = Number(btn.dataset.s29Sim);
@@ -1943,21 +1961,29 @@ function renderSlide29State(step: number, slideEl: HTMLElement, reducedMotion: b
     reqTag.textContent = 'Toàn bộ đoạn 400–411 đang trống (12 block)';
     bnoVal.innerHTML = '(400, 12)';
     cntVal.innerHTML = '(12, 400)';
+    syncPill.textContent = 'Cùng trỏ vào vùng trống (400, 12)';
     ansBox.hidden = true;
+    const qaQEl = slideEl.querySelector<HTMLElement>('.s29-qa .qa-q');
+    if (qaQEl) qaQEl.hidden = false;
     ansBtn.textContent = 'Hiện đáp án';
   } else if (step === 1) {
     reqTag.innerHTML = 'Yêu cầu <strong>10 block</strong> → block cuối được cấp sẽ là?';
     bnoVal.innerHTML = '(400, 12)';
     cntVal.innerHTML = '(12, 400)';
+    syncPill.textContent = 'Chờ cấp 10 block từ vùng (400, 12)';
   } else if (step === 2) {
     reqTag.textContent = 'Đã cắt 10 block đầu (400–409)';
     bnoVal.innerHTML = '<del>(400, 12)</del> → <strong>(410, 2)</strong>';
     cntVal.innerHTML = '<del>(12, 400)</del> → <strong>(2, 410)</strong>';
+    syncPill.textContent = 'bnobt sửa tại chỗ · cntbt nhảy sang lá ngắn!';
   } else {
     reqTag.textContent = 'Đối chiếu đủ 3 mốc thời gian';
     bnoVal.innerHTML = '<del>(410, 2)</del> → <strong class="val-ok">(400, 12)</strong>';
     cntVal.innerHTML = '<del>(2, 410)</del> → <strong class="val-ok">(12, 400)</strong>';
+    syncPill.textContent = 'Gộp 400–411 → cả hai lá về lại (400, 12)!';
   }
+
+  syncSvg.innerHTML = buildS29DualLeafSvg(step, reducedMotion);
 
   if (!reducedMotion && (step === 2 || step === 3)) {
     slideEl.querySelectorAll<HTMLElement>('.idx-row').forEach((row) => {
@@ -1966,6 +1992,112 @@ function renderSlide29State(step: number, slideEl: HTMLElement, reducedMotion: b
       row.classList.add('step-flash');
     });
   }
+}
+
+function buildS29DualLeafSvg(step: number, reducedMotion: boolean): string {
+  const isAlloc = step === 2;
+  const isReclaim = step >= 3;
+  const bnoCellBg = isAlloc ? '#FEF08A' : isReclaim ? '#DCFCE7' : '#DBEAFE';
+  const bnoCellStroke = isAlloc ? '#B45309' : isReclaim ? '#16A34A' : '#004AAD';
+  const bnoMain = isAlloc ? '410' : '400';
+  const bnoSub = isAlloc ? 'dài 2' : 'dài 12';
+  const bnoFoot = isAlloc
+    ? 'Sửa tại chỗ: 400 → 410 (cùng lá [300..499])'
+    : isReclaim
+      ? 'Gộp 409 | 410 → khôi phục (400, dài 12)'
+      : 'Khóa địa chỉ 400 nằm trong lá [300..499]';
+
+  const cntFoot = isAlloc
+    ? 'Độ dài giảm 12 → 2: bản ghi rời lá giữa, nhảy sang lá ngắn nhất!'
+    : isReclaim
+      ? 'Gộp thành dài 12: bản ghi quay về lại lá giữa [8..15]'
+      : 'Khóa độ dài 12 đang nằm ở lá giữa [8..15]';
+
+  return `
+  <svg class="s29-dual-svg" viewBox="0 0 770 112" role="img" aria-label="Đồng bộ lá bnobt và cntbt theo trạng thái đĩa">
+    <defs>
+      <marker id="s29-arr-b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2563EB"/>
+      </marker>
+      <marker id="s29-arr-w" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+        <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#D97706"/>
+      </marker>
+      <marker id="s29-arr-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+        <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16A34A"/>
+      </marker>
+      <path id="s29-jump-l" d="M 702 34 Q 532 2 364 34" />
+      <path id="s29-jump-r" d="M 364 34 Q 532 2 702 34" />
+    </defs>
+
+    <!-- LEFT: bnobt in-place update -->
+    <rect x="10" y="6" width="128" height="20" rx="3" fill="#004AAD"/>
+    <text x="74" y="19.5" text-anchor="middle" fill="#FFFFFF" font-size="10.5" font-weight="800" font-family="'IBM Plex Mono', monospace">bnobt · địa chỉ</text>
+
+    <g>
+      <polygon points="24,38 29,33 255,33 250,38" fill="#BDD8FF" stroke="#004AAD" stroke-width="1.3"/>
+      <polygon points="250,38 255,33 255,73 250,78" fill="#7EB2FF" stroke="#004AAD" stroke-width="1.3"/>
+      <rect x="24" y="38" width="113" height="40" fill="#FFFFFF" stroke="#004AAD" stroke-width="1.7"/>
+      <text x="80.5" y="55" text-anchor="middle" fill="#0F1D3A" font-size="13.5" font-weight="800" font-family="'IBM Plex Mono', monospace">300</text>
+      <text x="80.5" y="70" text-anchor="middle" fill="#475569" font-size="10.5" font-weight="600" font-family="'Be Vietnam Pro', sans-serif">dài 6</text>
+
+      <rect x="137" y="38" width="113" height="40" fill="${bnoCellBg}" stroke="${bnoCellStroke}" stroke-width="2.2"/>
+      <text x="193.5" y="55" text-anchor="middle" fill="#0F1D3A" font-size="13.5" font-weight="800" font-family="'IBM Plex Mono', monospace">${bnoMain}</text>
+      <text x="193.5" y="70" text-anchor="middle" fill="${bnoCellStroke}" font-size="10.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">${bnoSub}</text>
+    </g>
+    <text x="138" y="100" text-anchor="middle" fill="#1E3A8A" font-size="10.8" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">${bnoFoot}</text>
+
+    <!-- Divider -->
+    <line x1="290" y1="8" x2="290" y2="104" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+    <!-- RIGHT: cntbt cross-leaf jump -->
+    <rect x="308" y="6" width="128" height="20" rx="3" fill="#0F1D3A"/>
+    <text x="372" y="19.5" text-anchor="middle" fill="#FEF08A" font-size="10.5" font-weight="800" font-family="'IBM Plex Mono', monospace">cntbt · độ dài</text>
+
+    <!-- cntbt Leaf 1 (short extents) -->
+    <g>
+      <polygon points="310,38 315,33 503,33 498,38" fill="#BDD8FF" stroke="#004AAD" stroke-width="1.3"/>
+      <polygon points="498,38 503,33 503,73 498,78" fill="#7EB2FF" stroke="#004AAD" stroke-width="1.3"/>
+      <rect x="310" y="38" width="94" height="40" fill="${isAlloc ? '#FEF08A' : '#FFFFFF'}" stroke="${isAlloc ? '#B45309' : '#004AAD'}" stroke-width="${isAlloc ? 2.2 : 1.7}"/>
+      <text x="357" y="55" text-anchor="middle" fill="#0F1D3A" font-size="13.5" font-weight="800" font-family="'IBM Plex Mono', monospace">${isAlloc ? '2' : '4'}</text>
+      <text x="357" y="70" text-anchor="middle" fill="${isAlloc ? '#B45309' : '#475569'}" font-size="10.5" font-weight="${isAlloc ? 800 : 600}" font-family="'Be Vietnam Pro', sans-serif">${isAlloc ? 'ở 410' : 'ở 500'}</text>
+
+      <rect x="404" y="38" width="94" height="40" fill="#FFFFFF" stroke="#004AAD" stroke-width="1.7"/>
+      <text x="451" y="55" text-anchor="middle" fill="#0F1D3A" font-size="13.5" font-weight="800" font-family="'IBM Plex Mono', monospace">${isAlloc ? '4' : '6'}</text>
+      <text x="451" y="70" text-anchor="middle" fill="#475569" font-size="10.5" font-weight="600" font-family="'Be Vietnam Pro', sans-serif">${isAlloc ? 'ở 500' : 'ở 300'}</text>
+    </g>
+
+    <!-- Leaf link -->
+    <line x1="506" y1="58" x2="554" y2="58" stroke="#2563EB" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#s29-arr-b)"/>
+
+    <!-- cntbt Leaf 2 (medium extents) -->
+    <g>
+      <polygon points="560,38 565,33 753,33 748,38" fill="#BDD8FF" stroke="#004AAD" stroke-width="1.3"/>
+      <polygon points="748,38 753,33 753,73 748,78" fill="#7EB2FF" stroke="#004AAD" stroke-width="1.3"/>
+      <rect x="560" y="38" width="94" height="40" fill="#FFFFFF" stroke="#004AAD" stroke-width="1.7"/>
+      <text x="607" y="55" text-anchor="middle" fill="#0F1D3A" font-size="13.5" font-weight="800" font-family="'IBM Plex Mono', monospace">8</text>
+      <text x="607" y="70" text-anchor="middle" fill="#475569" font-size="10.5" font-weight="600" font-family="'Be Vietnam Pro', sans-serif">ở 100</text>
+
+      <rect x="654" y="38" width="94" height="40" fill="${isAlloc ? '#F8FAFC' : isReclaim ? '#DCFCE7' : '#DBEAFE'}" stroke="${isAlloc ? '#94A3B8' : isReclaim ? '#16A34A' : '#004AAD'}" stroke-width="${isAlloc ? 1.6 : 2.2}"${isAlloc ? ' stroke-dasharray="4 3"' : ''}/>
+      <text x="701" y="55" text-anchor="middle" fill="${isAlloc ? '#94A3B8' : '#0F1D3A'}" font-size="13.5" font-weight="800" font-family="'IBM Plex Mono', monospace">${isAlloc ? '—' : '12'}</text>
+      <text x="701" y="70" text-anchor="middle" fill="${isAlloc ? '#94A3B8' : isReclaim ? '#15803D' : '#004AAD'}" font-size="10.5" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">${isAlloc ? 'đã chuyển' : 'ở 400'}</text>
+    </g>
+
+    ${isAlloc ? `
+      <path d="M 702 34 Q 532 2 364 34" fill="none" stroke="#D97706" stroke-width="2.4" stroke-dasharray="6 4" marker-end="url(#s29-arr-w)"/>
+      ${!reducedMotion ? `<circle r="3.8" fill="#FEF08A" stroke="#B45309" stroke-width="1.5"><animateMotion dur="1.7s" repeatCount="indefinite"><mpath href="#s29-jump-l"/></animateMotion></circle>` : ''}
+      <rect x="462" y="7" width="154" height="19" rx="9.5" fill="#FEF3C7" stroke="#D97706" stroke-width="1.3"/>
+      <text x="539" y="20" text-anchor="middle" fill="#92400E" font-size="10.2" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">12 → 2: nhảy về lá ngắn!</text>
+    ` : ''}
+
+    ${isReclaim ? `
+      <path d="M 364 34 Q 532 2 702 34" fill="none" stroke="#16A34A" stroke-width="2.4" stroke-dasharray="6 4" marker-end="url(#s29-arr-g)"/>
+      ${!reducedMotion ? `<circle r="3.8" fill="#BBF7D0" stroke="#15803D" stroke-width="1.5"><animateMotion dur="1.7s" repeatCount="indefinite"><mpath href="#s29-jump-r"/></animateMotion></circle>` : ''}
+      <rect x="462" y="7" width="154" height="19" rx="9.5" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.3"/>
+      <text x="539" y="20" text-anchor="middle" fill="#14532D" font-size="10.2" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">2 → 12: về lại lá giữa!</text>
+    ` : ''}
+
+    <text x="532" y="100" text-anchor="middle" fill="#1E3A8A" font-size="10.8" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">${cntFoot}</text>
+  </svg>`;
 }
 
 export const PART5_SLIDES: SlideDef[] = [slide22, slide23, slide24, slide25, slide26, slide27, slide28, slide29];
