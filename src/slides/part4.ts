@@ -105,7 +105,7 @@ function buildS17CanvaSvg(side: 'max' | 'min', active: boolean, animate: boolean
             <animateMotion dur="2.1s" repeatCount="indefinite"><mpath href="#${leftPathId}"/></animateMotion>
           </circle>
           <circle r="3.4" fill="#5284FF" class="s17-pulse-dot">
-            <animateMotion dur="2.1s" begin="0.35s" repeatCount="indefinite"><mpath href="#${rightPathId}"/></animateMotion>
+            <animateMotion dur="2.1s" begin="-0.35s" repeatCount="indefinite"><mpath href="#${rightPathId}"/></animateMotion>
           </circle>
         ` : ''}
         <text x="${midX}" y="${y0 + 44}" text-anchor="middle" fill="${accent}" font-size="12" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">${branchText}</text>
@@ -443,7 +443,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
             viewBox: [0, 0, 520, 212],
             nodes: [
               { id: 'iw-r', x: 280, y: 30, cellW: 38, cellH: 26, keys: [{ id: 'iw-30', label: '30' }, { id: 'iw-60', label: '60' }] },
-              { id: 'iw-i0', x: 132, y: 92, cellW: 34, cellH: 24, state: 'overflow', tag: 'Tràn mức 1 · đẩy 22 ↑', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-15', label: '15' }, { id: 'iw-22', label: '22', tone: 'active' }, { id: 'iw-25', label: '25' }] },
+              { id: 'iw-i0', x: 132, y: 92, cellW: 34, cellH: 24, state: 'overflow', tag: 'Tràn mức 1 · đẩy 22 ↑', tagPos: 'top', tagTone: 'error', keys: [{ id: 'iw-15', label: '15' }, { id: 'iw-22', label: '22', tone: 'active' }, { id: 'iw-25', label: '25' }] },
               { id: 'iw-i1', x: 356, y: 92, cellW: 32, cellH: 24, state: 'muted', keys: [{ id: 'iw-45', label: '45', tone: 'muted' }] },
               { id: 'iw-i2', x: 458, y: 92, cellW: 32, cellH: 24, state: 'muted', keys: [{ id: 'iw-75', label: '75', tone: 'muted' }] },
               { id: 'iw-l0', x: 36, y: 162, cellW: 30, cellH: 22, state: 'muted', keys: [{ id: 'iw-10', label: '10', tone: 'muted' }] },
@@ -1257,7 +1257,7 @@ function buildS19DecisionSvg(active: boolean): string {
         <animateMotion dur="2.5s" repeatCount="indefinite"><mpath href="#s19-dec-route"/></animateMotion>
       </circle>
       <circle r="4.4" fill="#38BDF8" stroke="#004AAD" stroke-width="1.5" class="s17-pulse-dot">
-        <animateMotion dur="2.5s" begin="1.25s" repeatCount="indefinite"><mpath href="#s19-dec-route2"/></animateMotion>
+        <animateMotion dur="2.5s" begin="-1.25s" repeatCount="indefinite"><mpath href="#s19-dec-route2"/></animateMotion>
       </circle>
     ` : ''}
   </svg>`;
@@ -1700,8 +1700,8 @@ function buildS21StoreSvg(active: boolean, animate: boolean): string {
       <line class="${animate ? 's21-edge-draw is-anim' : ''}" style="--ed:0.34s" pathLength="1" x1="260" y1="58" x2="366" y2="112" stroke="#0F1D3A" stroke-width="1.8" marker-end="url(#s21-a1)"/>
       ${active ? `
         <circle r="3.6" fill="#38BDF8" stroke="#004AAD" stroke-width="1.2" class="s21-search-bead"><animateMotion dur="2.2s" repeatCount="indefinite"><mpath href="#s21-ptr0"/></animateMotion></circle>
-        <circle r="3.6" fill="#38BDF8" stroke="#004AAD" stroke-width="1.2" class="s21-search-bead"><animateMotion dur="2.2s" begin="0.45s" repeatCount="indefinite"><mpath href="#s21-ptr1"/></animateMotion></circle>
-        <circle r="3.6" fill="#38BDF8" stroke="#004AAD" stroke-width="1.2" class="s21-search-bead"><animateMotion dur="2.2s" begin="0.9s" repeatCount="indefinite"><mpath href="#s21-ptr2"/></animateMotion></circle>
+        <circle r="3.6" fill="#38BDF8" stroke="#004AAD" stroke-width="1.2" class="s21-search-bead"><animateMotion dur="2.2s" begin="-0.45s" repeatCount="indefinite"><mpath href="#s21-ptr1"/></animateMotion></circle>
+        <circle r="3.6" fill="#38BDF8" stroke="#004AAD" stroke-width="1.2" class="s21-search-bead"><animateMotion dur="2.2s" begin="-0.9s" repeatCount="indefinite"><mpath href="#s21-ptr2"/></animateMotion></circle>
       ` : ''}
 
       <!-- 3 Leaves with sequential memory pulse -->
