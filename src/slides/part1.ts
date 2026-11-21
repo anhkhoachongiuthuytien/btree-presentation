@@ -338,14 +338,17 @@ const slide03: SlideDef = {
         <div class="s03-top-stage">
           <div class="s03-visual" data-role="visual"></div>
           <div class="s03-demo" data-role="demo">
-            <div class="s03-demo__head">Kiểm chứng nhanh trên cây bìa</div>
+            <div class="s03-demo__head">
+              <span>Kiểm chứng nhanh trên cây bìa</span>
+              <span class="s03-demo__hint">Nhấn để thử</span>
+            </div>
             <div class="s03-call-list" data-role="calls">
-              <div class="s03-call" data-call="0"><code>search(17)</code> → <span class="badge-ok">(lá [12|17], 1)</span></div>
-              <div class="s03-call" data-call="1"><code>insert(17)</code> → <span class="badge-warn">False (đã tồn tại)</span></div>
-              <div class="s03-call" data-call="2"><code>delete(99)</code> → <span class="badge-err">False (không có khóa)</span></div>
+              <button type="button" class="s03-call" data-call="0"><code>search(17)</code> → <span class="badge-ok">(lá [12|17], 1)</span></button>
+              <button type="button" class="s03-call" data-call="1"><code>insert(17)</code> → <span class="badge-warn">False (đã tồn tại)</span></button>
+              <button type="button" class="s03-call" data-call="2"><code>delete(99)</code> → <span class="badge-err">False (không có khóa)</span></button>
             </div>
             <div class="s03-demo__note" data-role="contract">
-              Tìm hụt → <code>None</code> · Thêm mới / xóa khóa có thật → <code>True</code>
+              Tìm hụt → <code>None</code> · Thêm/xóa hợp lệ → <code>True</code>
             </div>
           </div>
         </div>
@@ -354,10 +357,12 @@ const slide03: SlideDef = {
           <article class="canva-card s03-col" data-col="0">
             <div class="s03-col__head">${iconSvg('tree')}<h3>Phát biểu bài toán</h3></div>
             <p>Quản lý tập khóa nguyên có thứ tự với 3 thao tác <strong>Search, Insert, Delete</strong> hiệu quả trên dữ liệu lớn và luôn giữ cây <strong>cân bằng</strong>.</p>
+            <div class="s03-col__foot">3 thao tác · Tự cân bằng</div>
           </article>
           <article class="canva-card s03-col" data-col="1">
             <div class="s03-col__head">${iconSvg('disk')}<h3>Mục tiêu</h3></div>
             <p>Tối ưu bộ nhớ ngoài (HDD, SSD): gom nhiều khóa vào <strong>1 nút = 1 trang đĩa</strong> để giảm chiều cao cây, giữ tốc độ ${texInline('O(\\log N)')}.</p>
+            <div class="s03-col__foot">1 nút = 1 trang (4–16 KB)</div>
           </article>
           <article class="canva-card s03-col" data-col="2">
             <div class="s03-col__head">${iconSvg('input')}<h3>Input</h3></div>
@@ -366,6 +371,7 @@ const slide03: SlideDef = {
               <li>Tập khóa nguyên phân biệt</li>
               <li>Chuỗi <code>search/insert/delete(k)</code></li>
             </ul>
+            <div class="s03-col__foot">M ≥ 3 · Khóa phân biệt</div>
           </article>
           <article class="canva-card s03-col" data-col="3">
             <div class="s03-col__head">${iconSvg('output')}<h3>Output</h3></div>
@@ -374,10 +380,18 @@ const slide03: SlideDef = {
               <li><code>insert(k)</code>: <code>True</code> / <code>False</code></li>
               <li><code>delete(k)</code>: <code>True</code> / <code>False</code></li>
             </ul>
+            <div class="s03-col__foot">(node, i) / None · True / False</div>
           </article>
         </div>
       </div>
     `;
+
+    ctx.slideEl.querySelectorAll<HTMLButtonElement>('.s03-call').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        renderS03Probe(ctx.slideEl, Number(btn.dataset.call), ctx.getReducedMotion());
+      });
+    });
   },
   renderStep(step, _prev, ctx) {
     const visual = ctx.slideEl.querySelector<HTMLElement>('[data-role="visual"]')!;
@@ -394,9 +408,15 @@ const slide03: SlideDef = {
     });
 
     demo.classList.toggle('is-revealed', step >= 3);
-    ctx.slideEl.querySelectorAll<HTMLElement>('.s03-call').forEach((callEl) => {
+    ctx.slideEl.querySelectorAll<HTMLElement>('.s03-call').forEach((callEl, idx) => {
       callEl.classList.toggle('is-lit', step >= 3);
+      callEl.classList.toggle('is-selected', step >= 3 && idx === 0);
     });
+
+    if (step >= 3) {
+      renderS03Probe(ctx.slideEl, 0, ctx.getReducedMotion());
+      return;
+    }
 
     const scene: TreeSceneSpec =
       step === 0
@@ -415,11 +435,11 @@ const slide03: SlideDef = {
             ],
             overlaySvg: `
               <g transform="translate(390, 24)">
-                <rect x="0" y="0" width="340" height="156" rx="14" fill="#EEF7FF" stroke="#004AAD" stroke-width="2" stroke-dasharray="6 4"/>
+                <rect x="0" y="0" width="340" height="156" rx="6" fill="#EEF7FF" stroke="#004AAD" stroke-width="2" stroke-dasharray="6 4"/>
                 <text x="170" y="42" text-anchor="middle" fill="#004AAD" font-size="17" font-weight="800" font-family="'Be Vietnam Pro', sans-serif">Trang đĩa (4 KB – 16 KB)</text>
                 <text x="170" y="74" text-anchor="middle" fill="#334155" font-size="14" font-family="'Be Vietnam Pro', sans-serif">BST chỉ đặt 1 khóa / nút → cây cao,</text>
                 <text x="170" y="96" text-anchor="middle" fill="#334155" font-size="14" font-family="'Be Vietnam Pro', sans-serif">mỗi tầng có thể tốn thêm 1 lần đọc đĩa.</text>
-                <rect x="65" y="114" width="210" height="28" rx="14" fill="#FEF08A" stroke="#B45309" stroke-width="1.6"/>
+                <rect x="65" y="114" width="210" height="28" rx="4" fill="#FEF08A" stroke="#B45309" stroke-width="1.6"/>
                 <text x="170" y="133" text-anchor="middle" fill="#0F1D3A" font-size="13" font-weight="700" font-family="'Be Vietnam Pro', sans-serif">Nhồi nhiều khóa vào 1 nút?</text>
               </g>
             `,
@@ -472,43 +492,18 @@ const slide03: SlideDef = {
                   tag: 'Tối đa M − 1 khóa (ở đây M = 3 → 2 khóa)',
                   tagTone: 'cobalt',
                   keys: [
-                    { id: 'k10', label: '10', tone: step === 2 ? 'active' : 'default' },
-                    { id: 'k20', label: '20', tone: step === 2 ? 'active' : 'default' },
+                    { id: 'k10', label: '10', tone: 'active' },
+                    { id: 'k20', label: '20', tone: 'active' },
                   ],
                 },
-                {
-                  id: 'ml0',
-                  x: 165,
-                  y: 164,
-                  cellW: 52,
-                  cellH: 40,
-                  keys: [{ id: 'k5', label: '5' }, { id: 'k6', label: '6' }],
-                },
-                {
-                  id: 'ml1',
-                  x: 380,
-                  y: 164,
-                  cellW: 52,
-                  cellH: 40,
-                  state: step === 3 ? 'success' : 'normal',
-                  keys: [
-                    { id: 'k12', label: '12' },
-                    { id: 'k17', label: '17', tone: step === 3 ? 'success' : 'default' },
-                  ],
-                },
-                {
-                  id: 'ml2',
-                  x: 595,
-                  y: 164,
-                  cellW: 52,
-                  cellH: 40,
-                  keys: [{ id: 'k30', label: '30' }],
-                },
+                { id: 'ml0', x: 165, y: 164, cellW: 52, cellH: 40, keys: [{ id: 'k5', label: '5' }, { id: 'k6', label: '6' }] },
+                { id: 'ml1', x: 380, y: 164, cellW: 52, cellH: 40, keys: [{ id: 'k12', label: '12' }, { id: 'k17', label: '17' }] },
+                { id: 'ml2', x: 595, y: 164, cellW: 52, cellH: 40, keys: [{ id: 'k30', label: '30' }] },
               ],
               edges: [
-                { id: 'me0', fromNode: 'm-root', portIndex: 0, toNode: 'ml0', label: step === 2 ? 'nhánh 1' : undefined },
-                { id: 'me1', fromNode: 'm-root', portIndex: 1, toNode: 'ml1', state: step === 3 ? 'active' : 'normal', arrow: step === 3, label: step === 2 ? 'nhánh 2' : '10 < 17 < 20' },
-                { id: 'me2', fromNode: 'm-root', portIndex: 2, toNode: 'ml2', label: step === 2 ? 'nhánh M' : undefined },
+                { id: 'me0', fromNode: 'm-root', portIndex: 0, toNode: 'ml0', label: 'nhánh 1' },
+                { id: 'me1', fromNode: 'm-root', portIndex: 1, toNode: 'ml1', label: 'nhánh 2' },
+                { id: 'me2', fromNode: 'm-root', portIndex: 2, toNode: 'ml2', label: 'nhánh M' },
               ],
             };
 
@@ -519,6 +514,74 @@ const slide03: SlideDef = {
     if (v) cancelTreeAnimations(v);
   },
 };
+
+function renderS03Probe(slideEl: HTMLElement, callIdx: number, reducedMotion: boolean): void {
+  const visual = slideEl.querySelector<HTMLElement>('[data-role="visual"]')!;
+  slideEl.querySelectorAll<HTMLElement>('.s03-call').forEach((c, idx) => {
+    c.classList.toggle('is-selected', idx === callIdx);
+  });
+
+  const isSearch = callIdx === 0;
+  const isDup = callIdx === 1;
+  const isMiss = callIdx === 2;
+
+  const scene: TreeSceneSpec = {
+    viewBox: [0, 0, 760, 210],
+    nodes: [
+      {
+        id: 'm-root',
+        x: 380,
+        y: 66,
+        cellW: 62,
+        cellH: 44,
+        showPorts: true,
+        state: 'active',
+        tag: isSearch
+          ? 'search(17) → gặp tại (lá [12|17], chỉ số 1)'
+          : isDup
+            ? 'insert(17) → 17 đã có trong cây ⇒ False'
+            : 'delete(99) → 99 > 20, đi nhánh phải ⇒ không có!',
+        tagTone: isSearch ? 'success' : isDup ? 'warn' : 'error',
+        keys: [
+          { id: 'k10', label: '10', tone: !isMiss ? 'active' : 'default' },
+          { id: 'k20', label: '20', tone: 'active' },
+        ],
+      },
+      { id: 'ml0', x: 165, y: 164, cellW: 52, cellH: 40, state: 'muted', keys: [{ id: 'k5', label: '5', tone: 'muted' }, { id: 'k6', label: '6', tone: 'muted' }] },
+      {
+        id: 'ml1',
+        x: 380,
+        y: 164,
+        cellW: 52,
+        cellH: 40,
+        state: isSearch ? 'success' : isDup ? 'highlight-box' : 'muted',
+        keys: [
+          { id: 'k12', label: '12', tone: isMiss ? 'muted' : 'default' },
+          { id: 'k17', label: '17', tone: isSearch ? 'success' : isDup ? 'active' : 'muted' },
+        ],
+      },
+      {
+        id: 'ml2',
+        x: 595,
+        y: 164,
+        cellW: 52,
+        cellH: 40,
+        state: isMiss ? 'overflow' : 'muted',
+        tag: isMiss ? 'Không thấy 99 → False' : undefined,
+        tagPos: 'bottom',
+        tagTone: 'error',
+        keys: [{ id: 'k30', label: '30', tone: isMiss ? 'error' : 'muted' }],
+      },
+    ],
+    edges: [
+      { id: 'me0', fromNode: 'm-root', portIndex: 0, toNode: 'ml0', state: 'muted' },
+      { id: 'me1', fromNode: 'm-root', portIndex: 1, toNode: 'ml1', state: !isMiss ? 'active' : 'muted', arrow: !isMiss, label: !isMiss ? '10 < 17 < 20' : undefined },
+      { id: 'me2', fromNode: 'm-root', portIndex: 2, toNode: 'ml2', state: isMiss ? 'error' : 'muted', arrow: isMiss, label: isMiss ? '99 > 20' : undefined },
+    ],
+  };
+
+  renderTreeScene(visual, scene, { reducedMotion });
+}
 
 // ============================================================================
 // SLIDE 04 — Một nút của cây tìm kiếm M nhánh
@@ -570,6 +633,15 @@ const slide04: SlideDef = {
               <h3>Ví dụ với ${texInline('M = 4')}</h3>
               <div class="metric-row"><span>Tối đa số nhánh con</span><strong>${texInline('M = 4')}</strong></div>
               <div class="metric-row"><span>Tối đa số khóa</span><strong>${texInline('M - 1 = 3')}</strong></div>
+              <div class="s04-probe-bar" data-role="probe-bar">
+                <span class="s04-probe-lbl">Thử tìm khóa:</span>
+                <div class="s04-probe-btns">
+                  <button type="button" class="s04-probe-btn" data-probe="15">15</button>
+                  <button type="button" class="s04-probe-btn" data-probe="50">50</button>
+                  <button type="button" class="s04-probe-btn is-on" data-probe="65">65</button>
+                  <button type="button" class="s04-probe-btn" data-probe="95">95</button>
+                </div>
+              </div>
               <p class="s04-note" data-role="step-note">3 khóa chia trục số thành 4 khoảng tìm kiếm.</p>
             </div>
             <div class="canva-card s04-box s04-gen" data-role="gen-box">
@@ -581,128 +653,169 @@ const slide04: SlideDef = {
                 <li>${texInline('\\dots')}</li>
                 <li>${texInline('P_r > k_r')}</li>
               </ul>
+              <div class="s04-gen-foot">Nút <strong>r khóa</strong> luôn chia trục số thành <strong>r + 1 khoảng rời nhau</strong>.</div>
             </div>
           </aside>
         </div>
       </div>
     `;
+
+    ctx.slideEl.querySelectorAll<HTMLButtonElement>('.s04-probe-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const val = Number(btn.dataset.probe);
+        renderS04Scene(ctx.slideEl, 2, val, ctx.getReducedMotion());
+      });
+    });
   },
   renderStep(step, _prev, ctx) {
-    const treeBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
-    const note = ctx.slideEl.querySelector<HTMLElement>('[data-role="step-note"]')!;
-    const genBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="gen-box"]')!;
-    genBox.classList.toggle('is-dim', step < 3);
-
-    const isGen = step === 3;
-    const nodes: TreeSceneSpec['nodes'] = [
-      {
-        id: 'mway-node',
-        x: 370,
-        y: 92,
-        cellW: 96,
-        cellH: 54,
-        showPorts: true,
-        tag: isGen ? 'Nút trong: r khóa → r + 1 con' : 'M = 4 · Tối đa 3 khóa',
-        tagTone: 'cobalt',
-        keys: isGen
-          ? [
-              { id: 'mw-k1', label: 'k₁', tone: 'guide' },
-              { id: 'mw-k2', label: 'k₂', tone: 'guide' },
-              { id: 'mw-kr', label: '… kᵣ', tone: 'guide' },
-            ]
-          : [
-              { id: 'mw-k1', label: '20' },
-              { id: 'mw-k2', label: '50', tone: step === 2 ? 'success' : 'default' },
-              { id: 'mw-kr', label: '80' },
-            ],
-      },
-    ];
-
-    const edges: TreeSceneSpec['edges'] = [];
-    const chips: TreeSceneSpec['chips'] = [];
-
-    if (step >= 1) {
-      const ranges = isGen
-        ? [
-            { id: 'p0', x: 105, label: 'P₀', sub: 'x < k₁', active: false },
-            { id: 'p1', x: 280, label: 'P₁', sub: 'k₁ < x < k₂', active: false },
-            { id: 'p2', x: 460, label: 'P₂', sub: 'k₂ < x < kᵣ', active: false },
-            { id: 'p3', x: 635, label: 'Pᵣ', sub: 'x > kᵣ', active: false },
-          ]
-        : [
-            { id: 'p0', x: 105, label: 'x < 20', sub: 'Cổng 0', active: false },
-            { id: 'p1', x: 280, label: '20 < x < 50', sub: 'Cổng 1', active: false },
-            { id: 'p2', x: 460, label: '50 < x < 80', sub: 'Cổng 2', active: step === 2 },
-            { id: 'p3', x: 635, label: 'x > 80', sub: 'Cổng 3', active: false },
-          ];
-      ranges.forEach((r, idx) => {
-        nodes.push({
-          id: r.id,
-          x: r.x,
-          y: 256,
-          cellW: 136,
-          cellH: 48,
-          state: r.active ? 'active' : 'normal',
-          keys: [{ id: `rng-${idx}`, label: r.label, sublabel: r.sub, tone: r.active ? 'active' : 'guide' }],
-        });
-        edges.push({
-          id: `e-mw-${idx}`,
-          fromNode: 'mway-node',
-          portIndex: idx,
-          toNode: r.id,
-          state: r.active ? 'active' : 'normal',
-          arrow: true,
-        });
-      });
-    }
-
-    if (step === 2) {
-      chips.push(
-        { id: 'probe-50', x: 370, y: 26, text: '50 = 50 · Gặp ngay tại nút', tone: 'success' },
-        { id: 'probe-65', x: 460, y: 332, text: '65 ∈ (50, 80) → đi cổng 2', tone: 'active' },
-      );
-    }
-
-    // Number-line visual under the node on steps 1–2
-    const numberLineSvg =
-      step === 1 || step === 2
-        ? `
-        <g transform="translate(50, 168)">
-          <line x1="20" y1="0" x2="640" y2="0" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
-          ${step === 2 ? '<line class="s04-numline-hl" x1="320" y1="0" x2="480" y2="0" stroke="#5284FF" stroke-width="6" stroke-linecap="round"/>' : ''}
-          <circle cx="170" cy="0" r="6" fill="#004AAD"/><text x="170" y="-10" text-anchor="middle" fill="#004AAD" font-size="12" font-weight="700" font-family="IBM Plex Mono">20</text>
-          <circle cx="320" cy="0" r="6" fill="#004AAD"/><text x="320" y="-10" text-anchor="middle" fill="#004AAD" font-size="12" font-weight="700" font-family="IBM Plex Mono">50</text>
-          <circle cx="480" cy="0" r="6" fill="#004AAD"/><text x="480" y="-10" text-anchor="middle" fill="#004AAD" font-size="12" font-weight="700" font-family="IBM Plex Mono">80</text>
-          ${step === 2 ? '<circle class="s04-probe-ring" cx="400" cy="0" r="14" fill="none" stroke="#F59E0B" stroke-width="2"/><circle cx="400" cy="0" r="7.5" fill="#FEF08A" stroke="#B45309" stroke-width="2.5"/><text x="400" y="-14" text-anchor="middle" fill="#B45309" font-size="13" font-weight="800" font-family="IBM Plex Mono">65</text>' : ''}
-        </g>`
-        : '';
-
-    renderTreeScene(
-      treeBox,
-      {
-        viewBox: [0, 0, 740, 365],
-        nodes,
-        edges,
-        chips,
-        underlaySvg: numberLineSvg,
-      },
-      { reducedMotion: ctx.getReducedMotion() },
-    );
-
-    note.innerHTML =
-      step === 0
-        ? 'Nút <code>[20 | 50 | 80]</code> có 4 cổng chờ phía dưới.'
-        : step === 1
-          ? '3 khóa chia trục số thành đúng 4 khoảng ứng với 4 cổng con.'
-          : step === 2
-            ? 'Thử <strong>65</strong>: thuộc <code>(50, 80)</code> → rẽ cổng thứ 3. Thử <strong>50</strong>: khớp ngay tại nút!'
-            : 'Tổng quát: nút trong <em>r</em> khóa có <em>r + 1</em> con (tối đa <em>M</em> con, <em>M − 1</em> khóa).';
+    renderS04Scene(ctx.slideEl, step, 65, ctx.getReducedMotion());
   },
   cancelAnimations(slideEl) {
     const t = slideEl.querySelector<HTMLElement>('[data-role="tree"]');
     if (t) cancelTreeAnimations(t);
   },
 };
+
+function renderS04Scene(slideEl: HTMLElement, step: number, probeKey: number, reducedMotion: boolean): void {
+  const treeBox = slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
+  const note = slideEl.querySelector<HTMLElement>('[data-role="step-note"]')!;
+  const genBox = slideEl.querySelector<HTMLElement>('[data-role="gen-box"]')!;
+  const probeBar = slideEl.querySelector<HTMLElement>('[data-role="probe-bar"]')!;
+
+  genBox.classList.toggle('is-dim', step < 3);
+  probeBar.classList.toggle('is-dim', step !== 2);
+  slideEl.querySelectorAll<HTMLElement>('.s04-probe-btn').forEach((b) => {
+    b.classList.toggle('is-on', step === 2 && Number(b.dataset.probe) === probeKey);
+  });
+
+  const isGen = step === 3;
+  const isProbe = step === 2;
+  const isHit50 = isProbe && probeKey === 50;
+  const targetPort = !isProbe || isHit50 ? -1 : probeKey < 20 ? 0 : probeKey < 50 ? 1 : probeKey < 80 ? 2 : 3;
+
+  const nodes: TreeSceneSpec['nodes'] = [
+    {
+      id: 'mway-node',
+      x: 370,
+      y: 78,
+      cellW: 96,
+      cellH: 52,
+      showPorts: true,
+      tag: isGen
+        ? 'Nút trong: r khóa → r + 1 con'
+        : isHit50
+          ? '50 = 50 · Khớp ngay tại nút!'
+          : isProbe
+            ? `Đang định tuyến khóa ${probeKey} → đi Cổng ${targetPort}`
+            : 'M = 4 · Tối đa 3 khóa',
+      tagTone: isHit50 ? 'success' : isProbe ? 'warn' : 'cobalt',
+      keys: isGen
+        ? [
+            { id: 'mw-k1', label: 'k₁', tone: 'guide' },
+            { id: 'mw-k2', label: 'k₂', tone: 'guide' },
+            { id: 'mw-kr', label: '… kᵣ', tone: 'guide' },
+          ]
+        : [
+            { id: 'mw-k1', label: '20' },
+            { id: 'mw-k2', label: '50', tone: isHit50 ? 'success' : 'default' },
+            { id: 'mw-kr', label: '80' },
+          ],
+    },
+  ];
+
+  const edges: TreeSceneSpec['edges'] = [];
+
+  if (step >= 1) {
+    const ranges = isGen
+      ? [
+          { id: 'p0', x: 105, label: 'P₀', sub: 'x < k₁' },
+          { id: 'p1', x: 280, label: 'P₁', sub: 'k₁ < x < k₂' },
+          { id: 'p2', x: 460, label: 'P₂', sub: 'k₂ < x < kᵣ' },
+          { id: 'p3', x: 635, label: 'Pᵣ', sub: 'x > kᵣ' },
+        ]
+      : [
+          { id: 'p0', x: 105, label: 'x < 20', sub: 'Cổng 0' },
+          { id: 'p1', x: 280, label: '20 < x < 50', sub: 'Cổng 1' },
+          { id: 'p2', x: 460, label: '50 < x < 80', sub: 'Cổng 2' },
+          { id: 'p3', x: 635, label: 'x > 80', sub: 'Cổng 3' },
+        ];
+    ranges.forEach((r, idx) => {
+      const isAct = targetPort === idx;
+      nodes.push({
+        id: r.id,
+        x: r.x,
+        y: 214,
+        cellW: 136,
+        cellH: 48,
+        state: isAct ? 'active' : 'normal',
+        keys: [{ id: `rng-${idx}`, label: r.label, sublabel: r.sub, tone: isAct ? 'active' : 'guide' }],
+      });
+      edges.push({
+        id: `e-mw-${idx}`,
+        fromNode: 'mway-node',
+        portIndex: idx,
+        toNode: r.id,
+        state: isAct ? 'active' : 'normal',
+        arrow: true,
+      });
+    });
+  }
+
+  // Clean number-line partition BELOW the 4 portals (ZERO collision with curved arrows!)
+  const probeXMap: Record<number, number> = { 15: 98, 50: 320, 65: 400, 95: 558 };
+  const segCoords: Record<number, [number, number]> = {
+    0: [24, 170],
+    1: [170, 320],
+    2: [320, 480],
+    3: [480, 626],
+  };
+  const px = probeXMap[probeKey] ?? 400;
+  const activeSeg = targetPort >= 0 ? segCoords[targetPort] : null;
+
+  const numberLineSvg =
+    step === 1 || step === 2
+      ? `
+      <g transform="translate(45, 314)">
+        <rect x="0" y="-34" width="650" height="62" rx="4" fill="#F8FBFF" stroke="#BFDBFE" stroke-width="1.4"/>
+        <text x="16" y="-17" fill="#64748B" font-size="10.5" font-weight="800" font-family="'IBM Plex Mono', monospace">TRỤC SỐ PHÂN HOẠCH</text>
+        <line x1="24" y1="4" x2="626" y2="4" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+        ${activeSeg ? `<line class="s04-numline-hl" x1="${activeSeg[0]}" y1="4" x2="${activeSeg[1]}" y2="4" stroke="#5284FF" stroke-width="6.5" stroke-linecap="round"/>` : ''}
+        <circle cx="170" cy="4" r="5.5" fill="#004AAD"/><text x="170" y="21" text-anchor="middle" fill="#004AAD" font-size="12" font-weight="800" font-family="'IBM Plex Mono', monospace">20</text>
+        <circle cx="320" cy="4" r="5.5" fill="${isHit50 ? '#16A34A' : '#004AAD'}"/><text x="320" y="21" text-anchor="middle" fill="${isHit50 ? '#15803D' : '#004AAD'}" font-size="12" font-weight="800" font-family="'IBM Plex Mono', monospace">50</text>
+        <circle cx="480" cy="4" r="5.5" fill="#004AAD"/><text x="480" y="21" text-anchor="middle" fill="#004AAD" font-size="12" font-weight="800" font-family="'IBM Plex Mono', monospace">80</text>
+        ${
+          isProbe
+            ? `<circle class="s04-probe-ring" cx="${px}" cy="4" r="13" fill="none" stroke="${isHit50 ? '#16A34A' : '#F59E0B'}" stroke-width="2"/>
+               <circle cx="${px}" cy="4" r="7" fill="${isHit50 ? '#DCFCE7' : '#FEF08A'}" stroke="${isHit50 ? '#15803D' : '#B45309'}" stroke-width="2.4"/>
+               <text x="${px}" y="-11" text-anchor="middle" fill="${isHit50 ? '#15803D' : '#B45309'}" font-size="12.5" font-weight="800" font-family="'IBM Plex Mono', monospace">${probeKey}${isHit50 ? ' (Khớp!)' : ''}</text>`
+            : ''
+        }
+      </g>`
+      : '';
+
+  renderTreeScene(
+    treeBox,
+    {
+      viewBox: [0, 0, 740, 365],
+      nodes,
+      edges,
+      underlaySvg: numberLineSvg,
+    },
+    { reducedMotion },
+  );
+
+  note.innerHTML =
+    step === 0
+      ? 'Nút <code>[20 | 50 | 80]</code> có 4 cổng chờ phía dưới.'
+      : step === 1
+        ? '3 khóa chia trục số thành đúng 4 khoảng ứng với 4 cổng con.'
+        : step === 2
+          ? isHit50
+            ? 'Thử <strong>50</strong>: trùng ngay khóa giữa tại nút → dừng tìm kiếm!'
+            : `Thử <strong>${probeKey}</strong>: rơi vào khoảng Cổng ${targetPort} → rẽ xuống nhánh ${targetPort}.`
+          : 'Tổng quát: nút trong <em>r</em> khóa có <em>r + 1</em> con (tối đa <em>M</em> con, <em>M − 1</em> khóa).';
+}
 
 // ============================================================================
 // SLIDE 05 — Từ M-way search tree đến B-tree
@@ -751,22 +864,34 @@ const slide05: SlideDef = {
 
         <div class="s05-grid">
           <div class="s05-props">
-            <div class="prop-item" data-prop="0">
-              <span class="prop-icon">①</span>
-              <div><strong>Số nhánh tối đa:</strong> Tối đa ${texInline('M')} nhánh con ứng với các khoảng tìm kiếm.</div>
-            </div>
-            <div class="prop-item" data-prop="1">
-              <span class="prop-icon">②</span>
-              <div><strong>Số khóa tối đa:</strong> Tối đa ${texInline('M - 1')} khóa, sắp xếp tăng dần.</div>
-            </div>
-            <div class="prop-item" data-prop="2">
-              <span class="prop-icon">③</span>
-              <div><strong>Lấp đầy tối thiểu:</strong> Đặt ${texInline('t = \\lceil M/2 \\rceil')}. Nút trong khác gốc có ${texInline('\\ge t')} con; nút khác gốc có ${texInline('\\ge t - 1')} khóa.</div>
-            </div>
-            <div class="prop-item" data-prop="3">
-              <span class="prop-icon">④</span>
-              <div><strong>Tính cân bằng:</strong> Mọi nút lá nằm cùng một mức — đường từ gốc đến mọi lá đều bằng nhau.</div>
-            </div>
+            <button type="button" class="prop-item" data-prop="0" data-s05-step="1">
+              <span class="prop-badge">01</span>
+              <div class="prop-body">
+                <div class="prop-top"><strong>Số nhánh tối đa</strong><span class="prop-kind">Kế thừa M-way</span></div>
+                <p>Mỗi nút có tối đa ${texInline('M')} nhánh con ứng với các khoảng tìm kiếm.</p>
+              </div>
+            </button>
+            <button type="button" class="prop-item" data-prop="1" data-s05-step="1">
+              <span class="prop-badge">02</span>
+              <div class="prop-body">
+                <div class="prop-top"><strong>Số khóa tối đa</strong><span class="prop-kind">Kế thừa M-way</span></div>
+                <p>Mỗi nút chứa tối đa ${texInline('M - 1')} khóa, sắp xếp tăng dần.</p>
+              </div>
+            </button>
+            <button type="button" class="prop-item" data-prop="2" data-s05-step="2">
+              <span class="prop-badge prop-badge--new">03</span>
+              <div class="prop-body">
+                <div class="prop-top"><strong>Lấp đầy tối thiểu</strong><span class="prop-kind prop-kind--new">Ràng buộc B-tree</span></div>
+                <p>Đặt ${texInline('t = \\lceil M/2 \\rceil')}. Nút trong khác gốc có ${texInline('\\ge t')} con; nút khác gốc có ${texInline('\\ge t - 1')} khóa.</p>
+              </div>
+            </button>
+            <button type="button" class="prop-item" data-prop="3" data-s05-step="3">
+              <span class="prop-badge prop-badge--new">04</span>
+              <div class="prop-body">
+                <div class="prop-top"><strong>Tính cân bằng tuyệt đối</strong><span class="prop-kind prop-kind--new">Ràng buộc B-tree</span></div>
+                <p>Mọi nút lá nằm cùng một mức — đường từ gốc đến mọi lá đều bằng nhau.</p>
+              </div>
+            </button>
           </div>
 
           <div class="s05-right">
@@ -778,133 +903,149 @@ const slide05: SlideDef = {
         </div>
       </div>
     `;
+
+    ctx.slideEl.querySelectorAll<HTMLButtonElement>('.prop-item').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const targetStep = Number(btn.dataset.s05Step || '1');
+        renderS05View(ctx.slideEl, targetStep, ctx.getReducedMotion());
+      });
+    });
   },
   renderStep(step, _prev, ctx) {
-    const treeBox = ctx.slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
-    const props = ctx.slideEl.querySelectorAll<HTMLElement>('.prop-item');
-    const exc = ctx.slideEl.querySelector<HTMLElement>('[data-role="exc"]')!;
-
-    props.forEach((p, idx) => {
-      const lit =
-        (step >= 1 && idx <= 1) ||
-        (step >= 2 && idx === 2) ||
-        (step >= 3 && idx === 3);
-      p.classList.toggle('is-lit', lit);
-      p.classList.toggle('is-current', (step === 1 && idx <= 1) || (step === 2 && idx === 2) || (step === 3 && idx === 3));
-    });
-    exc.classList.toggle('is-lit', step >= 2);
-
-    const leafDefs = [
-      { id: 'f0', x: 58, keys: ['5', '10'], parent: 'n0', port: 0 },
-      { id: 'f1', x: 158, keys: ['25', '30'], parent: 'n0', port: 1 },
-      { id: 'f2', x: 258, keys: ['45', '50'], parent: 'n1', port: 0 },
-      { id: 'f3', x: 358, keys: ['65', '70'], parent: 'n1', port: 1 },
-      { id: 'f4', x: 458, keys: ['85', '90'], parent: 'n2', port: 0 },
-      { id: 'f5', x: 558, keys: ['105', '110'], parent: 'n2', port: 1 },
-      { id: 'f6', x: 658, keys: ['125', '130'], parent: 'n2', port: 2 },
-    ];
-
-    const nodes: TreeSceneSpec['nodes'] = [
-      {
-        id: 'r',
-        x: 358,
-        y: 48,
-        cellW: 48,
-        cellH: 38,
-        state: step === 2 ? 'active' : 'normal',
-        tag: step === 2 ? 'Gốc: ≥ 2 con (đang có 3)' : undefined,
-        tagTone: 'cobalt',
-        keys: [
-          { id: 'k40', label: '40', tone: step === 2 ? 'active' : 'default' },
-          { id: 'k80', label: '80', tone: step === 2 ? 'active' : 'default' },
-        ],
-      },
-      {
-        id: 'n0',
-        x: 112,
-        y: 146,
-        cellW: 46,
-        cellH: 36,
-        state: step === 2 ? 'highlight-box' : 'normal',
-        tag: step === 2 ? '≥ t−1 khóa, ≥ t con' : undefined,
-        tagPos: 'top',
-        tagTone: 'warn',
-        keys: [{ id: 'k20', label: '20' }],
-      },
-      {
-        id: 'n1',
-        x: 310,
-        y: 146,
-        cellW: 46,
-        cellH: 36,
-        keys: [{ id: 'k60', label: '60' }],
-      },
-      {
-        id: 'n2',
-        x: 558,
-        y: 146,
-        cellW: 52,
-        cellH: 36,
-        state: step === 1 ? 'active' : 'normal',
-        tag: step === 1 ? '2 khóa · 3 nhánh (≤ M)' : undefined,
-        tagTone: 'cobalt',
-        keys: [
-          { id: 'k100', label: '100', tone: step === 1 ? 'active' : 'default' },
-          { id: 'k120', label: '120', tone: step === 1 ? 'active' : 'default' },
-        ],
-      },
-    ];
-
-    const edges: TreeSceneSpec['edges'] = [
-      { id: 'er0', fromNode: 'r', portIndex: 0, toNode: 'n0', state: step === 3 ? 'active' : 'normal', arrow: step === 3, label: step === 3 ? 'cạnh 1' : undefined },
-      { id: 'er1', fromNode: 'r', portIndex: 1, toNode: 'n1' },
-      { id: 'er2', fromNode: 'r', portIndex: 2, toNode: 'n2', state: step === 3 ? 'active' : 'normal', arrow: step === 3, label: step === 3 ? 'cạnh 1' : undefined },
-    ];
-
-    for (const lf of leafDefs) {
-      const isOuter = lf.id === 'f0' || lf.id === 'f6';
-      nodes.push({
-        id: lf.id,
-        x: lf.x,
-        y: 256,
-        cellW: 41,
-        cellH: 34,
-        state: step === 3 && isOuter ? 'success' : 'normal',
-        keys: lf.keys.map((v) => ({
-          id: `k${v}`,
-          label: v,
-          tone: step === 3 && isOuter ? 'success' : 'default',
-        })),
-      });
-      edges.push({
-        id: `e-${lf.id}`,
-        fromNode: lf.parent,
-        portIndex: lf.port,
-        toNode: lf.id,
-        state: step === 3 && isOuter ? 'active' : 'normal',
-        arrow: step === 3 && isOuter,
-        label: step === 3 && isOuter ? 'cạnh 2' : undefined,
-      });
-    }
-
-    renderTreeScene(
-      treeBox,
-      {
-        viewBox: [0, 0, 718, 326],
-        nodes,
-        edges,
-        baselineY:
-          step === 3
-            ? { y: 292, x1: 16, x2: 702, label: 'Đường chuẩn 7 lá · cùng độ sâu h = 2 cạnh' }
-            : undefined,
-      },
-      { reducedMotion: ctx.getReducedMotion() },
-    );
+    renderS05View(ctx.slideEl, step, ctx.getReducedMotion());
   },
   cancelAnimations(slideEl) {
     const t = slideEl.querySelector<HTMLElement>('[data-role="tree"]');
     if (t) cancelTreeAnimations(t);
   },
 };
+
+function renderS05View(slideEl: HTMLElement, step: number, reducedMotion: boolean): void {
+  const treeBox = slideEl.querySelector<HTMLElement>('[data-role="tree"]')!;
+  const props = slideEl.querySelectorAll<HTMLElement>('.prop-item');
+  const exc = slideEl.querySelector<HTMLElement>('[data-role="exc"]')!;
+
+  props.forEach((p, idx) => {
+    const lit =
+      (step >= 1 && idx <= 1) ||
+      (step >= 2 && idx === 2) ||
+      (step >= 3 && idx === 3);
+    p.classList.toggle('is-lit', lit);
+    p.classList.toggle('is-current', (step === 1 && idx <= 1) || (step === 2 && idx === 2) || (step === 3 && idx === 3));
+  });
+  exc.classList.toggle('is-lit', step >= 2);
+
+  const leafDefs = [
+    { id: 'f0', x: 58, keys: ['5', '10'], parent: 'n0', port: 0 },
+    { id: 'f1', x: 158, keys: ['25', '30'], parent: 'n0', port: 1 },
+    { id: 'f2', x: 258, keys: ['45', '50'], parent: 'n1', port: 0 },
+    { id: 'f3', x: 358, keys: ['65', '70'], parent: 'n1', port: 1 },
+    { id: 'f4', x: 458, keys: ['85', '90'], parent: 'n2', port: 0 },
+    { id: 'f5', x: 558, keys: ['105', '110'], parent: 'n2', port: 1 },
+    { id: 'f6', x: 658, keys: ['125', '130'], parent: 'n2', port: 2 },
+  ];
+
+  const nodes: TreeSceneSpec['nodes'] = [
+    {
+      id: 'r',
+      x: 358,
+      y: 52,
+      cellW: 48,
+      cellH: 38,
+      state: step === 2 ? 'active' : 'normal',
+      tag: step === 2 ? 'Gốc: ≥ 2 con (đang có 3)' : undefined,
+      tagTone: 'cobalt',
+      keys: [
+        { id: 'k40', label: '40', tone: step === 2 ? 'active' : 'default' },
+        { id: 'k80', label: '80', tone: step === 2 ? 'active' : 'default' },
+      ],
+    },
+    {
+      id: 'n0',
+      x: 112,
+      y: 148,
+      cellW: 46,
+      cellH: 36,
+      state: step === 2 ? 'highlight-box' : 'normal',
+      tag: step === 2 ? '≥ t−1 = 1 khóa · ≥ t = 2 con' : undefined,
+      tagPos: 'top',
+      tagTone: 'warn',
+      keys: [{ id: 'k20', label: '20' }],
+    },
+    {
+      id: 'n1',
+      x: 310,
+      y: 148,
+      cellW: 46,
+      cellH: 36,
+      keys: [{ id: 'k60', label: '60' }],
+    },
+    {
+      id: 'n2',
+      x: 558,
+      y: 148,
+      cellW: 52,
+      cellH: 36,
+      state: step === 1 ? 'active' : 'normal',
+      tag: step === 1 ? '2 khóa (≤ M−1) · 3 nhánh (≤ M)' : undefined,
+      tagTone: 'cobalt',
+      keys: [
+        { id: 'k100', label: '100', tone: step === 1 ? 'active' : 'default' },
+        { id: 'k120', label: '120', tone: step === 1 ? 'active' : 'default' },
+      ],
+    },
+  ];
+
+  const edges: TreeSceneSpec['edges'] = [
+    { id: 'er0', fromNode: 'r', portIndex: 0, toNode: 'n0', state: step === 3 ? 'active' : 'normal', arrow: step === 3, label: step === 3 ? 'cạnh 1' : undefined },
+    { id: 'er1', fromNode: 'r', portIndex: 1, toNode: 'n1' },
+    { id: 'er2', fromNode: 'r', portIndex: 2, toNode: 'n2', state: step === 3 ? 'active' : 'normal', arrow: step === 3, label: step === 3 ? 'cạnh 1' : undefined },
+  ];
+
+  for (const lf of leafDefs) {
+    const isOuter = lf.id === 'f0' || lf.id === 'f6';
+    nodes.push({
+      id: lf.id,
+      x: lf.x,
+      y: 256,
+      cellW: 41,
+      cellH: 34,
+      state: step === 3 && isOuter ? 'success' : 'normal',
+      keys: lf.keys.map((v) => ({
+        id: `k${v}`,
+        label: v,
+        tone: step === 3 && isOuter ? 'success' : 'default',
+      })),
+    });
+    edges.push({
+      id: `e-${lf.id}`,
+      fromNode: lf.parent,
+      portIndex: lf.port,
+      toNode: lf.id,
+      state: step === 3 && isOuter ? 'active' : 'normal',
+      arrow: step === 3 && isOuter,
+      label: step === 3 && isOuter ? 'cạnh 2' : undefined,
+    });
+  }
+
+  const chips: TreeSceneSpec['chips'] =
+    step === 2 ? [{ id: 's05-mchip', x: 582, y: 26, text: 'M = 3 ⇒ t = ⌈3/2⌉ = 2', tone: 'active' }] : [];
+
+  renderTreeScene(
+    treeBox,
+    {
+      viewBox: [0, 0, 718, 326],
+      nodes,
+      edges,
+      chips,
+      baselineY:
+        step === 3
+          ? { y: 292, x1: 16, x2: 702, label: 'Đường chuẩn 7 lá · cùng độ sâu h = 2 cạnh' }
+          : undefined,
+    },
+    { reducedMotion },
+  );
+}
 
 export const PART1_SLIDES: SlideDef[] = [slide01, slide02, slide03, slide04, slide05];
