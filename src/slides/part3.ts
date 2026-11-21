@@ -1,6 +1,7 @@
 import type { SlideDef, TreeSceneSpec } from '../types';
 import { renderPythonWindow, updateCodeHighlight, highlightPythonLine } from '../pythonCode';
 import { renderTreeScene, cancelTreeAnimations } from '../svg/treeRenderer';
+import { soundFx } from '../soundEffects';
 
 function triggerStepPulse(el: HTMLElement, reducedMotion: boolean): void {
   if (reducedMotion) return;
@@ -1152,6 +1153,7 @@ function playPyDemoStep(
     if (charIdx < curLine.length) {
       const ch = curLine[charIdx];
       charIdx++;
+      if (ch !== ' ') soundFx.playKeystroke();
       const delay = ch === ' ' ? 14 : 21;
       rt.timerId = window.setTimeout(tick, delay);
     } else if (lineIdx < linesToType.length - 1) {
@@ -1161,6 +1163,7 @@ function playPyDemoStep(
     } else {
       rt.timerId = window.setTimeout(() => {
         rt.timerId = null;
+        if (step > 0) soundFx.playSuccess();
         finishStep();
       }, 160);
     }

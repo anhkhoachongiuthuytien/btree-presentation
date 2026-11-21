@@ -21,6 +21,7 @@ import { texBlock } from './math';
 import { renderPythonWindow } from './pythonCode';
 import { playSlideTransition, cancelSlideTransition, triggerSlideEntrance } from './transitions';
 import { initChapterStageSkins } from './stageThemes';
+import { soundFx } from './soundEffects';
 import type { SlideContext, SlideDef } from './types';
 
 function pad2(n: number): string {
@@ -39,6 +40,29 @@ const transitionOverlay = document.getElementById('transition-overlay')!;
 const topProgressFill = document.getElementById('top-progress-fill')!;
 const laserLayer = document.getElementById('laser-layer')!;
 const laserDot = document.getElementById('laser-dot')!;
+const fxRippleLayer = document.getElementById('fx-ripple-layer')!;
+const ghostAudioBtn = document.getElementById('ghost-audio-btn') as HTMLButtonElement | null;
+
+type RippleTone = 'cobalt' | 'emerald' | 'amber' | 'red' | 'laser';
+
+function spawnRipple(clientX: number, clientY: number, tone: RippleTone = 'cobalt'): void {
+  if (getReducedMotion()) return;
+  const ring = document.createElement('span');
+  ring.className = `fx-ripple fx-ripple--${tone}`;
+  ring.style.left = `${clientX}px`;
+  ring.style.top = `${clientY}px`;
+  fxRippleLayer.appendChild(ring);
+  ring.addEventListener('animationend', () => ring.remove(), { once: true });
+}
+
+function toggleAudio(): void {
+  const on = soundFx.toggle();
+  if (ghostAudioBtn) {
+    ghostAudioBtn.setAttribute('aria-pressed', String(on));
+    ghostAudioBtn.classList.toggle('is-muted', !on);
+  }
+  showShortcutToast(on ? 'Âm thanh: BẬT (nhấn A để tắt)' : 'Âm thanh: TẮT (nhấn A để bật)');
+}
 
 // Podium controls
 const btnPrev = document.getElementById('btn-prev') as HTMLButtonElement;
@@ -99,6 +123,7 @@ function isAnyModalOpen(): boolean {
 
 function closeShortcutsModal(): void {
   shortcutsModal.hidden = true;
+  soundFx.playModal(false);
   if (!isAnyModalOpen() && savedFocusBeforeModal) {
     savedFocusBeforeModal.focus();
     savedFocusBeforeModal = null;
@@ -114,6 +139,7 @@ function toggleShortcutsModal(): void {
     savedFocusBeforeModal = document.activeElement as HTMLElement | null;
   }
   shortcutsModal.hidden = false;
+  soundFx.playModal(true);
   shortcutsClose.focus();
 }
 
@@ -130,11 +156,13 @@ function openCodeZoom(title: string, startLine: number, endLine: number, highlig
     zoomable: false,
   });
   codeZoomModal.hidden = false;
+  soundFx.playModal(true);
   codeZoomBody.focus();
 }
 
 function closeCodeZoom(): void {
   codeZoomModal.hidden = true;
+  soundFx.playModal(false);
   if (!isAnyModalOpen() && savedFocusBeforeModal) {
     savedFocusBeforeModal.focus();
     savedFocusBeforeModal = null;
@@ -185,11 +213,13 @@ function openFullView(slide: SlideDef): void {
 
   fullViewBody.innerHTML = parts.join('');
   fullViewModal.hidden = false;
+  soundFx.playModal(true);
   fullViewBody.focus();
 }
 
 function closeFullView(): void {
   fullViewModal.hidden = true;
+  soundFx.playModal(false);
   if (!isAnyModalOpen() && savedFocusBeforeModal) {
     savedFocusBeforeModal.focus();
     savedFocusBeforeModal = null;
@@ -356,15 +386,30 @@ deck.on('slidechanged', (event: unknown) => {
   const ev = event as { indexh?: number };
   const prevNum = currentSlideNumber;
   const nextNum = (ev.indexh ?? 0) + 1;
+  if (prevNum !== nextNum) {
+    soundFx.playSlideWhoosh(nextNum > prevNum ? 'next' : 'prev');
+  }
   syncCurrentSlide(prevNum !== nextNum ? prevNum : undefined);
 });
 
 deck.on('fragmentshown', () => {
   syncCurrentSlide();
+  const h = deck?.getIndices().h ?? 0;
+  const slide = ALL_SLIDES[h];
+  if (slide) {
+    const step = getCurrentStepForSection(slideSections[h]);
+    soundFx.playStepTick(step, slide.stepCount);
+  }
 });
 
 deck.on('fragmenthidden', () => {
   syncCurrentSlide();
+  const h = deck?.getIndices().h ?? 0;
+  const slide = ALL_SLIDES[h];
+  if (slide) {
+    const step = getCurrentStepForSection(slideSections[h]);
+    soundFx.playStepTick(step, slide.stepCount);
+  }
 });
 
 deck.on('overviewshown', () => {
@@ -487,6 +532,59 @@ document.getElementById('ghost-fs-btn')?.addEventListener('click', (e) => {
   toggleFullscreen();
 });
 
+ghostAudioBtn?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  toggleAudio();
+});
+
+// Unlock Web Audio cleanly on first user gesture & spawn semantic interactive feedback
+window.addEventListener(
+  'pointerdown',
+  (ev) => {
+    soundFx.unlock();
+    const target = ev.target as HTMLElement | null;
+    if (!target) return;
+
+    if (laserEnabled) {
+      spawnRipple(ev.clientX, ev.clientY, 'laser');
+    }
+
+    const extCard = target.closest<HTMLElement>('.ext-card');
+    if (extCard) {
+      const ok = Number(extCard.dataset.extLen ?? 0) >= 10;
+      spawnRipple(ev.clientX, ev.clientY, ok ? 'emerald' : 'red');
+      if (ok) soundFx.playSuccess();
+      else soundFx.playAlert();
+      return;
+    }
+
+    const s03Probe = target.closest<HTMLElement>('[data-s03-probe]');
+    if (s03Probe) {
+      const mode = s03Probe.dataset.s03Probe;
+      const ok = mode === 'search';
+      spawnRipple(ev.clientX, ev.clientY, ok ? 'emerald' : 'amber');
+      if (ok) soundFx.playSuccess();
+      else soundFx.playAlert();
+      return;
+    }
+
+    if (target.closest('[data-role="reveal-ans"], .s26-qbtn, .rec-pill, [data-s04-probe]')) {
+      spawnRipple(ev.clientX, ev.clientY, 'emerald');
+      soundFx.playSuccess();
+      return;
+    }
+
+    const interactive = target.closest(
+      'button:not(#ghost-audio-btn), .toc-bar, .tr-key--clickable, .xfs-cell, .s05-card, .s11-card-borrow, .s11-card-merge, .s18-click-row, [data-zoom-code]',
+    );
+    if (interactive) {
+      spawnRipple(ev.clientX, ev.clientY, 'cobalt');
+      soundFx.playClick();
+    }
+  },
+  true,
+);
+
 function togglePodiumBar(): void {
   const hidden = document.body.classList.toggle('podium-hidden');
   deck?.layout();
@@ -540,6 +638,7 @@ shortcutsModal.addEventListener('click', (e) => {
 window.addEventListener(
   'keydown',
   (ev) => {
+    soundFx.unlock();
     const activeTag = (document.activeElement as HTMLElement | null)?.tagName;
     if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
 
@@ -623,6 +722,10 @@ window.addEventListener(
       ev.stopPropagation();
       ev.stopImmediatePropagation();
       togglePodiumBar();
+    } else if (key === 'a') {
+      ev.preventDefault();
+      ev.stopPropagation();
+      toggleAudio();
     }
   },
   true,

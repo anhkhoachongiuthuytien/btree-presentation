@@ -23,6 +23,9 @@
       <div id="laser-dot" class="laser-dot"></div>
     </div>
 
+    <!-- Dedicated pointer-events:none click ripple & micro-interaction layer -->
+    <div id="fx-ripple-layer" class="fx-ripple-layer" aria-hidden="true"></div>
+
     <!-- Clean, minimal podium control bar -->
     <nav id="podium-bar" class="podium-bar" aria-label="Điều khiển bài thuyết trình">
       <div class="podium-group">
@@ -121,6 +124,7 @@
           <div class="sc-item"><kbd>O</kbd><span>Mở / đóng Tổng quan (Overview)</span></div>
           <div class="sc-item"><kbd>S</kbd><span>Mở cửa sổ Ghi chú người nói</span></div>
           <div class="sc-item"><kbd>F</kbd><span>Bật / tắt Toàn màn hình</span></div>
+          <div class="sc-item"><kbd>A</kbd><span>Bật / tắt hiệu ứng âm thanh</span></div>
           <div class="sc-item"><kbd>B</kbd><span>Hiện / ẩn thanh điều khiển dưới</span></div>
           <div class="sc-item"><kbd>H</kbd> / <kbd>?</kbd><span>Hiện / ẩn bảng phím tắt này</span></div>
           <div class="sc-item"><kbd>Esc</kbd><span>Đóng hộp thoại / thoát Tổng quan</span></div>
@@ -131,10 +135,16 @@
     <!-- Brief shortcut feedback toast -->
     <div id="shortcut-toast" class="shortcut-toast" role="status" aria-live="polite" hidden></div>
 
-    <!-- Subtle unobtrusive ghost fullscreen toggle (also available via F key) -->
-    <button id="ghost-fs-btn" class="ghost-fs-btn" type="button" title="Toàn màn hình (F) · Phím tắt (H)" aria-label="Toàn màn hình">
-      <svg class="ui-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/></svg>
-    </button>
+    <!-- Subtle unobtrusive ghost corner controls (Audio A & Fullscreen F) -->
+    <div class="ghost-corner-dock">
+      <button id="ghost-audio-btn" class="ghost-fs-btn" type="button" aria-pressed="true" title="Bật/tắt âm thanh (A)" aria-label="Bật/tắt âm thanh">
+        <svg class="ui-ico ico-sound-on" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.2h2.7l3.3-2.7v9l-3.3-2.7H2.5z"/><path d="M11 5.6a3.5 3.5 0 0 1 0 4.8"/><path d="M12.8 3.8a6 6 0 0 1 0 8.4"/></svg>
+        <svg class="ui-ico ico-sound-off" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.2h2.7l3.3-2.7v9l-3.3-2.7H2.5z"/><path d="M11 6l3 4M14 6l-3 4"/></svg>
+      </button>
+      <button id="ghost-fs-btn" class="ghost-fs-btn" type="button" title="Toàn màn hình (F) · Phím tắt (H)" aria-label="Toàn màn hình">
+        <svg class="ui-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/></svg>
+      </button>
+    </div>
 
     <script type="module" src="/src/main.ts"></script>
   </body>

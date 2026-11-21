@@ -96,11 +96,17 @@ body.podium-hidden .podium-bar {
   box-shadow: none;
 }
 
-.ghost-fs-btn {
+.ghost-corner-dock {
   position: fixed;
   right: 10px;
   bottom: 10px;
   z-index: 95;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ghost-fs-btn {
   width: 30px;
   height: 30px;
   border-radius: 5px;
@@ -110,8 +116,8 @@ body.podium-hidden .podium-bar {
   display: grid;
   place-items: center;
   cursor: pointer;
-  opacity: 0.26;
-  transition: opacity 180ms ease, background 180ms ease, transform 160ms ease;
+  opacity: 0.3;
+  transition: opacity 180ms ease, background 180ms ease, transform 140ms ease, color 160ms ease, border-color 160ms ease;
 }
 
 .ghost-fs-btn:hover {
@@ -121,7 +127,29 @@ body.podium-hidden .podium-bar {
   transform: scale(1.06);
 }
 
-body:not(.podium-hidden) .ghost-fs-btn {
+.ghost-fs-btn:active {
+  transform: scale(0.94);
+}
+
+#ghost-audio-btn .ico-sound-off {
+  display: none;
+}
+
+#ghost-audio-btn.is-muted {
+  color: #b91c1c;
+  border-color: rgba(220, 38, 38, 0.45);
+  opacity: 0.55;
+}
+
+#ghost-audio-btn.is-muted .ico-sound-on {
+  display: none;
+}
+
+#ghost-audio-btn.is-muted .ico-sound-off {
+  display: block;
+}
+
+body:not(.podium-hidden) .ghost-corner-dock {
   display: none;
 }
 
@@ -7100,6 +7128,114 @@ button.stack-frame:hover {
   font-size: 11.5px;
   font-weight: 700;
   white-space: nowrap;
+}
+
+/* ============================================================================
+   INTERACTIVE CLICK RIPPLES & TACTILE SPRING MICRO-INTERACTIONS
+   ============================================================================ */
+.fx-ripple-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 240;
+  overflow: hidden;
+}
+
+.fx-ripple {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  margin-top: -9px;
+  border-radius: 999px;
+  border: 2.5px solid var(--cobalt);
+  background: rgba(82, 132, 255, 0.16);
+  animation: fxRippleBurst 380ms cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+.fx-ripple--emerald {
+  border-color: #16a34a;
+  background: rgba(22, 163, 74, 0.18);
+}
+
+.fx-ripple--amber {
+  border-color: #d97706;
+  background: rgba(245, 158, 11, 0.2);
+}
+
+.fx-ripple--red {
+  border-color: #dc2626;
+  background: rgba(220, 38, 38, 0.18);
+}
+
+.fx-ripple--laser {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.26);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.55);
+}
+
+@keyframes fxRippleBurst {
+  0% {
+    opacity: 0.95;
+    transform: scale(0.45);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(3.4);
+  }
+}
+
+/* Tactile press-in & crisp hover feedback across interactive controls */
+.inline-action-btn,
+.step-chip,
+.rec-pill,
+.ext-card,
+.xfs-cell,
+.crumb-card,
+.ms-pill,
+.s16-tab,
+.s13-m-btn,
+.s26-qbtn,
+.s18-op-tab,
+.toc-bar,
+.s05-card {
+  transition: transform 140ms cubic-bezier(.22, 1, .36, 1), box-shadow 160ms ease, background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.inline-action-btn:hover:not(:disabled),
+.step-chip:hover,
+.rec-pill:hover,
+.ext-card:hover,
+.xfs-cell:hover,
+.s16-tab:hover,
+.s13-m-btn:hover,
+.s18-op-tab:hover {
+  transform: translateY(-1.5px);
+}
+
+.inline-action-btn:active:not(:disabled),
+.step-chip:active,
+.rec-pill:active,
+.ext-card:active,
+.xfs-cell:active,
+.crumb-card:active,
+.ms-pill:active,
+.s16-tab:active,
+.s13-m-btn:active,
+.s26-qbtn:active,
+.s18-op-tab:active,
+.toc-bar:active,
+.s05-card:active {
+  transform: scale(0.97) translateY(0.5px);
+}
+
+.tr-key--clickable {
+  cursor: pointer;
+  transition: filter 160ms ease, transform 150ms ease;
+}
+
+.tr-key--clickable:hover {
+  filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.55));
 }
 
 /* Reduced Motion (placed last so it cleanly disables every on-slide animation) */
