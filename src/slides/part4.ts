@@ -287,7 +287,7 @@ interface S18CompareSpec {
 
 function buildS18Compare(opIdx: number): S18CompareSpec {
   if (opIdx === 2) {
-    // INSERT: Real 3-phase animated loop — Best (append at leaf) vs Worst (cascading split climb!)
+    // INSERT: 4-phase one-shot animation — runs smoothly to a valid B-tree and stops
     return {
       opName: 'Insert',
       bestTitle: 'Thuận lợi · Chèn cuối lá còn chỗ',
@@ -296,16 +296,16 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
       worstCost: 'O(M(h + 1))',
       phases: [
         {
-          bestPhase: '1/3 · Tìm xuống lá [25 | 30 | _]',
+          bestPhase: '1/4 · Tìm xuống lá [25 | 30 | _]',
           bestScene: {
-            viewBox: [0, 0, 520, 194],
+            viewBox: [0, 0, 520, 206],
             nodes: [
-              { id: 'ib-r', x: 260, y: 30, cellW: 44, cellH: 28, state: 'active', keys: [{ id: 'ib-40', label: '40', tone: 'active' }] },
-              { id: 'ib-i0', x: 148, y: 88, cellW: 40, cellH: 26, state: 'active', keys: [{ id: 'ib-20', label: '20', tone: 'active' }] },
-              { id: 'ib-i1', x: 388, y: 88, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
-              { id: 'ib-l0', x: 66, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-5', label: '5', tone: 'muted' }] },
-              { id: 'ib-l1', x: 230, y: 146, capacity: 3, cellW: 40, cellH: 26, tag: 'Còn 1 ô trống cuối lá', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-30', label: '30' }] },
-              { id: 'ib-l2', x: 432, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
+              { id: 'ib-r', x: 260, y: 34, cellW: 44, cellH: 28, state: 'active', keys: [{ id: 'ib-40', label: '40', tone: 'active' }] },
+              { id: 'ib-i0', x: 148, y: 94, cellW: 40, cellH: 26, state: 'active', keys: [{ id: 'ib-20', label: '20', tone: 'active' }] },
+              { id: 'ib-i1', x: 388, y: 94, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
+              { id: 'ib-l0', x: 66, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-5', label: '5', tone: 'muted' }] },
+              { id: 'ib-l1', x: 230, y: 152, capacity: 3, cellW: 40, cellH: 26, tag: 'Còn 1 ô trống cuối lá', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-30', label: '30' }] },
+              { id: 'ib-l2', x: 432, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
             ],
             edges: [
               { id: 'ibe0', fromNode: 'ib-r', portIndex: 0, toNode: 'ib-i0', state: 'active', arrow: true },
@@ -314,16 +314,16 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'ibe3', fromNode: 'ib-i0', portIndex: 1, toNode: 'ib-l1', state: 'active', arrow: true },
               { id: 'ibe4', fromNode: 'ib-i1', portIndex: 0, toNode: 'ib-l2', state: 'muted' },
             ],
-            chips: [{ id: 'ib-ch', x: 345, y: 32, text: 'Chèn 35', tone: 'active' }],
+            chips: [{ id: 'ib-ch', x: 345, y: 36, text: 'Chèn 35', tone: 'active' }],
           },
-          worstPhase: '1/3 · Chèn 22 → Lá tràn (> M−1)',
+          worstPhase: '1/4 · Chèn 22 → Lá tràn (> M−1)',
           worstScene: {
-            viewBox: [0, 0, 520, 194],
+            viewBox: [0, 0, 520, 206],
             nodes: [
-              { id: 'iw-r', x: 250, y: 30, cellW: 40, cellH: 28, keys: [{ id: 'iw-30', label: '30' }, { id: 'iw-50', label: '50' }, { id: 'iw-75', label: '75' }] },
-              { id: 'iw-i0', x: 148, y: 88, cellW: 38, cellH: 26, keys: [{ id: 'iw-15', label: '15' }, { id: 'iw-25', label: '25' }] },
-              { id: 'iw-i1', x: 425, y: 88, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'iw-85', label: '85', tone: 'muted' }] },
-              { id: 'iw-l1', x: 170, y: 148, cellW: 38, cellH: 26, state: 'overflow', tag: 'Lá tràn · dịch O(M)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-18', label: '18' }, { id: 'iw-22', label: '22', tone: 'active' }, { id: 'iw-28', label: '28' }] },
+              { id: 'iw-r', x: 250, y: 34, cellW: 40, cellH: 28, keys: [{ id: 'iw-30', label: '30' }, { id: 'iw-50', label: '50' }, { id: 'iw-75', label: '75' }] },
+              { id: 'iw-i0', x: 148, y: 94, cellW: 38, cellH: 26, keys: [{ id: 'iw-15', label: '15' }, { id: 'iw-25', label: '25' }] },
+              { id: 'iw-i1', x: 425, y: 94, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'iw-85', label: '85', tone: 'muted' }] },
+              { id: 'iw-l1', x: 170, y: 156, cellW: 38, cellH: 26, state: 'overflow', tag: 'Lá tràn · dịch O(M)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-18', label: '18' }, { id: 'iw-22', label: '22', tone: 'active' }, { id: 'iw-28', label: '28' }] },
             ],
             edges: [
               { id: 'iwe0', fromNode: 'iw-r', portIndex: 0, toNode: 'iw-i0', state: 'active', arrow: true },
@@ -333,16 +333,16 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
           },
         },
         {
-          bestPhase: '2/3 · Đặt 35 vào ô cuối (0 dịch mảng)',
+          bestPhase: '2/4 · Đặt 35 vào ô cuối (0 dịch mảng)',
           bestScene: {
-            viewBox: [0, 0, 520, 194],
+            viewBox: [0, 0, 520, 206],
             nodes: [
-              { id: 'ib-r', x: 260, y: 30, cellW: 44, cellH: 28, keys: [{ id: 'ib-40', label: '40' }] },
-              { id: 'ib-i0', x: 148, y: 88, cellW: 40, cellH: 26, keys: [{ id: 'ib-20', label: '20' }] },
-              { id: 'ib-i1', x: 388, y: 88, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
-              { id: 'ib-l0', x: 66, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-5', label: '5', tone: 'muted' }] },
-              { id: 'ib-l1', x: 230, y: 146, capacity: 3, cellW: 40, cellH: 26, state: 'active', tag: 'Gắn 35 ngay cuối lá', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-30', label: '30' }, { id: 'ib-35', label: '35', tone: 'active' }] },
-              { id: 'ib-l2', x: 432, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
+              { id: 'ib-r', x: 260, y: 34, cellW: 44, cellH: 28, keys: [{ id: 'ib-40', label: '40' }] },
+              { id: 'ib-i0', x: 148, y: 94, cellW: 40, cellH: 26, keys: [{ id: 'ib-20', label: '20' }] },
+              { id: 'ib-i1', x: 388, y: 94, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
+              { id: 'ib-l0', x: 66, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-5', label: '5', tone: 'muted' }] },
+              { id: 'ib-l1', x: 230, y: 152, capacity: 3, cellW: 40, cellH: 26, state: 'active', tag: 'Gắn 35 ngay cuối lá', tagPos: 'bottom', tagTone: 'cobalt', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-30', label: '30' }, { id: 'ib-35', label: '35', tone: 'active' }] },
+              { id: 'ib-l2', x: 432, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
             ],
             edges: [
               { id: 'ibe0', fromNode: 'ib-r', portIndex: 0, toNode: 'ib-i0' },
@@ -352,15 +352,15 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'ibe4', fromNode: 'ib-i1', portIndex: 0, toNode: 'ib-l2', state: 'muted' },
             ],
           },
-          worstPhase: '2/3 · Split lá ↑ làm Cha [15|22|25] tràn!',
+          worstPhase: '2/4 · Split lá ↑ làm Cha [15|22|25] tràn!',
           worstScene: {
-            viewBox: [0, 0, 520, 194],
+            viewBox: [0, 0, 520, 206],
             nodes: [
-              { id: 'iw-r', x: 250, y: 30, cellW: 40, cellH: 28, keys: [{ id: 'iw-30', label: '30' }, { id: 'iw-50', label: '50' }, { id: 'iw-75', label: '75' }] },
-              { id: 'iw-i0', x: 165, y: 88, cellW: 38, cellH: 26, state: 'overflow', tag: 'Mức 1 tràn · Split O(M)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-15', label: '15' }, { id: 'iw-22', label: '22', tone: 'active' }, { id: 'iw-25', label: '25' }] },
-              { id: 'iw-i1', x: 448, y: 88, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'iw-85', label: '85', tone: 'muted' }] },
-              { id: 'iw-l1a', x: 112, y: 152, cellW: 36, cellH: 26, state: 'success', keys: [{ id: 'iw-18', label: '18' }] },
-              { id: 'iw-l1b', x: 222, y: 152, cellW: 36, cellH: 26, state: 'success', keys: [{ id: 'iw-28', label: '28' }] },
+              { id: 'iw-r', x: 250, y: 34, cellW: 40, cellH: 28, keys: [{ id: 'iw-30', label: '30' }, { id: 'iw-50', label: '50' }, { id: 'iw-75', label: '75' }] },
+              { id: 'iw-i0', x: 165, y: 94, cellW: 38, cellH: 26, state: 'overflow', tag: 'Mức 1 tràn · Split O(M)', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-15', label: '15' }, { id: 'iw-22', label: '22', tone: 'active' }, { id: 'iw-25', label: '25' }] },
+              { id: 'iw-i1', x: 448, y: 94, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'iw-85', label: '85', tone: 'muted' }] },
+              { id: 'iw-l1a', x: 112, y: 158, cellW: 36, cellH: 26, state: 'success', keys: [{ id: 'iw-18', label: '18' }] },
+              { id: 'iw-l1b', x: 222, y: 158, cellW: 36, cellH: 26, state: 'success', keys: [{ id: 'iw-28', label: '28' }] },
             ],
             edges: [
               { id: 'iwe0', fromNode: 'iw-r', portIndex: 0, toNode: 'iw-i0', state: 'error' },
@@ -369,21 +369,21 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'iwe2b', fromNode: 'iw-i0', portIndex: 2, toNode: 'iw-l1b', state: 'active' },
             ],
             transfers: [
-              { id: 'iw-u1', fromX: 168, fromY: 142, toX: 165, toY: 102, ctrlX: 115, ctrlY: 122, label: '22 ↑', tone: 'error' },
+              { id: 'iw-u1', fromX: 168, fromY: 148, toX: 165, toY: 108, ctrlX: 115, ctrlY: 128, label: '22 ↑', tone: 'error' },
             ],
           },
         },
         {
-          bestPhase: '3/3 · Hợp lệ ngay · Tổng O(log N)',
+          bestPhase: '3/4 · 0 split · Cây hợp lệ ngay',
           bestScene: {
-            viewBox: [0, 0, 520, 194],
+            viewBox: [0, 0, 520, 206],
             nodes: [
-              { id: 'ib-r', x: 260, y: 30, cellW: 44, cellH: 28, keys: [{ id: 'ib-40', label: '40' }] },
-              { id: 'ib-i0', x: 148, y: 88, cellW: 40, cellH: 26, keys: [{ id: 'ib-20', label: '20' }] },
-              { id: 'ib-i1', x: 388, y: 88, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
-              { id: 'ib-l0', x: 66, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-5', label: '5', tone: 'muted' }] },
-              { id: 'ib-l1', x: 230, y: 146, capacity: 3, cellW: 40, cellH: 26, state: 'success', tag: '0 split · giữ nguyên chiều cao', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-30', label: '30' }, { id: 'ib-35', label: '35', tone: 'success' }] },
-              { id: 'ib-l2', x: 432, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
+              { id: 'ib-r', x: 260, y: 34, cellW: 44, cellH: 28, keys: [{ id: 'ib-40', label: '40' }] },
+              { id: 'ib-i0', x: 148, y: 94, cellW: 40, cellH: 26, keys: [{ id: 'ib-20', label: '20' }] },
+              { id: 'ib-i1', x: 388, y: 94, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
+              { id: 'ib-l0', x: 66, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-5', label: '5', tone: 'muted' }] },
+              { id: 'ib-l1', x: 230, y: 152, capacity: 3, cellW: 40, cellH: 26, state: 'success', tag: '0 split · giữ nguyên chiều cao', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-30', label: '30' }, { id: 'ib-35', label: '35', tone: 'success' }] },
+              { id: 'ib-l2', x: 432, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
             ],
             edges: [
               { id: 'ibe0', fromNode: 'ib-r', portIndex: 0, toNode: 'ib-i0' },
@@ -393,16 +393,16 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'ibe4', fromNode: 'ib-i1', portIndex: 0, toNode: 'ib-l2', state: 'muted' },
             ],
           },
-          worstPhase: '3/3 · Split lan tới Gốc · O(M(h + 1))',
+          worstPhase: '3/4 · Split lan tới Gốc [22|30|50|75] tràn!',
           worstScene: {
-            viewBox: [0, 0, 520, 194],
+            viewBox: [0, 0, 520, 206],
             nodes: [
-              { id: 'iw-r', x: 225, y: 30, cellW: 38, cellH: 26, state: 'overflow', tag: 'Gốc tràn · Split O(M)!', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-22', label: '22', tone: 'active' }, { id: 'iw-30', label: '30' }, { id: 'iw-50', label: '50' }, { id: 'iw-75', label: '75' }] },
-              { id: 'iw-i0a', x: 105, y: 92, cellW: 36, cellH: 26, state: 'success', keys: [{ id: 'iw-15', label: '15' }] },
-              { id: 'iw-i0b', x: 220, y: 92, cellW: 36, cellH: 26, state: 'success', keys: [{ id: 'iw-25', label: '25' }] },
-              { id: 'iw-i1', x: 432, y: 92, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'iw-85', label: '85', tone: 'muted' }] },
-              { id: 'iw-l1a', x: 105, y: 154, cellW: 36, cellH: 24, keys: [{ id: 'iw-18', label: '18' }] },
-              { id: 'iw-l1b', x: 220, y: 154, cellW: 36, cellH: 24, keys: [{ id: 'iw-28', label: '28' }] },
+              { id: 'iw-r', x: 225, y: 34, cellW: 38, cellH: 26, state: 'overflow', tag: 'Gốc tràn · đẩy 50 ↑', tagPos: 'right', tagTone: 'error', keys: [{ id: 'iw-22', label: '22' }, { id: 'iw-30', label: '30' }, { id: 'iw-50', label: '50', tone: 'active' }, { id: 'iw-75', label: '75' }] },
+              { id: 'iw-i0a', x: 105, y: 98, cellW: 36, cellH: 26, state: 'success', keys: [{ id: 'iw-15', label: '15' }] },
+              { id: 'iw-i0b', x: 220, y: 98, cellW: 36, cellH: 26, state: 'success', keys: [{ id: 'iw-25', label: '25' }] },
+              { id: 'iw-i1', x: 432, y: 98, cellW: 34, cellH: 24, state: 'muted', keys: [{ id: 'iw-85', label: '85', tone: 'muted' }] },
+              { id: 'iw-l1a', x: 105, y: 162, cellW: 36, cellH: 24, keys: [{ id: 'iw-18', label: '18' }] },
+              { id: 'iw-l1b', x: 220, y: 162, cellW: 36, cellH: 24, keys: [{ id: 'iw-28', label: '28' }] },
             ],
             edges: [
               { id: 'iwe0a', fromNode: 'iw-r', portIndex: 0, toNode: 'iw-i0a', state: 'error' },
@@ -412,7 +412,51 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'iwe2b', fromNode: 'iw-i0b', portIndex: 1, toNode: 'iw-l1b' },
             ],
             transfers: [
-              { id: 'iw-u2', fromX: 162, fromY: 84, toX: 185, toY: 42, ctrlX: 120, ctrlY: 54, label: '22 ↑ gốc', tone: 'error' },
+              { id: 'iw-u2', fromX: 162, fromY: 88, toX: 185, toY: 46, ctrlX: 120, ctrlY: 58, label: '22 ↑ gốc', tone: 'error' },
+            ],
+          },
+        },
+        {
+          bestPhase: '4/4 · Hoàn tất · Cây hợp lệ O(log N)',
+          bestScene: {
+            viewBox: [0, 0, 520, 206],
+            nodes: [
+              { id: 'ib-r', x: 260, y: 34, cellW: 44, cellH: 28, keys: [{ id: 'ib-40', label: '40' }] },
+              { id: 'ib-i0', x: 148, y: 94, cellW: 40, cellH: 26, keys: [{ id: 'ib-20', label: '20' }] },
+              { id: 'ib-i1', x: 388, y: 94, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'ib-70', label: '70', tone: 'muted' }] },
+              { id: 'ib-l0', x: 66, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-5', label: '5', tone: 'muted' }] },
+              { id: 'ib-l1', x: 230, y: 152, capacity: 3, cellW: 40, cellH: 26, state: 'success', tag: 'Cây hợp lệ · 0 split', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'ib-25', label: '25' }, { id: 'ib-30', label: '30' }, { id: 'ib-35', label: '35', tone: 'success' }] },
+              { id: 'ib-l2', x: 432, y: 152, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'ib-80', label: '80', tone: 'muted' }] },
+            ],
+            edges: [
+              { id: 'ibe0', fromNode: 'ib-r', portIndex: 0, toNode: 'ib-i0' },
+              { id: 'ibe1', fromNode: 'ib-r', portIndex: 1, toNode: 'ib-i1', state: 'muted' },
+              { id: 'ibe2', fromNode: 'ib-i0', portIndex: 0, toNode: 'ib-l0', state: 'muted' },
+              { id: 'ibe3', fromNode: 'ib-i0', portIndex: 1, toNode: 'ib-l1', state: 'active' },
+              { id: 'ibe4', fromNode: 'ib-i1', portIndex: 0, toNode: 'ib-l2', state: 'muted' },
+            ],
+          },
+          worstPhase: '4/4 · Tách gốc → Cây hợp lệ (h + 1)',
+          worstScene: {
+            viewBox: [0, 0, 520, 206],
+            nodes: [
+              { id: 'iw-root-new', x: 260, y: 22, cellW: 40, cellH: 24, state: 'success', tag: 'Gốc mới · h tăng +1', tagPos: 'right', tagTone: 'success', keys: [{ id: 'iw-50', label: '50', tone: 'success' }] },
+              { id: 'iw-rL', x: 165, y: 74, cellW: 36, cellH: 24, state: 'success', keys: [{ id: 'iw-22', label: '22', tone: 'success' }, { id: 'iw-30', label: '30' }] },
+              { id: 'iw-rR', x: 375, y: 74, cellW: 36, cellH: 24, state: 'success', keys: [{ id: 'iw-75', label: '75' }] },
+              { id: 'iw-i0a', x: 95, y: 128, cellW: 34, cellH: 22, keys: [{ id: 'iw-15', label: '15' }] },
+              { id: 'iw-i0b', x: 205, y: 128, cellW: 34, cellH: 22, keys: [{ id: 'iw-25', label: '25' }] },
+              { id: 'iw-i1', x: 422, y: 128, cellW: 34, cellH: 22, state: 'muted', keys: [{ id: 'iw-85', label: '85', tone: 'muted' }] },
+              { id: 'iw-l1a', x: 95, y: 180, cellW: 34, cellH: 22, keys: [{ id: 'iw-18', label: '18' }] },
+              { id: 'iw-l1b', x: 205, y: 180, cellW: 34, cellH: 22, keys: [{ id: 'iw-28', label: '28' }] },
+            ],
+            edges: [
+              { id: 'iwe-nr0', fromNode: 'iw-root-new', portIndex: 0, toNode: 'iw-rL', state: 'active' },
+              { id: 'iwe-nr1', fromNode: 'iw-root-new', portIndex: 1, toNode: 'iw-rR', state: 'active' },
+              { id: 'iwe0a', fromNode: 'iw-rL', portIndex: 0, toNode: 'iw-i0a' },
+              { id: 'iwe0b', fromNode: 'iw-rL', portIndex: 1, toNode: 'iw-i0b' },
+              { id: 'iwe1', fromNode: 'iw-rR', portIndex: 1, toNode: 'iw-i1', state: 'muted' },
+              { id: 'iwe2a', fromNode: 'iw-i0a', portIndex: 1, toNode: 'iw-l1a' },
+              { id: 'iwe2b', fromNode: 'iw-i0b', portIndex: 1, toNode: 'iw-l1b' },
             ],
           },
         },
@@ -421,7 +465,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
   }
 
   if (opIdx === 3) {
-    // DELETE: Real 3-phase animated loop — Best (pop leaf end) vs Worst (predecessor + cascading merge!)
+    // DELETE: 4-phase one-shot animation — runs smoothly to a valid B-tree and stops
     return {
       opName: 'Delete',
       bestTitle: 'Thuận lợi · Xóa cuối lá còn đủ khóa',
@@ -430,7 +474,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
       worstCost: 'O(M(h + 1))',
       phases: [
         {
-          bestPhase: '1/3 · Tìm xuống lá [25 | 30]',
+          bestPhase: '1/4 · Tìm xuống lá [25 | 30]',
           bestScene: {
             viewBox: [0, 0, 520, 194],
             nodes: [
@@ -449,7 +493,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'dbe4', fromNode: 'db-i1', portIndex: 0, toNode: 'db-l2', state: 'muted' },
             ],
           },
-          worstPhase: '1/3 · Xóa 40 ở gốc → đi tìm tiền nhiệm 38',
+          worstPhase: '1/4 · Xóa 40 ở gốc → đi tìm tiền nhiệm 38',
           worstScene: {
             viewBox: [0, 0, 520, 194],
             nodes: [
@@ -468,7 +512,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
           },
         },
         {
-          bestPhase: '2/3 · Pop 30 cuối lá (0 dịch đuôi)',
+          bestPhase: '2/4 · Pop 30 cuối lá (0 dịch đuôi)',
           bestScene: {
             viewBox: [0, 0, 520, 194],
             nodes: [
@@ -487,7 +531,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'dbe4', fromNode: 'db-i1', portIndex: 0, toNode: 'db-l2', state: 'muted' },
             ],
           },
-          worstPhase: '2/3 · Đổi 38 ↑ gốc → Lá rỗng, Gộp O(M)',
+          worstPhase: '2/4 · Đổi 38 ↑ gốc → Lá rỗng, Gộp O(M)',
           worstScene: {
             viewBox: [0, 0, 520, 194],
             nodes: [
@@ -507,7 +551,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
           },
         },
         {
-          bestPhase: '3/3 · 0 mượn/gộp · Tổng O(log N)',
+          bestPhase: '3/4 · 0 mượn/gộp · Cây hợp lệ ngay',
           bestScene: {
             viewBox: [0, 0, 520, 194],
             nodes: [
@@ -515,7 +559,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'db-i0', x: 148, y: 88, cellW: 40, cellH: 26, keys: [{ id: 'db-20', label: '20' }] },
               { id: 'db-i1', x: 388, y: 88, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'db-70', label: '70', tone: 'muted' }] },
               { id: 'db-l0', x: 66, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-5', label: '5', tone: 'muted' }] },
-              { id: 'db-l1', x: 230, y: 146, cellW: 44, cellH: 26, state: 'success', tag: 'Xong · 0 borrow, 0 merge', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'db-25', label: '25', tone: 'success' }] },
+              { id: 'db-l1', x: 230, y: 146, cellW: 44, cellH: 26, state: 'success', tag: '0 borrow, 0 merge', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'db-25', label: '25', tone: 'success' }] },
               { id: 'db-l2', x: 432, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-80', label: '80', tone: 'muted' }] },
             ],
             edges: [
@@ -526,7 +570,7 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'dbe4', fromNode: 'db-i1', portIndex: 0, toNode: 'db-l2', state: 'muted' },
             ],
           },
-          worstPhase: '3/3 · Gộp lan tới Gốc · O(M(h + 1))',
+          worstPhase: '3/4 · Gộp lan tới Gốc → Gốc rỗng!',
           worstScene: {
             viewBox: [0, 0, 520, 194],
             nodes: [
@@ -539,6 +583,40 @@ function buildS18Compare(opIdx: number): S18CompareSpec {
               { id: 'dwe0', fromNode: 'dw-r', portIndex: 0, toNode: 'dw-i0', state: 'error' },
               { id: 'dwe2', fromNode: 'dw-i0', portIndex: 0, toNode: 'dw-l0', state: 'active' },
               { id: 'dwe3', fromNode: 'dw-i0', portIndex: 2, toNode: 'dw-l2', state: 'muted' },
+            ],
+          },
+        },
+        {
+          bestPhase: '4/4 · Hoàn tất · Cây hợp lệ O(log N)',
+          bestScene: {
+            viewBox: [0, 0, 520, 194],
+            nodes: [
+              { id: 'db-r', x: 260, y: 30, cellW: 44, cellH: 28, keys: [{ id: 'db-40', label: '40' }] },
+              { id: 'db-i0', x: 148, y: 88, cellW: 40, cellH: 26, keys: [{ id: 'db-20', label: '20' }] },
+              { id: 'db-i1', x: 388, y: 88, cellW: 40, cellH: 26, state: 'muted', keys: [{ id: 'db-70', label: '70', tone: 'muted' }] },
+              { id: 'db-l0', x: 66, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-5', label: '5', tone: 'muted' }] },
+              { id: 'db-l1', x: 230, y: 146, cellW: 44, cellH: 26, state: 'success', tag: 'Cây hợp lệ · 0 mượn/gộp', tagPos: 'bottom', tagTone: 'success', keys: [{ id: 'db-25', label: '25', tone: 'success' }] },
+              { id: 'db-l2', x: 432, y: 146, cellW: 36, cellH: 26, state: 'muted', keys: [{ id: 'db-80', label: '80', tone: 'muted' }] },
+            ],
+            edges: [
+              { id: 'dbe0', fromNode: 'db-r', portIndex: 0, toNode: 'db-i0' },
+              { id: 'dbe1', fromNode: 'db-r', portIndex: 1, toNode: 'db-i1', state: 'muted' },
+              { id: 'dbe2', fromNode: 'db-i0', portIndex: 0, toNode: 'db-l0', state: 'muted' },
+              { id: 'dbe3', fromNode: 'db-i0', portIndex: 1, toNode: 'db-l1', state: 'active' },
+              { id: 'dbe4', fromNode: 'db-i1', portIndex: 0, toNode: 'db-l2', state: 'muted' },
+            ],
+          },
+          worstPhase: '4/4 · Hạ tầng gốc → Cây hợp lệ (h − 1)',
+          worstScene: {
+            viewBox: [0, 0, 520, 194],
+            nodes: [
+              { id: 'dw-i0', x: 245, y: 50, cellW: 46, cellH: 28, state: 'success', tag: 'Gốc mới · h giảm −1', tagPos: 'right', tagTone: 'success', keys: [{ id: 'dw-38', label: '38', tone: 'success' }, { id: 'dw-70', label: '70', tone: 'success' }] },
+              { id: 'dw-l0', x: 135, y: 132, cellW: 42, cellH: 26, state: 'success', keys: [{ id: 'dw-10', label: '10' }, { id: 'dw-20b', label: '20' }] },
+              { id: 'dw-l2', x: 355, y: 132, cellW: 42, cellH: 26, keys: [{ id: 'dw-80', label: '80' }] },
+            ],
+            edges: [
+              { id: 'dwe2', fromNode: 'dw-i0', portIndex: 0, toNode: 'dw-l0', state: 'active' },
+              { id: 'dwe3', fromNode: 'dw-i0', portIndex: 2, toNode: 'dw-l2' },
             ],
           },
         },
@@ -727,6 +805,7 @@ const slide18: SlideDef = {
             <button type="button" class="s18-tab is-on" data-op="1">Search</button>
             <button type="button" class="s18-tab" data-op="2">Insert</button>
             <button type="button" class="s18-tab" data-op="3">Delete</button>
+            <button type="button" class="s18-replay-btn" data-role="s18-replay" title="Chạy lại minh họa">↺ Chạy lại</button>
           </div>
         </header>
 
@@ -818,8 +897,14 @@ const slide18: SlideDef = {
         selectOp(Number(btn.dataset.op));
       });
     });
+
+    ctx.slideEl.querySelector<HTMLButtonElement>('[data-role="s18-replay"]')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const curOp = Number(ctx.slideEl.dataset.activeOp || '1');
+      selectOp(curOp);
+    });
   },
-  renderStep(step, _prev, ctx) {
+  renderStep(step, prev, ctx) {
     const rows = ctx.slideEl.querySelectorAll<HTMLElement>('.complexity-table tbody tr');
     const worstCells = ctx.slideEl.querySelectorAll<HTMLElement>('[data-col="worst"]');
     const bestCells = ctx.slideEl.querySelectorAll<HTMLElement>('[data-col="best"]');
@@ -835,6 +920,10 @@ const slide18: SlideDef = {
     goto19.classList.toggle('is-lit', step >= 4);
 
     const activeOp = step === 2 ? 2 : step === 3 ? 3 : step === 4 ? 2 : 1;
+    // Avoid restarting Search when simply advancing from step 0 -> step 1 if already on Search
+    if (prev === 0 && step === 1 && ctx.slideEl.dataset.activeOp === '1') {
+      return;
+    }
     startS18CompareLoop(ctx.slideEl, activeOp, ctx.getReducedMotion());
   },
   cancelAnimations(slideEl) {
@@ -845,6 +934,7 @@ const slide18: SlideDef = {
 
 function startS18CompareLoop(slideEl: HTMLElement, opIdx: number, reducedMotion: boolean): void {
   stopS18Loop(slideEl);
+  slideEl.dataset.activeOp = String(opIdx);
   const spec = buildS18Compare(opIdx);
   slideEl.querySelector<HTMLElement>('[data-role="best-title"]')!.textContent = spec.bestTitle;
   slideEl.querySelector<HTMLElement>('[data-role="best-cost"]')!.textContent = spec.bestCost;
@@ -863,28 +953,33 @@ function startS18CompareLoop(slideEl: HTMLElement, opIdx: number, reducedMotion:
   const bestTree = slideEl.querySelector<HTMLElement>('[data-role="best-tree"]')!;
   const worstTree = slideEl.querySelector<HTMLElement>('[data-role="worst-tree"]')!;
 
+  const lastIdx = spec.phases.length - 1;
   const renderPhase = (pIdx: number) => {
     const frame = spec.phases[pIdx];
     bestPhaseEl.textContent = frame.bestPhase;
     worstPhaseEl.textContent = frame.worstPhase;
+    worstPhaseEl.classList.toggle('is-done-ok', pIdx === lastIdx);
     renderTreeScene(bestTree, frame.bestScene, { reducedMotion, durationMs: 420 });
     renderTreeScene(worstTree, frame.worstScene, { reducedMotion, durationMs: 420 });
   };
 
   if (reducedMotion) {
-    renderPhase(spec.phases.length - 1);
+    renderPhase(lastIdx);
     return;
   }
 
   let phase = 0;
   renderPhase(0);
   const scheduleNext = () => {
+    if (phase >= lastIdx) {
+      stopS18Loop(slideEl);
+      return;
+    }
     const sec = slideEl.closest('section.slide-section');
     if (sec && !sec.classList.contains('present') && !sec.classList.contains('is-entering-slide')) {
       stopS18Loop(slideEl);
       return;
     }
-    const delay = phase === spec.phases.length - 1 ? 2150 : 1450;
     s18LoopTimers.set(
       slideEl,
       window.setTimeout(() => {
@@ -893,10 +988,10 @@ function startS18CompareLoop(slideEl: HTMLElement, opIdx: number, reducedMotion:
           stopS18Loop(slideEl);
           return;
         }
-        phase = (phase + 1) % spec.phases.length;
+        phase += 1;
         renderPhase(phase);
         scheduleNext();
-      }, delay),
+      }, 1350),
     );
   };
   scheduleNext();

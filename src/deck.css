@@ -2552,6 +2552,26 @@ code {
   box-shadow: 3px 3px 0 rgba(59, 130, 246, 0.35);
 }
 
+.s18-replay-btn {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 11px;
+  border-radius: 3px;
+  border: 1.5px solid #94a3b8;
+  background: #f8fafc;
+  color: var(--ink);
+  cursor: pointer;
+  margin-left: 4px;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.s18-replay-btn:hover {
+  background: #eef5ff;
+  border-color: var(--title-blue);
+  color: var(--title-blue);
+}
+
 .complexity-table {
   width: 100%;
   border-collapse: collapse;
@@ -2676,6 +2696,12 @@ code {
   background: #fef3c7;
   border-color: #d97706;
   color: #92400e;
+}
+
+.s18-phase-pill--err.is-done-ok {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #14532d;
 }
 
 .s18-cost-pill {
