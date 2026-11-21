@@ -1012,11 +1012,51 @@ function startS18CompareLoop(slideEl: HTMLElement, opIdx: number, reducedMotion:
 }
 
 // ============================================================================
-// SLIDE 20 — Chi phí trung bình và chứng minh chi tiết từng bước
+// SLIDE 20 — Chi phí trung bình và chứng minh chi tiết từng bước (3D Isometric)
 // ============================================================================
+function s19Cube3D(
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  opts: {
+    face: string;
+    top: string;
+    side: string;
+    stroke: string;
+    text: string;
+    textFill?: string;
+    fontSize?: number;
+    fontFamily?: string;
+    extraClass?: string;
+    extraStyle?: string;
+  },
+): string {
+  const d = 5;
+  const cls = opts.extraClass ? ` class="${opts.extraClass}"` : '';
+  const st = opts.extraStyle ? ` style="${opts.extraStyle}"` : '';
+  const ff = opts.fontFamily ?? `'IBM Plex Mono', monospace`;
+  const fs = opts.fontSize ?? 13;
+  const tf = opts.textFill ?? '#0f1d3a';
+  return `
+    <g${cls}${st}>
+      <polygon points="${x},${y} ${x + d},${y - d} ${x + w + d},${y - d} ${x + w},${y}" fill="${opts.top}" stroke="${opts.stroke}" stroke-width="1.2" stroke-linejoin="round"/>
+      <polygon points="${x + w},${y} ${x + w + d},${y - d} ${x + w + d},${y + h - d} ${x + w},${y + h}" fill="${opts.side}" stroke="${opts.stroke}" stroke-width="1.2" stroke-linejoin="round"/>
+      <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${opts.face}" stroke="${opts.stroke}" stroke-width="1.6"/>
+      <text x="${x + w / 2}" y="${y + h / 2 + 4.5}" text-anchor="middle" fill="${tf}" font-family="${ff}" font-size="${fs}" font-weight="800">${opts.text}</text>
+    </g>
+  `;
+}
+
 function buildS19DecisionSvg(active: boolean): string {
-  const stroke = active ? '#1d4ed8' : '#94a3b8';
-  const okStroke = active ? '#16a34a' : '#94a3b8';
+  const stroke = active ? '#004aad' : '#94a3b8';
+  const topBlue = active ? '#5284ff' : '#cbd5e1';
+  const sideBlue = active ? '#1d4ed8' : '#94a3b8';
+  const okStroke = active ? '#15803d' : '#94a3b8';
+  const topOk = active ? '#4ade80' : '#cbd5e1';
+  const sideOk = active ? '#16a34a' : '#94a3b8';
+  const topGold = active ? '#fde047' : '#cbd5e1';
+  const sideGold = active ? '#eab308' : '#94a3b8';
   const hiFill = active ? '#fef08a' : '#f1f5f9';
   const okFill = active ? '#dcfce7' : '#f1f5f9';
   const leafFill = active ? '#eff6ff' : '#f8fafc';
@@ -1024,80 +1064,90 @@ function buildS19DecisionSvg(active: boolean): string {
   const lblFill = active ? '#004aad' : '#94a3b8';
 
   return `
-  <svg class="s19-proof-svg" viewBox="0 0 540 166" role="img" aria-label="Cây quyết định tam phân chứng minh độ sâu trung bình">
+  <svg class="s19-proof-svg" viewBox="0 0 540 206" role="img" aria-label="Cây quyết định tam phân 3D chứng minh độ sâu trung bình">
     <defs>
       <marker id="s19-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto">
         <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="${stroke}"/>
       </marker>
-      <path id="s19-dec-route" d="M 222 26 L 104 84 L 104 142"/>
-      <path id="s19-dec-route2" d="M 222 26 L 340 84 L 340 142"/>
+      <marker id="s19-arr-ok" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto">
+        <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="${okStroke}"/>
+      </marker>
+      <path id="s19-dec-route" d="M 218 33 L 102 96 L 102 158"/>
+      <path id="s19-dec-route2" d="M 218 33 L 334 96 L 334 158"/>
     </defs>
 
-    <line x1="12" y1="26" x2="432" y2="26" stroke="rgba(59,130,246,0.14)" stroke-dasharray="4 4"/>
-    <line x1="12" y1="84" x2="432" y2="84" stroke="rgba(59,130,246,0.14)" stroke-dasharray="4 4"/>
-    <line x1="12" y1="142" x2="432" y2="142" stroke="rgba(59,130,246,0.14)" stroke-dasharray="4 4"/>
+    <!-- Subtle depth gridlines -->
+    <line x1="12" y1="33" x2="432" y2="33" stroke="rgba(59,130,246,0.16)" stroke-dasharray="4 4"/>
+    <line x1="12" y1="96" x2="432" y2="96" stroke="rgba(59,130,246,0.16)" stroke-dasharray="4 4"/>
+    <line x1="12" y1="158" x2="432" y2="158" stroke="rgba(59,130,246,0.16)" stroke-dasharray="4 4"/>
 
-    <g font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="700" fill="${lblFill}">
-      <text class="${active ? 's19-tier-pulse' : ''}" style="--ti:0" x="434" y="30">Mức 0: 1 nút</text>
-      <text class="${active ? 's19-tier-pulse' : ''}" style="--ti:1" x="434" y="88">Mức 1: ≤ 3 nút</text>
-      <text class="${active ? 's19-tier-pulse' : ''}" style="--ti:2" x="434" y="146">Mức d: ≤ 3ᵈ nút</text>
+    <!-- Right-side pulsing level counts -->
+    <g font-family="'IBM Plex Mono', monospace" font-size="11.2" font-weight="800" fill="${lblFill}">
+      <text class="${active ? 's19-tier-pulse' : ''}" style="--ti:0" x="438" y="37">Mức 0: 1 nút</text>
+      <text class="${active ? 's19-tier-pulse' : ''}" style="--ti:1" x="438" y="100">Mức 1: ≤ 3 nút</text>
+      <text class="${active ? 's19-tier-pulse' : ''}" style="--ti:2" x="438" y="162">Mức d: ≤ 3ᵈ</text>
     </g>
 
-    <line x1="194" y1="40" x2="108" y2="68" stroke="${stroke}" stroke-width="2" marker-end="url(#s19-arr)"/>
-    <line x1="222" y1="40" x2="222" y2="68" stroke="${okStroke}" stroke-width="2" marker-end="url(#s19-arr)"/>
-    <line x1="250" y1="40" x2="336" y2="68" stroke="${stroke}" stroke-width="2" marker-end="url(#s19-arr)"/>
+    <!-- Level 0 -> Level 1 edges -->
+    <line x1="190" y1="48" x2="110" y2="79" stroke="${stroke}" stroke-width="2.1" marker-end="url(#s19-arr)"/>
+    <line x1="218" y1="48" x2="218" y2="79" stroke="${okStroke}" stroke-width="2.1" marker-end="url(#s19-arr-ok)"/>
+    <line x1="246" y1="48" x2="326" y2="79" stroke="${stroke}" stroke-width="2.1" marker-end="url(#s19-arr)"/>
 
-    <g font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="800" text-anchor="middle">
-      <rect x="130" y="42" width="22" height="17" rx="4" fill="#dbeafe" stroke="${stroke}" stroke-width="1"/>
-      <text x="141" y="54" fill="${lblFill}">&lt;</text>
-      <rect x="211" y="45" width="22" height="17" rx="4" fill="#dcfce7" stroke="${okStroke}" stroke-width="1"/>
-      <text x="222" y="57" fill="#15803d">=</text>
-      <rect x="292" y="42" width="22" height="17" rx="4" fill="#dbeafe" stroke="${stroke}" stroke-width="1"/>
-      <text x="303" y="54" fill="${lblFill}">&gt;</text>
+    <!-- Rounded cobalt / emerald operator badges -->
+    <g font-family="'IBM Plex Mono', monospace" font-size="11.5" font-weight="800" text-anchor="middle">
+      <rect x="128" y="51" width="26" height="18" rx="9" fill="${active ? '#3b82f6' : '#cbd5e1'}"/>
+      <text x="141" y="64" fill="#ffffff">&lt;</text>
+      <rect x="205" y="53" width="26" height="18" rx="9" fill="${active ? '#16a34a' : '#cbd5e1'}"/>
+      <text x="218" y="66" fill="#ffffff">=</text>
+      <rect x="282" y="51" width="26" height="18" rx="9" fill="${active ? '#3b82f6' : '#cbd5e1'}"/>
+      <text x="295" y="64" fill="#ffffff">&gt;</text>
     </g>
 
-    <g stroke="${stroke}" stroke-width="1.5" opacity="0.72">
-      <line x1="90" y1="98" x2="44" y2="128"/>
-      <line x1="104" y1="98" x2="104" y2="128"/>
-      <line x1="118" y1="98" x2="164" y2="128"/>
-      <line x1="326" y1="98" x2="280" y2="128"/>
-      <line x1="340" y1="98" x2="340" y2="128"/>
-      <line x1="354" y1="98" x2="400" y2="128"/>
+    <!-- Level 1 -> Level d edges -->
+    <g stroke="${stroke}" stroke-width="1.6" opacity="0.78">
+      <line x1="84" y1="111" x2="44" y2="144"/>
+      <line x1="102" y1="111" x2="102" y2="144"/>
+      <line x1="120" y1="111" x2="160" y2="144"/>
+      <line x1="316" y1="111" x2="276" y2="144"/>
+      <line x1="334" y1="111" x2="334" y2="144"/>
+      <line x1="352" y1="111" x2="392" y2="144"/>
     </g>
 
-    <rect x="178" y="12" width="88" height="28" rx="3" fill="${hiFill}" stroke="${active ? '#ca8a04' : stroke}" stroke-width="2"/>
-    <text x="222" y="30" text-anchor="middle" fill="${ink}" font-family="'IBM Plex Mono', monospace" font-size="13.5" font-weight="800">k ? x₀</text>
-
-    <rect x="66" y="70" width="76" height="28" rx="3" fill="#ffffff" stroke="${stroke}" stroke-width="1.8"/>
-    <text x="104" y="88" text-anchor="middle" fill="${ink}" font-family="'IBM Plex Mono', monospace" font-size="13" font-weight="700">k ? x₁</text>
-
-    <rect class="${active ? 's19-ok-pulse' : ''}" x="186" y="70" width="72" height="28" rx="3" fill="${okFill}" stroke="${okStroke}" stroke-width="1.8"/>
-    <text x="222" y="88" text-anchor="middle" fill="#14532d" font-family="'Be Vietnam Pro', sans-serif" font-size="12.5" font-weight="800">Tìm thấy</text>
-
-    <rect x="302" y="70" width="76" height="28" rx="3" fill="#ffffff" stroke="${stroke}" stroke-width="1.8"/>
-    <text x="340" y="88" text-anchor="middle" fill="${ink}" font-family="'IBM Plex Mono', monospace" font-size="13" font-weight="700">k ? x₂</text>
+    <!-- 3D Extruded Nodes -->
+    ${s19Cube3D(172, 18, 92, 30, { face: hiFill, top: topGold, side: sideGold, stroke: active ? '#b45309' : stroke, text: 'k ? x₀', textFill: ink, fontSize: 14 })}
+    ${s19Cube3D(61, 82, 82, 28, { face: '#ffffff', top: topBlue, side: sideBlue, stroke, text: 'k ? x₁', textFill: ink, fontSize: 13 })}
+    ${s19Cube3D(180, 82, 76, 28, { face: okFill, top: topOk, side: sideOk, stroke: okStroke, text: 'Tìm thấy', textFill: '#14532d', fontSize: 12.5, fontFamily: `'Be Vietnam Pro', sans-serif`, extraClass: active ? 's19-ok-pulse' : '' })}
+    ${s19Cube3D(293, 82, 82, 28, { face: '#ffffff', top: topBlue, side: sideBlue, stroke, text: 'k ? x₂', textFill: ink, fontSize: 13 })}
 
     ${[
       { x: 44, ok: false },
-      { x: 104, ok: true },
-      { x: 164, ok: false },
-      { x: 280, ok: false },
-      { x: 340, ok: true },
-      { x: 400, ok: false },
+      { x: 102, ok: true },
+      { x: 160, ok: false },
+      { x: 276, ok: false },
+      { x: 334, ok: true },
+      { x: 392, ok: false },
     ]
-      .map(
-        (lf) => `
-      <rect x="${lf.x - 24}" y="130" width="48" height="24" rx="3" fill="${lf.ok ? okFill : leafFill}" stroke="${lf.ok ? okStroke : stroke}" stroke-width="1.4"/>
-      <text x="${lf.x}" y="146" text-anchor="middle" fill="${lf.ok ? '#14532d' : ink}" font-family="'IBM Plex Mono', monospace" font-size="11.5" font-weight="700">1/N</text>
-    `,
+      .map((lf) =>
+        s19Cube3D(lf.x - 23, 146, 46, 24, {
+          face: lf.ok ? okFill : leafFill,
+          top: lf.ok ? topOk : topBlue,
+          side: lf.ok ? sideOk : sideBlue,
+          stroke: lf.ok ? okStroke : stroke,
+          text: '1/N',
+          textFill: lf.ok ? '#14532d' : ink,
+          fontSize: 11.5,
+        }),
       )
       .join('')}
 
+    <!-- Clean footer caption inside SVG -->
+    <text x="218" y="195" text-anchor="middle" fill="${lblFill}" font-family="'Be Vietnam Pro', sans-serif" font-size="11.5" font-weight="800">Cây quyết định tam phân · độ sâu trung bình ≥ log₃ N</text>
+
     ${active ? `
-      <circle r="4.6" fill="#FEF08A" stroke="#004AAD" stroke-width="1.6" class="s17-pulse-dot">
+      <circle r="4.8" fill="#FEF08A" stroke="#004AAD" stroke-width="1.6" class="s17-pulse-dot">
         <animateMotion dur="2.5s" repeatCount="indefinite"><mpath href="#s19-dec-route"/></animateMotion>
       </circle>
-      <circle r="4.2" fill="#38BDF8" stroke="#004AAD" stroke-width="1.4" class="s17-pulse-dot">
+      <circle r="4.4" fill="#38BDF8" stroke="#004AAD" stroke-width="1.5" class="s17-pulse-dot">
         <animateMotion dur="2.5s" begin="1.25s" repeatCount="indefinite"><mpath href="#s19-dec-route2"/></animateMotion>
       </circle>
     ` : ''}
@@ -1106,52 +1156,93 @@ function buildS19DecisionSvg(active: boolean): string {
 
 function buildS19AlignedClimbSvg(assumptionOn: boolean, revealed: boolean): string {
   const worst = revealed && !assumptionOn;
-  const stroke = worst ? '#dc2626' : '#1d4ed8';
-  const fillTop = worst ? '#fee2e2' : '#eef5ff';
-  const fillMid = worst ? '#fee2e2' : '#dbeafe';
-  const fillBot = worst ? '#fee2e2' : '#fef08a';
+  const stroke = worst ? '#dc2626' : '#004aad';
+  const topBlue = worst ? '#f87171' : '#5284ff';
+  const sideBlue = worst ? '#b91c1c' : '#1d4ed8';
   const ink = worst ? '#991b1b' : '#0f1d3a';
 
-  const rows = [
-    { y: 26, name: 'Gốc', j: 'j = 3', w: worst ? 186 : 48, fill: worst ? '#ef4444' : '#60a5fa', bi: 2 },
-    { y: 82, name: 'Cha', j: 'j = 2', w: worst ? 186 : 104, fill: worst ? '#ef4444' : '#3b82f6', bi: 1 },
-    { y: 138, name: 'Lá', j: 'j = 1', w: 186, fill: worst ? '#dc2626' : '#004aad', bi: 0 },
+  const ladder = [
+    { y: 26, name: 'Gốc', pill: worst ? 'O(M)' : 'j=3: Pr ≤ p²', face: worst ? '#fee2e2' : '#eef5ff', top: worst ? '#f87171' : '#93c5fd', side: sideBlue, pillBg: worst ? '#fee2e2' : '#eef5ff', pillStroke: worst ? '#dc2626' : '#3b82f6', pillTxt: worst ? '#991b1b' : '#1d4ed8', ni: 2 },
+    { y: 88, name: 'Cha', pill: worst ? 'O(M)' : 'j=2: Pr ≤ p', face: worst ? '#fee2e2' : '#dbeafe', top: topBlue, side: sideBlue, pillBg: worst ? '#fee2e2' : '#3b82f6', pillStroke: worst ? '#dc2626' : '#1d4ed8', pillTxt: worst ? '#991b1b' : '#ffffff', ni: 1 },
+    { y: 150, name: 'Lá', pill: worst ? 'O(M)' : 'j=1: Pr ≤ 1', face: worst ? '#fee2e2' : '#fef08a', top: worst ? '#f87171' : '#fde047', side: worst ? '#b91c1c' : '#eab308', pillBg: worst ? '#dc2626' : '#fef08a', pillStroke: worst ? '#991b1b' : '#ca8a04', pillTxt: worst ? '#ffffff' : '#78350f', ni: 0 },
+  ];
+
+  const bars = [
+    { x: 278, h: worst ? 116 : 118, topLbl: 'j=1', valLbl: worst ? 'O(M)' : '1', grad: worst ? 's19-g-red' : 's19-g-1', bi: 0 },
+    { x: 340, h: worst ? 116 : 78, topLbl: 'j=2', valLbl: worst ? 'O(M)' : 'p', grad: worst ? 's19-g-red' : 's19-g-2', bi: 1 },
+    { x: 402, h: worst ? 116 : 46, topLbl: 'j=3', valLbl: worst ? 'O(M)' : 'p²', grad: worst ? 's19-g-red' : 's19-g-3', bi: 2 },
+    { x: 464, h: worst ? 116 : 24, topLbl: 'j=h+1', valLbl: worst ? 'O(M)' : 'pʰ', grad: worst ? 's19-g-red' : 's19-g-4', bi: 3 },
   ];
 
   return `
-  <svg class="s19-proof-svg" viewBox="0 0 540 166" role="img" aria-label="Sơ đồ số mức sửa R đối chiếu xác suất giảm dần">
+  <svg class="s19-proof-svg" viewBox="0 0 540 206" role="img" aria-label="Sơ đồ leo mức sửa R và biểu đồ cột xác suất đuôi">
     <defs>
       <marker id="s19-up" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
         <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="${stroke}"/>
       </marker>
-      <path id="s19-climb-path" d="M 32 142 L 32 24"/>
+      <path id="s19-climb-path" d="M 28 176 L 28 24"/>
+      <linearGradient id="s19-g-1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#003580"/></linearGradient>
+      <linearGradient id="s19-g-2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient>
+      <linearGradient id="s19-g-3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#60a5fa"/><stop offset="100%" stop-color="#2563eb"/></linearGradient>
+      <linearGradient id="s19-g-4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#93c5fd"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient>
+      <linearGradient id="s19-g-red" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f87171"/><stop offset="100%" stop-color="#b91c1c"/></linearGradient>
     </defs>
 
-    <path class="${revealed ? 's21-ref-flow' : ''}" d="M 32 142 L 32 24" stroke="${stroke}" stroke-width="2.4" stroke-dasharray="${worst ? '6 4' : '5 3'}" marker-end="url(#s19-up)"/>
+    <!-- Two clean architectural inner sub-panels -->
+    <rect x="6" y="6" width="238" height="194" rx="4" fill="#f5f9ff" stroke="rgba(59,130,246,0.28)" stroke-width="1.2"/>
+    <rect x="254" y="6" width="280" height="194" rx="4" fill="#f5f9ff" stroke="rgba(59,130,246,0.28)" stroke-width="1.2"/>
+
+    <!-- LEFT SUB-PANEL: 3D Ladder + Ascending R↑ Signal -->
+    <path class="${revealed ? 's21-ref-flow' : ''}" d="M 28 176 L 28 24" stroke="${stroke}" stroke-width="2.4" stroke-dasharray="5 3" marker-end="url(#s19-up)"/>
     ${revealed ? `
-      <circle r="4.5" fill="${worst ? '#FCA5A5' : '#FEF08A'}" stroke="${stroke}" stroke-width="1.6" class="s17-pulse-dot">
-        <animateMotion dur="${worst ? '1.3s' : '2.4s'}" repeatCount="indefinite"><mpath href="#s19-climb-path"/></animateMotion>
+      <circle r="4.6" fill="${worst ? '#FCA5A5' : '#FEF08A'}" stroke="${stroke}" stroke-width="1.6" class="s17-pulse-dot">
+        <animateMotion dur="${worst ? '1.25s' : '2.3s'}" repeatCount="indefinite"><mpath href="#s19-climb-path"/></animateMotion>
       </circle>
     ` : ''}
-    <rect x="8" y="70" width="28" height="22" rx="3" fill="${worst ? '#dc2626' : '#004aad'}"/>
-    <text x="22" y="85" text-anchor="middle" fill="#ffffff" font-family="'IBM Plex Mono', monospace" font-size="11.5" font-weight="800">R↑</text>
+    <rect x="11" y="90" width="34" height="22" rx="11" fill="${worst ? '#dc2626' : '#004aad'}"/>
+    <text x="28" y="105" text-anchor="middle" fill="#ffffff" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="800">R↑</text>
 
-    <line x1="118" y1="40" x2="118" y2="68" stroke="${stroke}" stroke-width="2" stroke-dasharray="${worst ? 'none' : '4 3'}"/>
-    <line x1="118" y1="96" x2="118" y2="124" stroke="${stroke}" stroke-width="2"/>
+    <line x1="94" y1="54" x2="94" y2="83" stroke="${stroke}" stroke-width="2" stroke-dasharray="${worst ? 'none' : '4 3'}"/>
+    <line x1="94" y1="116" x2="94" y2="145" stroke="${stroke}" stroke-width="2"/>
 
-    ${rows
-      .map((r, idx) => {
-        const boxFill = idx === 0 ? fillTop : idx === 1 ? fillMid : fillBot;
+    ${ladder
+      .map(
+        (r) => `
+      ${s19Cube3D(64, r.y, 60, 28, {
+        face: r.face,
+        top: r.top,
+        side: r.side,
+        stroke,
+        text: r.name,
+        textFill: ink,
+        fontSize: 13,
+        fontFamily: `'Be Vietnam Pro', sans-serif`,
+        extraClass: revealed ? (worst ? 's19-alarm-node' : 's19-node-step') : '',
+        extraStyle: `--ni:${r.ni}`,
+      })}
+      <rect x="138" y="${r.y + 3}" width="96" height="22" rx="11" fill="${r.pillBg}" stroke="${r.pillStroke}" stroke-width="1.2"/>
+      <text x="186" y="${r.y + 18}" text-anchor="middle" fill="${r.pillTxt}" font-family="'IBM Plex Mono', monospace" font-size="10.8" font-weight="800">${r.pill}</text>
+    `,
+      )
+      .join('')}
+
+    <!-- RIGHT SUB-PANEL: Animated Vertical Probability Column Chart -->
+    <text x="394" y="25" text-anchor="middle" fill="${worst ? '#b91c1c' : '#004aad'}" font-family="'Be Vietnam Pro', sans-serif" font-size="11.5" font-weight="800">${worst ? 'Không có cận p → mọi tầng đều O(M)!' : 'Xác suất đuôi Pr(R ≥ j) giảm dần'}</text>
+
+    <!-- Chart gridlines & baseline -->
+    <line x1="268" y1="54" x2="522" y2="54" stroke="rgba(59,130,246,0.16)" stroke-dasharray="3 3"/>
+    <line x1="268" y1="114" x2="522" y2="114" stroke="rgba(59,130,246,0.16)" stroke-dasharray="3 3"/>
+    <line x1="266" y1="172" x2="524" y2="172" stroke="${stroke}" stroke-width="1.8"/>
+
+    ${bars
+      .map((b) => {
+        const yTop = 172 - b.h;
         return `
-        <line x1="162" y1="${r.y}" x2="210" y2="${r.y}" stroke="rgba(59,130,246,0.28)" stroke-dasharray="3 3"/>
-        <rect class="${revealed ? (worst ? 's19-alarm-node' : 's19-node-step') : ''}" style="--ni:${r.bi}" x="74" y="${r.y - 14}" width="88" height="28" rx="3" fill="${boxFill}" stroke="${stroke}" stroke-width="1.8"/>
-        <text x="118" y="${r.y + 5}" text-anchor="middle" fill="${ink}" font-family="'Be Vietnam Pro', sans-serif" font-size="13" font-weight="800">${r.name}</text>
-
-        <text x="218" y="${r.y + 4}" fill="${ink}" font-family="'IBM Plex Mono', monospace" font-size="12" font-weight="800">${r.j}</text>
-        <rect x="266" y="${r.y - 12}" width="186" height="24" rx="3" fill="#edf4ff" stroke="rgba(59,130,246,0.25)" stroke-width="1"/>
-        <rect class="s19-hbar${revealed ? ' is-grow' : ''}" style="--bi:${r.bi}" x="266" y="${r.y - 12}" width="${r.w}" height="24" rx="3" fill="${r.fill}"/>
-        <text x="460" y="${r.y + 4}" fill="${worst ? '#991b1b' : '#004aad'}" font-family="'IBM Plex Mono', monospace" font-size="11.5" font-weight="800">${worst ? 'O(M)' : idx === 0 ? '≤ p²' : idx === 1 ? '≤ p' : '≤ 1'}</text>
-      `;
+        <g>
+          <rect class="s19-vbar${revealed ? ' is-grow' : ''}" style="--bi:${b.bi}" x="${b.x}" y="${yTop}" width="44" height="${b.h}" rx="3" fill="url(#${b.grad})"/>
+          <text x="${b.x + 22}" y="${yTop - 5}" text-anchor="middle" fill="${worst ? '#991b1b' : '#004aad'}" font-family="'IBM Plex Mono', monospace" font-size="10.8" font-weight="800">${b.topLbl}</text>
+          <text x="${b.x + 22}" y="189" text-anchor="middle" fill="${ink}" font-family="'IBM Plex Mono', monospace" font-size="12" font-weight="800">${b.valLbl}</text>
+        </g>`;
       })
       .join('')}
   </svg>`;
@@ -1205,17 +1296,17 @@ const slide19: SlideDef = {
 
         <div class="s19-cols">
           <article class="canva-card s19-card" data-card="search">
-            <h3>1. Tìm kiếm thành công (Cây quyết định tam phân)</h3>
+            <h3>1. Tìm kiếm thành công (Cây quyết định 3 nhánh)</h3>
             <div class="s19-svg-stage" data-role="tree-dec"></div>
             <div class="s19-proof-steps" data-role="s19-m1">
               <div class="proof-row"><span class="proof-tag">B1</span><div>Mỗi phép so sánh rẽ tối đa <strong>3 hướng</strong> (<code>&lt;</code>, <code>=</code>, <code>&gt;</code>) ⇒ mức ${texInline('d')} có tối đa ${texInline('3^d')} kết quả.</div></div>
-              <div class="proof-row"><span class="proof-tag">B2</span><div>Với ${texInline('N')} khóa đồng xác suất ${texInline('1/N')}: số phép so sánh trung bình ${texInline('E[C] \\ge \\log_3 N = \\Omega(\\log N)')}.</div></div>
+              <div class="proof-row"><span class="proof-tag">B2</span><div>Với ${texInline('N')} khóa đồng xác suất ${texInline('1/N')}: kỳ vọng số phép so sánh ${texInline('E[C] \\ge \\log_3 N = \\Omega(\\log N)')}.</div></div>
               <div class="s19-res-badge"><strong>B3 · Kết luận:</strong> Ghép cận trên ${texInline('O(\\log N)')} ⇒ <strong>${texInline('E[T_{\\text{tìm kiếm}}] = \\Theta(\\log N)')}</strong></div>
             </div>
           </article>
 
           <article class="canva-card s19-card" data-card="update">
-            <h3>2. Chèn và xóa — Chứng minh kỳ vọng số mức sửa ${texInline('R')}</h3>
+            <h3>2. Chèn và xóa — Số mức leo sửa ${texInline('R')}</h3>
             <div class="s19-svg-stage" data-role="tree-climb"></div>
             <div class="s19-proof-steps" data-role="s19-m2">
               <div class="proof-row"><span class="proof-tag">B1</span><div>Gọi ${texInline('R \\in [0, h+1]')} là số mức sửa (${texInline('O(M)')}/mức) ⇒ ${texInline('E[T] = O(\\log N + M(1 + E[R]))')}.</div></div>
@@ -1261,7 +1352,7 @@ const slide19: SlideDef = {
       checkbox.checked = true;
       updateS19Tail(ctx.slideEl, true, true);
     } else {
-      updateS19Tail(ctx.slideEl, false, false);
+      updateS19Tail(ctx.slideEl, checkbox.checked, false);
     }
   },
 };
