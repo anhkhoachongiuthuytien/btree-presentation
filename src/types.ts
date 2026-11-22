@@ -1,4 +1,14 @@
-export type SlideTheme = 'cover' | 'toc' | 'blue' | 'white' | 'xfs-blue';
+export type SlideTheme =
+  | 'cover'
+  | 'toc'
+  | 'blue'
+  | 'white'
+  | 'xfs-blue'
+  | 'ch-01'
+  | 'ch-02'
+  | 'ch-03'
+  | 'ch-04'
+  | 'ch-05';
 
 export type TransitionKind = 'open-chapter' | 'connect-shape' | 'swap-example';
 

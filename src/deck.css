@@ -74,6 +74,57 @@ body[data-slide-theme="toc"] {
   background-position: center center;
 }
 
+/* 5 Distinct Signature Jewel-Toned Chapter Divider Backdrops (contrasting against light content slides) */
+body[data-slide-theme="ch-01"] {
+  background-color: #0b1e4a;
+  background-image:
+    radial-gradient(circle at 82% 24%, rgba(56, 189, 248, 0.24), transparent 48%),
+    linear-gradient(to right, rgba(147, 197, 253, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(147, 197, 253, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 34px 34px, 34px 34px;
+  background-position: center center;
+}
+
+body[data-slide-theme="ch-02"] {
+  background-color: #2c1118;
+  background-image:
+    radial-gradient(circle at 80% 24%, rgba(251, 146, 60, 0.24), transparent 48%),
+    linear-gradient(to right, rgba(253, 186, 116, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(253, 186, 116, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 34px 34px, 34px 34px;
+  background-position: center center;
+}
+
+body[data-slide-theme="ch-03"] {
+  background-color: #072621;
+  background-image:
+    radial-gradient(circle at 80% 24%, rgba(52, 211, 153, 0.24), transparent 48%),
+    linear-gradient(to right, rgba(110, 231, 183, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(110, 231, 183, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 34px 34px, 34px 34px;
+  background-position: center center;
+}
+
+body[data-slide-theme="ch-04"] {
+  background-color: #1e1045;
+  background-image:
+    radial-gradient(circle at 80% 24%, rgba(192, 132, 252, 0.25), transparent 48%),
+    linear-gradient(to right, rgba(216, 180, 254, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(216, 180, 254, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 34px 34px, 34px 34px;
+  background-position: center center;
+}
+
+body[data-slide-theme="ch-05"] {
+  background-color: #111827;
+  background-image:
+    radial-gradient(circle at 80% 24%, rgba(251, 191, 36, 0.22), transparent 48%),
+    linear-gradient(to right, rgba(253, 224, 71, 0.09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(253, 224, 71, 0.09) 1px, transparent 1px);
+  background-size: 100% 100%, 34px 34px, 34px 34px;
+  background-position: center center;
+}
+
 /* Reveal overrides for crisp 1280x720 edge-to-edge full-screen stage */
 .reveal {
   font-family: var(--font-sans);
@@ -237,6 +288,61 @@ body:not(.podium-hidden) .ghost-corner-dock {
     linear-gradient(to right, #e5effb 1px, transparent 1px),
     linear-gradient(to bottom, #e5effb 1px, transparent 1px);
   background-size: 32px 32px;
+}
+
+.reveal.overview .theme-ch-01 .slide-stage,
+.theme-ch-01.is-leaving-slide .slide-stage,
+.theme-ch-01.is-entering-slide .slide-stage {
+  background-color: #0b1e4a;
+  background-image:
+    radial-gradient(circle at 82% 24%, rgba(56, 189, 248, 0.24), transparent 48%),
+    linear-gradient(to right, rgba(147, 197, 253, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(147, 197, 253, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 34px 34px, 34px 34px;
+}
+
+.reveal.overview .theme-ch-02 .slide-stage,
+.theme-ch-02.is-leaving-slide .slide-stage,
+.theme-ch-02.is-entering-slide .slide-stage {
+  background-color: #2c1118;
+  background-image:
+    radial-gradient(circle at 80% 24%, rgba(251, 146, 60, 0.24), transparent 48%),
+    linear-gradient(to right, rgba(253, 186, 116, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(253, 186, 116, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 34px 34px, 34px 34px;
+}
+
+.reveal.overview .theme-ch-03 .slide-stage,
+.theme-ch-03.is-leaving-slide .slide-stage,
+.theme-ch-03.is-entering-slide .slide-stage {
+  background-color: #072621;
+  background-image:
+    radial-gradient(circle at 80% 24%, rgba(52, 211, 153, 0.24), transparent 48%),
+    linear-gradient(to right, rgba(110, 231, 183, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(110, 231, 183, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 34px 34px, 34px 34px;
+}
+
+.reveal.overview .theme-ch-04 .slide-stage,
+.theme-ch-04.is-leaving-slide .slide-stage,
+.theme-ch-04.is-entering-slide .slide-stage {
+  background-color: #1e1045;
+  background-image:
+    radial-gradient(circle at 80% 24%, rgba(192, 132, 252, 0.25), transparent 48%),
+    linear-gradient(to right, rgba(216, 180, 254, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(216, 180, 254, 0.1) 1px, transparent 1px);
+  background-size: 100% 100%, 34px 34px, 34px 34px;
+}
+
+.reveal.overview .theme-ch-05 .slide-stage,
+.theme-ch-05.is-leaving-slide .slide-stage,
+.theme-ch-05.is-entering-slide .slide-stage {
+  background-color: #111827;
+  background-image:
+    radial-gradient(circle at 80% 24%, rgba(251, 191, 36, 0.22), transparent 48%),
+    linear-gradient(to right, rgba(253, 224, 71, 0.09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(253, 224, 71, 0.09) 1px, transparent 1px);
+  background-size: 100% 100%, 34px 34px, 34px 34px;
 }
 
 /* Common Slide Frame */
@@ -8104,6 +8210,146 @@ button.stack-frame:hover {
   50% {
     fill: #60a5fa;
   }
+}
+
+/* ============================================================================
+   5 DISTINCT JEWEL-TONED CHAPTER DIVIDER THEMES (CH.01 .. CH.05)
+   ============================================================================ */
+.theme-ch-01 {
+  --ch-accent: #38bdf8;
+  --ch-kicker-bg: #0284c7;
+  --ch-kicker-fg: #fef08a;
+  --ch-sub: #bae6fd;
+  --ch-pill-bg: rgba(15, 36, 84, 0.78);
+  --ch-pill-border: rgba(56, 189, 248, 0.58);
+  --ch-pill-hover: rgba(23, 55, 122, 0.94);
+  --ch-wm: rgba(56, 189, 248, 0.14);
+  --ch-glow: rgba(56, 189, 248, 0.28);
+}
+
+.theme-ch-02 {
+  --ch-accent: #fb923c;
+  --ch-kicker-bg: #c2410c;
+  --ch-kicker-fg: #fef08a;
+  --ch-sub: #fed7aa;
+  --ch-pill-bg: rgba(68, 22, 32, 0.8);
+  --ch-pill-border: rgba(251, 146, 60, 0.6);
+  --ch-pill-hover: rgba(96, 30, 42, 0.95);
+  --ch-wm: rgba(251, 146, 60, 0.14);
+  --ch-glow: rgba(251, 146, 60, 0.28);
+}
+
+.theme-ch-03 {
+  --ch-accent: #34d399;
+  --ch-kicker-bg: #047857;
+  --ch-kicker-fg: #fef08a;
+  --ch-sub: #a7f3d0;
+  --ch-pill-bg: rgba(11, 56, 48, 0.8);
+  --ch-pill-border: rgba(52, 211, 153, 0.58);
+  --ch-pill-hover: rgba(16, 78, 66, 0.95);
+  --ch-wm: rgba(52, 211, 153, 0.14);
+  --ch-glow: rgba(52, 211, 153, 0.26);
+}
+
+.theme-ch-04 {
+  --ch-accent: #c084fc;
+  --ch-kicker-bg: #7e22ce;
+  --ch-kicker-fg: #fef08a;
+  --ch-sub: #e9d5ff;
+  --ch-pill-bg: rgba(45, 22, 98, 0.8);
+  --ch-pill-border: rgba(192, 132, 252, 0.58);
+  --ch-pill-hover: rgba(66, 34, 138, 0.95);
+  --ch-wm: rgba(192, 132, 252, 0.15);
+  --ch-glow: rgba(192, 132, 252, 0.28);
+}
+
+.theme-ch-05 {
+  --ch-accent: #fbbf24;
+  --ch-kicker-bg: #b45309;
+  --ch-kicker-fg: #ffffff;
+  --ch-sub: #fde68a;
+  --ch-pill-bg: rgba(30, 41, 59, 0.82);
+  --ch-pill-border: rgba(251, 191, 36, 0.6);
+  --ch-pill-hover: rgba(51, 65, 85, 0.95);
+  --ch-wm: rgba(251, 191, 36, 0.13);
+  --ch-glow: rgba(251, 191, 36, 0.26);
+}
+
+[class*="theme-ch-"] .chd-scan {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+}
+
+[class*="theme-ch-"] .chd-watermark {
+  color: var(--ch-wm);
+}
+
+[class*="theme-ch-"] .chd-kicker {
+  background: var(--ch-kicker-bg);
+  color: var(--ch-kicker-fg);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+[class*="theme-ch-"] .chd-range {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--ch-pill-border);
+  color: var(--ch-accent);
+}
+
+[class*="theme-ch-"] .chd-title {
+  color: #ffffff;
+}
+
+[class*="theme-ch-"] .chd-title span {
+  color: var(--ch-accent);
+}
+
+[class*="theme-ch-"] .chd-sub {
+  color: var(--ch-sub);
+}
+
+[class*="theme-ch-"] .chd-roadmap-lbl {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+[class*="theme-ch-"] .chd-pill {
+  background: var(--ch-pill-bg);
+  border-color: var(--ch-pill-border);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
+}
+
+[class*="theme-ch-"] .chd-pill:hover {
+  background: var(--ch-pill-hover);
+  border-color: var(--ch-accent);
+  box-shadow: 0 8px 24px var(--ch-glow);
+}
+
+[class*="theme-ch-"] .chd-pill-idx {
+  background: var(--ch-accent);
+  color: #0b1120;
+}
+
+[class*="theme-ch-"] .chd-pill-pg {
+  color: var(--ch-accent);
+}
+
+[class*="theme-ch-"] .chd-svg {
+  filter: drop-shadow(0 16px 34px rgba(0, 0, 0, 0.42)) drop-shadow(0 0 22px var(--ch-glow));
+}
+
+[class*="theme-ch-"] .chd-foot {
+  border-top-color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+[class*="theme-ch-"] .chd-foot-brand {
+  color: var(--ch-accent);
+}
+
+[class*="theme-ch-"] .chd-foot-hint kbd {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--ch-pill-border);
+  color: #ffffff;
 }
 
 /* Reduced Motion (placed last so it cleanly disables every on-slide animation) */

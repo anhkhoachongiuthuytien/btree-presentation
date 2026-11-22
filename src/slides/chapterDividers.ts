@@ -116,7 +116,7 @@ export const chapter01Slide = buildChapterDividerSlide({
   plainTitle: 'Phần 1: Bài toán & Cấu trúc B-tree',
   titleHtml: 'Bài toán &amp; Cấu trúc<br/><span>B-tree Cân bằng</span>',
   subtitle: 'Từ nút thắt đọc trang đĩa bộ nhớ ngoài đến cây tìm kiếm M nhánh đồng mức lá.',
-  theme: 'blue',
+  theme: 'ch-01',
   rangeLabel: 'TRANG 04 – 06',
   pills: [
     { label: 'Bài toán, đầu vào & đầu ra', targetSlide: 4 },
@@ -199,7 +199,7 @@ export const chapter02Slide = buildChapterDividerSlide({
   plainTitle: 'Phần 2: Các phép toán trong B-tree',
   titleHtml: 'Các phép toán<br/><span>Search · Insert · Delete</span>',
   subtitle: 'Tách nút dây chuyền khi tràn khóa · Mượn khóa (Borrow) &amp; Gộp nút (Merge) khi thiếu khóa.',
-  theme: 'white',
+  theme: 'ch-02',
   rangeLabel: 'TRANG 08 – 14',
   pills: [
     { label: 'Search(k) dùng bisect', targetSlide: 8 },
@@ -287,7 +287,7 @@ export const chapter03Slide = buildChapterDividerSlide({
   plainTitle: 'Phần 3: Cài đặt Python & Demo trực tiếp',
   titleHtml: 'Cài đặt Python<br/><span>&amp; Chạy thử trực tiếp</span>',
   subtitle: 'Từ lớp BTreeNode, BTree gọn sạch bằng bisect_left đến mô phỏng chạy live demo_btree.py.',
-  theme: 'blue',
+  theme: 'ch-03',
   rangeLabel: 'TRANG 16 – 20',
   pills: [
     { label: 'BTreeNode, BTree & search', targetSlide: 16 },
@@ -325,18 +325,18 @@ export const chapter03Slide = buildChapterDividerSlide({
       <circle r="5" fill="#FEF08A" stroke="#004AAD" stroke-width="1.6"><animateMotion dur="1.3s" begin="-0.2s" repeatCount="indefinite"><mpath href="#chd3-link"/></animateMotion></circle>
 
       <!-- Live RAM Tree Card -->
-      <rect x="34" y="288" width="412" height="94" rx="8" fill="rgba(255,255,255,0.96)" stroke="#004AAD" stroke-width="2.2"/>
+      <rect x="24" y="288" width="432" height="94" rx="8" fill="rgba(255,255,255,0.96)" stroke="#004AAD" stroke-width="2.2"/>
       <g class="chd-float">
-        <polygon points="62,316 69,309 213,309 206,316" fill="#93C5FD" stroke="#004AAD" stroke-width="1.5"/>
-        <polygon points="206,316 213,309 213,353 206,360" fill="#5284FF" stroke="#004AAD" stroke-width="1.5"/>
-        <rect x="62" y="316" width="72" height="44" fill="#EEF7FF" stroke="#004AAD" stroke-width="2"/>
-        <rect x="134" y="316" width="72" height="44" fill="#FEF08A" stroke="#B45309" stroke-width="2"/>
-        <text x="98" y="344" text-anchor="middle" fill="#0F1D3A" font-size="19" font-weight="800" font-family="'IBM Plex Mono', monospace">10</text>
-        <text x="170" y="344" text-anchor="middle" fill="#0F1D3A" font-size="19" font-weight="800" font-family="'IBM Plex Mono', monospace">20</text>
+        <polygon points="48,316 55,309 199,309 192,316" fill="#93C5FD" stroke="#004AAD" stroke-width="1.5"/>
+        <polygon points="192,316 199,309 199,353 192,360" fill="#5284FF" stroke="#004AAD" stroke-width="1.5"/>
+        <rect x="48" y="316" width="72" height="44" fill="#EEF7FF" stroke="#004AAD" stroke-width="2"/>
+        <rect x="120" y="316" width="72" height="44" fill="#FEF08A" stroke="#B45309" stroke-width="2"/>
+        <text x="84" y="344" text-anchor="middle" fill="#0F1D3A" font-size="19" font-weight="800" font-family="'IBM Plex Mono', monospace">10</text>
+        <text x="156" y="344" text-anchor="middle" fill="#0F1D3A" font-size="19" font-weight="800" font-family="'IBM Plex Mono', monospace">20</text>
       </g>
-      <circle cx="248" cy="326" r="5" fill="#16A34A" class="chd-pulse-dot"/>
-      <text x="262" y="331" fill="#15803D" font-size="13" font-weight="800" font-family="'IBM Plex Mono', monospace">RAM SYNC · M = 3</text>
-      <text x="242" y="355" fill="#334155" font-size="12.5" font-weight="600" font-family="'Be Vietnam Pro', sans-serif">exit 0 · đồng bộ từng biến &amp; nút cây</text>
+      <circle cx="228" cy="326" r="5" fill="#16A34A" class="chd-pulse-dot"/>
+      <text x="242" y="331" fill="#15803D" font-size="13" font-weight="800" font-family="'IBM Plex Mono', monospace">RAM SYNC · M = 3</text>
+      <text x="223" y="355" fill="#334155" font-size="11.8" font-weight="600" font-family="'Be Vietnam Pro', sans-serif">exit 0 · đồng bộ từng biến &amp; nút cây</text>
     </svg>
   `,
 });
@@ -349,7 +349,7 @@ export const chapter04Slide = buildChapterDividerSlide({
   plainTitle: 'Phần 4: Độ phức tạp của B-tree',
   titleHtml: 'Độ phức tạp<br/><span>Thời gian &amp; Không gian</span>',
   subtitle: 'Chứng minh chiều cao h = O(log_M N), chi phí các thao tác, kỳ vọng trung bình và RAM vs Đĩa.',
-  theme: 'white',
+  theme: 'ch-04',
   rangeLabel: 'TRANG 22 – 26',
   pills: [
     { label: 'Chiều cao h (N_max vs N_min)', targetSlide: 22 },
@@ -409,7 +409,7 @@ export const chapter05Slide = buildChapterDividerSlide({
   plainTitle: 'Phần 5: Các biến thể & Ứng dụng thực tế',
   titleHtml: 'Các biến thể<br/><span>&amp; Ứng dụng thực tế</span>',
   subtitle: 'Từ B+ Tree, B* Tree đến InnoDB, HFS+, Berkeley DB và cặp chỉ mục vùng trống XFS.',
-  theme: 'xfs-blue',
+  theme: 'ch-05',
   rangeLabel: 'TRANG 28 – 35',
   pills: [
     { label: 'B+ Tree (Range Scan & Copy-up)', targetSlide: 28 },
