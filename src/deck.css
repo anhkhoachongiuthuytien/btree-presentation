@@ -7944,6 +7944,10 @@ button.stack-frame:hover {
   letter-spacing: 0.08em;
 }
 
+.chd-foot-hint {
+  padding-right: 44px;
+}
+
 .chd-foot-hint kbd {
   padding: 2px 7px;
   border-radius: 3px;
