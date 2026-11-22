@@ -113,25 +113,25 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 3: // Problem scale: 1 billion keys -> few disk reads
+    case 4: // Problem scale: 1 billion keys -> few disk reads
       if (step === 3) {
         soundFx.playScaleCollapse();
         return;
       }
       break;
-    case 4: // M-way Search Tree 4-gate partition
+    case 5: // M-way Search Tree 4-gate partition
       if (step === 2) {
         soundFx.playIntervalGate(2);
         return;
       }
       break;
-    case 5: // B-tree balanced leaves at identical depth
+    case 6: // B-tree balanced leaves at identical depth
       if (step === 3) {
         soundFx.playBalanceLevel();
         return;
       }
       break;
-    case 6: // Search(17) binary-halving radar
+    case 8: // Search(17) binary-halving radar
       if (step === 1 || step === 2) {
         soundFx.playBisectProbe(step - 1);
         return;
@@ -141,7 +141,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 7: // Insert slot-shift drop-in -> Overflow -> Split
+    case 9: // Insert slot-shift drop-in -> Overflow -> Split
       if (step === 1) {
         soundFx.playSlotShiftSlide();
         return;
@@ -155,7 +155,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 8: // Cascading Split up to New Root Crown
+    case 10: // Cascading Split up to New Root Crown
       if (step === 1) {
         soundFx.playCascadeSplit(1);
         return;
@@ -169,7 +169,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 9: // Delete Leaf / Internal Predecessor swap
+    case 11: // Delete Leaf / Internal Predecessor swap
       if (step === 1) {
         soundFx.playDeletePop();
         return;
@@ -183,7 +183,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 10: // Borrow & Merge
+    case 12: // Borrow & Merge
       if (step === 1) {
         soundFx.playDeletePop();
         return;
@@ -201,7 +201,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 11: // Trace Delete(5) -> Root Collapse (h -> h-1)
+    case 13: // Trace Delete(5) -> Root Collapse (h -> h-1)
       if (step === 1) {
         soundFx.playDeletePop();
         return;
@@ -219,21 +219,21 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 12: // Delete decision flowchart Q1/Q2/Q3
+    case 14: // Delete decision flowchart Q1/Q2/Q3
       if (step >= 1) {
         soundFx.playDecisionRelay(step);
         return;
       }
       break;
-    case 15: // Python delete & predecessor
+    case 18: // Python delete & predecessor
       if (step === 2) {
         soundFx.playPredecessorSwap();
         return;
       }
       break;
-    case 17: // Live Python typing handles its own mechanical keyboard & semantic stdout sounds
+    case 20: // Live Python typing handles its own Scissor-Switch keyboard & semantic stdout sounds
       return;
-    case 18: // Tree height N_max vs N_min fan-out
+    case 22: // Tree height N_max vs N_min fan-out
       if (step === 1) {
         soundFx.playTreeGrowth('max');
         return;
@@ -247,19 +247,19 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 19: // Time complexity finale: Scale Showdown (10^9 keys -> 5 levels)
+    case 23: // Time complexity finale: Scale Showdown (10^9 keys -> 5 levels)
       if (step === 4) {
         soundFx.playScaleCollapse();
         return;
       }
       break;
-    case 20: // Average complexity geometric probability decay
+    case 24: // Average complexity geometric probability decay
       if (step >= 1 && step <= 3) {
         soundFx.playDecayProbability(step);
         return;
       }
       break;
-    case 21: // RAM silicon burst vs HDD mechanical seek
+    case 25: // RAM silicon burst vs HDD mechanical seek
       if (step === 1) {
         soundFx.playRamVsDisk('ram');
         return;
@@ -269,7 +269,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 22: // Space complexity recursion stack push/pop
+    case 26: // Space complexity recursion stack push/pop
       if (step === 2) {
         soundFx.playStackFrame('push');
         return;
@@ -279,7 +279,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 23: // B+ Tree Range Scan
+    case 28: // B+ Tree Range Scan
       if (step === 1) {
         soundFx.playBisectProbe(1);
         return;
@@ -293,7 +293,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 24: // B+ Tree Copy-up
+    case 29: // B+ Tree Copy-up
       if (step === 1) {
         soundFx.playSlotShiftSlide();
         return;
@@ -307,7 +307,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 25: // B* Tree Redistribute
+    case 30: // B* Tree Redistribute
       if (step === 1) {
         soundFx.playSlotShiftSlide();
         return;
@@ -321,7 +321,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 26: // B* Tree Split 2->3
+    case 31: // B* Tree Split 2->3
       if (step === 1) {
         soundFx.playOverflow();
         return;
@@ -335,7 +335,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 28: // XFS Free-space problem
+    case 33: // XFS Free-space problem
       if (step === 1) {
         soundFx.playAlert();
         return;
@@ -345,7 +345,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 29: // XFS bnobt & cntbt
+    case 34: // XFS bnobt & cntbt
       if (step === 1 || step === 3) {
         soundFx.playDiskSeek();
         return;
@@ -359,7 +359,7 @@ function playSemanticStepSound(
         return;
       }
       break;
-    case 30: // XFS Alloc & Reclaim dual B+ tree sync
+    case 35: // XFS Alloc & Reclaim dual B+ tree sync
       if (step === 2) {
         soundFx.playXfsDualIndexSync('alloc');
         return;
@@ -987,7 +987,7 @@ window.addEventListener(
     const target = ev.target as HTMLElement | null;
     if (!target) return;
     const hit = target.closest(
-      '.s04-probe-btn, .tr-key--clickable, [data-mval], .s18-tab, .s26-qbtn, .ext-card, .xfs-cell, [data-s29-sim], .toc-bar, .s11-card-borrow, .s11-card-merge',
+      '.s04-probe-btn, .tr-key--clickable, [data-mval], .s18-tab, .s26-qbtn, .ext-card, .xfs-cell, [data-s29-sim], .toc-bar, .s11-card-borrow, .s11-card-merge, .chd-pill',
     );
     if (hit && hit !== lastHoverTarget) {
       lastHoverTarget = hit;

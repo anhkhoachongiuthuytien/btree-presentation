@@ -194,8 +194,7 @@ const slide17: SlideDef = {
       <div class="slide-frame s17-frame">
         <header class="s17-header">
           <div>
-            <h1 class="s17-title">4. Độ phức tạp của B-tree</h1>
-            <div class="s17-subtitle"><span>Chiều cao</span> cây</div>
+            <h1 class="slide-title"><span>Chiều cao</span> của B-tree</h1>
           </div>
           <div class="s17-header-right">
             <div class="s17-numeric-pop" data-role="numeric" hidden>
@@ -903,7 +902,7 @@ const slide18: SlideDef = {
           '</ul>',
       },
       {
-        heading: 'Độ phức tạp trung bình (có điều kiện — xem chi tiết Trang 20)',
+        heading: 'Độ phức tạp trung bình (có điều kiện — xem chi tiết Trang 24)',
         bodyHtml:
           '<p>Tìm thành công (phân bố đều 1/N): ' + texInline('\\Theta(\\log N)') + '. Chèn/xóa (nếu xác suất sửa sâu giảm theo cấp số nhân): ' + texInline('O(\\log N + M)') + '.</p>',
       },
@@ -988,14 +987,14 @@ const slide18: SlideDef = {
 
         <div class="s18-foot-bar">
           <span class="s18-foot-note">Giả thiết nền: so sánh khóa ${texInline('O(1)')}, ${texInline('h = O(\\log_M N)')} ⇒ ${texInline('(h+1)\\log M = O(\\log N)')}.</span>
-          <button type="button" class="s18-avg-btn" data-role="goto-19">Xem chứng minh trung bình · Trang 20 →</button>
+          <button type="button" class="s18-avg-btn" data-role="goto-19">Xem chứng minh trung bình · Trang 24 →</button>
         </div>
       </div>
     `;
 
     ctx.slideEl.querySelector<HTMLButtonElement>('[data-role="goto-19"]')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      ctx.goToSlide(20);
+      ctx.goToSlide(24);
     });
 
     const selectOp = (opIdx: number) => {
@@ -1153,7 +1152,7 @@ function renderS18SummaryShowdown(
           <div class="s18-io-note">Mỗi nút đã nằm sẵn trong RAM sau 1 lần đọc trang → dịch <code>list</code> chỉ tốn vài nano-giây.</div>
         </div>
       </div>
-      <div class="s18-sum-foot s18-sum-foot--warn"><strong>Chốt:</strong> <code>O(M)</code> chạy trong RAM (nano-giây) · Nút thắt thật sự là <code>h + 1</code> lần đọc đĩa (Trang 20–21).</div>
+      <div class="s18-sum-foot s18-sum-foot--warn"><strong>Chốt:</strong> <code>O(M)</code> chạy trong RAM (nano-giây) · Nút thắt thật sự là <code>h + 1</code> lần đọc đĩa (Trang 24–25).</div>
     </div>
   `;
 

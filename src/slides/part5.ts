@@ -51,8 +51,7 @@ const slide22: SlideDef = {
     ctx.slideEl.innerHTML = `
       <div class="slide-frame">
         <header class="slide-header">
-          <div class="slide-chapter-head">5. Các biến thể và ứng dụng</div>
-          <h1 class="slide-title slide-title--sub"><span>B+</span> Tree</h1>
+          <h1 class="slide-title"><span>B+</span> Tree</h1>
           <p class="slide-lead">Dữ liệu ở lá. Node trong giữ khóa phân cách để dẫn đường.</p>
         </header>
 

@@ -30,10 +30,10 @@ const STAGE_SELECTOR = [
 type ChapterSkin = 'ch1' | 'ch2' | 'ch3' | 'ch4' | 'ch5';
 
 function getSkinForSlide(slideNum: number): ChapterSkin {
-  if (slideNum <= 5) return 'ch1';
-  if (slideNum <= 12) return 'ch2';
-  if (slideNum <= 17) return 'ch3';
-  if (slideNum <= 22) return 'ch4';
+  if (slideNum <= 6) return 'ch1';
+  if (slideNum <= 14) return 'ch2';
+  if (slideNum <= 20) return 'ch3';
+  if (slideNum <= 26) return 'ch4';
   return 'ch5';
 }
 
@@ -49,12 +49,12 @@ function buildDecorHtml(skin: ChapterSkin, slideNum: number, compact: boolean): 
       `;
     case 'ch2': {
       const opTone =
-        slideNum === 6 ? 'cobalt'
-        : slideNum === 7 || slideNum === 8 ? 'amber'
+        slideNum === 8 ? 'cobalt'
+        : slideNum === 9 || slideNum === 10 ? 'amber'
         : 'emerald';
       const opLabel =
-        slideNum === 6 ? 'OP · SEARCH'
-        : slideNum === 7 || slideNum === 8 ? 'OP · INSERT / SPLIT'
+        slideNum === 8 ? 'OP · SEARCH'
+        : slideNum === 9 || slideNum === 10 ? 'OP · INSERT / SPLIT'
         : 'OP · DELETE';
       return `
         <span class="sd-brk sd-brk--${opTone} sd-tl"></span>

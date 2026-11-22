@@ -14,10 +14,10 @@ export type ChapterSoundTheme = 'intro' | 'ch1' | 'ch2' | 'ch3' | 'ch4' | 'ch5';
 
 export function getChapterThemeForSlide(slideNumber: number): ChapterSoundTheme {
   if (slideNumber <= 2) return 'intro';
-  if (slideNumber <= 5) return 'ch1';
-  if (slideNumber <= 12) return 'ch2';
-  if (slideNumber <= 17) return 'ch3';
-  if (slideNumber <= 22) return 'ch4';
+  if (slideNumber <= 6) return 'ch1';
+  if (slideNumber <= 14) return 'ch2';
+  if (slideNumber <= 20) return 'ch3';
+  if (slideNumber <= 26) return 'ch4';
   return 'ch5';
 }
 

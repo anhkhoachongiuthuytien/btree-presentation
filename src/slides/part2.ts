@@ -40,8 +40,7 @@ const slide06: SlideDef = {
       <div class="slide-frame">
         <header class="slide-header slide-header--split">
           <div>
-            <div class="slide-chapter-head">2. Các phép toán trong B-tree</div>
-            <h1 class="slide-title slide-title--sub"><span>Tìm kiếm:</span> Search(k)</h1>
+            <h1 class="slide-title"><span>Tìm kiếm:</span> Search(k)</h1>
           </div>
           <button type="button" class="inline-action-btn" data-role="try16-btn">Thử 16 (tìm hụt)</button>
         </header>

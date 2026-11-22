@@ -214,11 +214,11 @@ function renderCoverStep(slideEl: HTMLElement, step: number, reducedMotion: bool
 // SLIDE 02 — Nội dung trình bày (TOC — Editorial Roadmap)
 // ============================================================================
 const TOC_ITEMS = [
-  { num: '01', title: 'Bài toán và cơ sở lý thuyết', sub: 'Bộ nhớ ngoài, M-way Search Tree & 4 tính chất B-tree', target: 3, range: 'Trang 03–05' },
-  { num: '02', title: 'Tìm kiếm, chèn và xóa trên B-tree', sub: 'Search(17), Insert + Split, Delete + Borrow / Merge', target: 6, range: 'Trang 06–12' },
-  { num: '03', title: 'Cài đặt Python và trực quan hóa', sub: 'Lớp BTreeNode, BTree, xử lý tách/gộp & chạy thử live', target: 13, range: 'Trang 13–17' },
-  { num: '04', title: 'Độ phức tạp thời gian và không gian', sub: 'Chiều cao h, thao tác, kỳ vọng trung bình, RAM/I/O & bộ nhớ', target: 18, range: 'Trang 18–22' },
-  { num: '05', title: 'Các biến thể và ứng dụng', sub: 'B+ Tree, B* Tree, InnoDB, HFS+ & bài toán XFS (2 cây B+)', target: 23, range: 'Trang 23–30', dest: 'Đích: XFS' },
+  { num: '01', title: 'Bài toán và cơ sở lý thuyết', sub: 'Bộ nhớ ngoài, M-way Search Tree & 4 tính chất B-tree', target: 3, range: 'Trang 03–06' },
+  { num: '02', title: 'Tìm kiếm, chèn và xóa trên B-tree', sub: 'Search(17), Insert + Split, Delete + Borrow / Merge', target: 7, range: 'Trang 07–14' },
+  { num: '03', title: 'Cài đặt Python và trực quan hóa', sub: 'Lớp BTreeNode, BTree, xử lý tách/gộp & chạy thử live', target: 15, range: 'Trang 15–20' },
+  { num: '04', title: 'Độ phức tạp thời gian và không gian', sub: 'Chiều cao h, thao tác, kỳ vọng trung bình, RAM/I/O & bộ nhớ', target: 21, range: 'Trang 21–26' },
+  { num: '05', title: 'Các biến thể và ứng dụng', sub: 'B+ Tree, B* Tree, InnoDB, HFS+ & bài toán XFS (2 cây B+)', target: 27, range: 'Trang 27–35', dest: 'Đích: XFS' },
 ];
 
 const slide02: SlideDef = {
@@ -235,14 +235,14 @@ const slide02: SlideDef = {
     summary: 'Mục lục 5 phần chính của bài thuyết trình B-tree, hỗ trợ nhảy thẳng tới bất kỳ chương nào.',
     sections: [
       {
-        heading: 'Lộ trình 5 chương (Trang 03 → 30)',
+        heading: 'Lộ trình 5 chương (Trang 03 → 35)',
         bodyHtml:
           '<ol>' +
-          '<li><strong>Bài toán và cơ sở lý thuyết (Trang 03–05):</strong> Động lực bộ nhớ ngoài, đầu vào/đầu ra, M-way Search Tree và định nghĩa B-tree.</li>' +
-          '<li><strong>Tìm kiếm, chèn và xóa trên B-tree (Trang 06–12):</strong> Search(17), Insert + split dây chuyền, minh họa xóa, Borrow/Merge, thu gọn gốc và cây quyết định Delete.</li>' +
-          '<li><strong>Cài đặt Python và trực quan hóa (Trang 13–17):</strong> BTreeNode, BTree, search, insert/_insert, delete/_delete, _fix_underflow và chạy thử trực tiếp bằng Python.</li>' +
-          '<li><strong>Độ phức tạp thời gian và không gian (Trang 18–22):</strong> Chiều cao h, chi phí các thao tác, kỳ vọng trung bình, RAM vs I/O và bộ nhớ phụ.</li>' +
-          '<li><strong>Các biến thể và ứng dụng (Trang 23–30):</strong> B+ Tree (duyệt khoảng, copy-up), B* Tree (phân phối lại, tách 2 thành 3), InnoDB/HFS+/Berkeley DB và bài toán XFS (cntbt, bnobt).</li>' +
+          '<li><strong>Bài toán và cơ sở lý thuyết (Trang 03–06):</strong> Động lực bộ nhớ ngoài, đầu vào/đầu ra, M-way Search Tree và định nghĩa B-tree.</li>' +
+          '<li><strong>Tìm kiếm, chèn và xóa trên B-tree (Trang 07–14):</strong> Search(17), Insert + split dây chuyền, minh họa xóa, Borrow/Merge, thu gọn gốc và cây quyết định Delete.</li>' +
+          '<li><strong>Cài đặt Python và trực quan hóa (Trang 15–20):</strong> BTreeNode, BTree, search, insert/_insert, delete/_delete, _fix_underflow và chạy thử trực tiếp bằng Python.</li>' +
+          '<li><strong>Độ phức tạp thời gian và không gian (Trang 21–26):</strong> Chiều cao h, chi phí các thao tác, kỳ vọng trung bình, RAM vs I/O và bộ nhớ phụ.</li>' +
+          '<li><strong>Các biến thể và ứng dụng (Trang 27–35):</strong> B+ Tree (duyệt khoảng, copy-up), B* Tree (phân phối lại, tách 2 thành 3), InnoDB/HFS+/Berkeley DB và bài toán XFS (cntbt, bnobt).</li>' +
           '</ol>',
       },
     ],
@@ -258,7 +258,7 @@ const slide02: SlideDef = {
           <div class="toc-server">${tocServerSvg()}</div>
           <div class="toc-stats">
             <div><strong>05</strong><span>Chương</span></div>
-            <div><strong>30</strong><span>Trang</span></div>
+            <div><strong>35</strong><span>Trang</span></div>
             <div><strong>Live</strong><span>Demo Python</span></div>
           </div>
         </aside>
@@ -291,7 +291,7 @@ const slide02: SlideDef = {
       btn.addEventListener('click', (ev) => {
         ev.stopPropagation();
         const target = Number(btn.dataset.targetSlide);
-        if (target >= 1 && target <= 30) ctx.goToSlide(target);
+        if (target >= 1 && target <= 35) ctx.goToSlide(target);
       });
     });
   },
@@ -360,8 +360,7 @@ const slide03: SlideDef = {
     ctx.slideEl.innerHTML = `
       <div class="slide-frame">
         <header class="slide-header">
-          <div class="slide-chapter-head">1. Bài toán và cơ sở lí thuyết</div>
-          <h1 class="slide-title slide-title--sub">Bài toán <span>đầu vào và đầu ra</span></h1>
+          <h1 class="slide-title">Bài toán <span>đầu vào và đầu ra</span></h1>
         </header>
 
         <div class="s03-layout">
