@@ -7401,6 +7401,299 @@ button.stack-frame:hover {
   }
 }
 
+.s18-tab--sum {
+  border-color: #d97706;
+  color: #b45309;
+  background: #fffbeb;
+}
+
+.s18-tab--sum.is-on {
+  background: #b45309;
+  border-color: #92400e;
+  color: #ffffff;
+  box-shadow: 3px 3px 0 rgba(217, 119, 6, 0.35);
+}
+
+/* Slide 19 Step 4 — Interactive Scale Showdown & O(M) Breakdown */
+.s18-sum-panel {
+  width: 100%;
+  height: 100%;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.s18-ratio-badge {
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: #dcfce7;
+  border: 1.3px solid #86efac;
+  color: #15803d;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.s18-scale-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+.s18-scale-btn {
+  padding: 3px 10px;
+  border-radius: 3px;
+  border: 1.5px solid #93c5fd;
+  background: #ffffff;
+  color: var(--title-blue);
+  font-family: var(--font-mono);
+  font-size: 11.8px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease, transform 120ms ease;
+}
+
+.s18-scale-btn:hover {
+  background: #eef7ff;
+  border-color: var(--title-blue);
+}
+
+.s18-scale-btn.is-on {
+  background: var(--title-blue);
+  border-color: var(--title-blue);
+  color: #ffffff;
+}
+
+.s18-race-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 8px 0;
+}
+
+.s18-race-row {
+  display: grid;
+  grid-template-columns: 196px minmax(0, 1fr) 58px;
+  align-items: center;
+  gap: 10px;
+}
+
+.s18-race-lbl {
+  font-size: 12.2px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.s18-race-lbl code {
+  font-size: 10.8px;
+  padding: 1px 4px;
+}
+
+.s18-race-track {
+  height: 22px;
+  background: #f1f5f9;
+  border: 1.2px solid #cbd5e1;
+  border-radius: 3px;
+  overflow: hidden;
+  padding: 2px;
+}
+
+.s18-race-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: s18BarGrow 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: left center;
+}
+
+.s18-race-bar--ok {
+  background: linear-gradient(90deg, #16a34a, #4ade80);
+}
+
+.s18-race-bar--bt {
+  background: linear-gradient(90deg, #004aad, #5284ff);
+}
+
+.s18-race-bar--bst {
+  background: linear-gradient(90deg, #d97706, #ef4444);
+}
+
+@keyframes s18BarGrow {
+  from {
+    transform: scaleX(0.08);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.s18-race-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.s18-race-val.is-ok {
+  color: #15803d;
+}
+
+.s18-race-val.is-bt {
+  color: #004aad;
+}
+
+.s18-race-val.is-bst {
+  color: #b91c1c;
+}
+
+.s18-cost-split {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.s18-cost-row {
+  padding: 8px 10px;
+  border-radius: 4px;
+  background: #f8fbff;
+  border: 1.5px solid #bfdbfe;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.s18-cost-row--warn {
+  background: #fffbeb;
+  border-color: #fcd34d;
+}
+
+.s18-cost-row--io {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.s18-io-note {
+  font-size: 11.4px;
+  color: #166534;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.s18-cost-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.s18-probe-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.s18-pdot {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: #2563eb;
+  border: 1.5px solid #004aad;
+  display: inline-block;
+}
+
+.s18-pdot.is-anim {
+  animation: s18DotPop 300ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--pi, 0) * 45ms) both;
+}
+
+@keyframes s18DotPop {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.s18-dot-tag {
+  margin-left: 6px;
+  font-size: 11.2px;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.s18-shift-strip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.s18-scell {
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: #ffffff;
+  border: 1.4px solid #d97706;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  color: #92400e;
+}
+
+.s18-scell.is-shift {
+  animation: s18ShiftSlide 420ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--si, 0) * 35ms) both;
+}
+
+@keyframes s18ShiftSlide {
+  0% {
+    transform: translateX(-8px);
+    background: #fef08a;
+  }
+  100% {
+    transform: translateX(0);
+    background: #ffffff;
+  }
+}
+
+.s18-shift-arr {
+  margin-left: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #b91c1c;
+  white-space: nowrap;
+}
+
+.s18-sum-foot {
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 11.8px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.s18-sum-foot--ok {
+  background: #dcfce7;
+  border: 1.3px solid #86efac;
+  color: #14532d;
+}
+
+.s18-sum-foot--warn {
+  background: #fee2e2;
+  border: 1.3px solid #fca5a5;
+  color: #7f1d1d;
+}
+
 /* Reduced Motion (placed last so it cleanly disables every on-slide animation) */
 @media (prefers-reduced-motion: reduce) {
   *,

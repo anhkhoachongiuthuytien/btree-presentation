@@ -920,6 +920,7 @@ const slide18: SlideDef = {
             <button type="button" class="s18-tab is-on" data-op="1">Search</button>
             <button type="button" class="s18-tab" data-op="2">Insert</button>
             <button type="button" class="s18-tab" data-op="3">Delete</button>
+            <button type="button" class="s18-tab s18-tab--sum" data-op="4">Tổng kết</button>
             <button type="button" class="s18-replay-btn" data-role="s18-replay" title="Chạy lại minh họa">↺ Chạy lại</button>
           </div>
         </header>
@@ -1036,12 +1037,9 @@ const slide18: SlideDef = {
     bestCells.forEach((c) => c.classList.toggle('is-best-hl', step >= 4));
     goto19.classList.toggle('is-lit', step >= 4);
 
-    const activeOp = step === 2 ? 2 : step >= 3 ? 3 : 1;
-    // Avoid restarting Search (0 -> 1) or Delete (3 -> 4) when already showing that operation
-    if (
-      (prev === 0 && step === 1 && ctx.slideEl.dataset.activeOp === '1') ||
-      (prev === 3 && step === 4 && ctx.slideEl.dataset.activeOp === '3')
-    ) {
+    const activeOp = step === 2 ? 2 : step === 3 ? 3 : step >= 4 ? 4 : 1;
+    // Avoid restarting Search (0 -> 1) when already showing Search
+    if (prev === 0 && step === 1 && ctx.slideEl.dataset.activeOp === '1') {
       return;
     }
     startS18CompareLoop(ctx.slideEl, activeOp, ctx.getReducedMotion());
@@ -1052,18 +1050,145 @@ const slide18: SlideDef = {
   },
 };
 
+function renderS18SummaryShowdown(
+  slideEl: HTMLElement,
+  scaleIdx: number,
+  reducedMotion: boolean,
+): void {
+  const scales = [
+    { label: '10⁴ (10 nghìn)', btree: 3, bst: 14, ratio: '4.7×', note: '10.000 khóa: B-tree chỉ cần 3 tầng thay vì 14 tầng BST.' },
+    { label: '10⁶ (1 triệu)', btree: 4, bst: 20, ratio: '5.0×', note: '1 triệu khóa (gấp 100×): B-tree chỉ tăng đúng +1 tầng!' },
+    { label: '10⁹ (1 tỷ)', btree: 5, bst: 30, ratio: '6.0×', note: 'Tăng N thêm 100.000× (10⁴ → 10⁹), B-tree chỉ tăng đúng +2 tầng!' },
+  ];
+  const sc = scales[Math.max(0, Math.min(2, scaleIdx))];
+
+  slideEl.querySelector<HTMLElement>('[data-role="best-title"]')!.textContent = 'Đường đua quy mô · Số tầng nút (M = 100)';
+  slideEl.querySelector<HTMLElement>('[data-role="best-phase"]')!.textContent = `N = ${sc.label} · B-tree chỉ ${sc.btree} tầng`;
+  slideEl.querySelector<HTMLElement>('[data-role="best-cost"]')!.textContent = `≤ ${sc.btree} tầng`;
+
+  const worstPhaseEl = slideEl.querySelector<HTMLElement>('[data-role="worst-phase"]')!;
+  slideEl.querySelector<HTMLElement>('[data-role="worst-title"]')!.textContent = 'Vì sao Xấu nhất có thêm hệ số M?';
+  worstPhaseEl.textContent = '1 nút đầy M = 100 khóa: bisect vs dịch list Python';
+  worstPhaseEl.classList.remove('is-done-ok');
+  slideEl.querySelector<HTMLElement>('[data-role="worst-cost"]')!.textContent = 'O(M(h + 1))';
+
+  const bestBar = slideEl.querySelector<HTMLElement>('[data-role="best-bar"]');
+  const worstBar = slideEl.querySelector<HTMLElement>('[data-role="worst-bar"]');
+  if (bestBar) bestBar.style.width = '100%';
+  if (worstBar) {
+    worstBar.style.width = '100%';
+    worstBar.classList.remove('is-done-ok');
+  }
+
+  const bestTree = slideEl.querySelector<HTMLElement>('[data-role="best-tree"]')!;
+  const worstTree = slideEl.querySelector<HTMLElement>('[data-role="worst-tree"]')!;
+  cancelTreeAnimations(bestTree);
+  cancelTreeAnimations(worstTree);
+
+  const btreePct = Math.round((sc.btree / 30) * 100);
+  const bstPct = Math.round((sc.bst / 30) * 100);
+
+  bestTree.innerHTML = `
+    <div class="s18-sum-panel">
+      <div class="s18-scale-pills">
+        <span>Chọn quy mô N:</span>
+        <button type="button" class="s18-scale-btn${scaleIdx === 0 ? ' is-on' : ''}" data-s18-scale="0">10⁴</button>
+        <button type="button" class="s18-scale-btn${scaleIdx === 1 ? ' is-on' : ''}" data-s18-scale="1">10⁶</button>
+        <button type="button" class="s18-scale-btn${scaleIdx === 2 ? ' is-on' : ''}" data-s18-scale="2">10⁹ (1 tỷ)</button>
+        <span class="s18-ratio-badge">Thấp hơn BST ${sc.ratio}</span>
+      </div>
+      <div class="s18-race-list">
+        <div class="s18-race-row">
+          <span class="s18-race-lbl"><strong>Search tại gốc</strong> <code>O(1)</code></span>
+          <div class="s18-race-track"><div class="s18-race-bar s18-race-bar--ok" style="width: 6%"></div></div>
+          <span class="s18-race-val is-ok">1 nút</span>
+        </div>
+        <div class="s18-race-row">
+          <span class="s18-race-lbl"><strong>B-tree (M = 100)</strong> <code>O(log_M N)</code></span>
+          <div class="s18-race-track"><div class="s18-race-bar s18-race-bar--bt" style="width: ${btreePct}%"></div></div>
+          <span class="s18-race-val is-bt">${sc.btree} tầng</span>
+        </div>
+        <div class="s18-race-row">
+          <span class="s18-race-lbl"><strong>BST cân bằng</strong> <code>O(log₂ N)</code></span>
+          <div class="s18-race-track"><div class="s18-race-bar s18-race-bar--bst" style="width: ${bstPct}%"></div></div>
+          <span class="s18-race-val is-bst">${sc.bst} tầng</span>
+        </div>
+      </div>
+      <div class="s18-sum-foot s18-sum-foot--ok">${sc.note}</div>
+    </div>
+  `;
+
+  worstTree.innerHTML = `
+    <div class="s18-sum-panel">
+      <div class="s18-cost-split">
+        <div class="s18-cost-row">
+          <div class="s18-cost-meta">
+            <strong>Search · bisect</strong>
+            <code>⌈log₂ 100⌉ = 7 bước</code>
+          </div>
+          <div class="s18-probe-dots">
+            ${Array.from({ length: 7 }, (_, i) => `<i class="s18-pdot${reducedMotion ? '' : ' is-anim'}" style="--pi:${i}"></i>`).join('')}
+            <span class="s18-dot-tag">chỉ nhảy nhị phân · không dịch mảng</span>
+          </div>
+        </div>
+
+        <div class="s18-cost-row s18-cost-row--warn">
+          <div class="s18-cost-meta">
+            <strong>Insert / Delete · dịch list</strong>
+            <code>tới M − 1 = 99 ô × (h + 1)</code>
+          </div>
+          <div class="s18-shift-strip">
+            ${['k₀', 'k₁', 'k₂', 'k₃', 'k₄', 'k₅', '…', 'k₉₈'].map(
+              (lbl, i) => `<span class="s18-scell${reducedMotion ? '' : ' is-shift'}" style="--si:${i}">${lbl}</span>`,
+            ).join('')}
+            <span class="s18-shift-arr">→ dịch đuôi O(M)</span>
+          </div>
+        </div>
+
+        <div class="s18-cost-row s18-cost-row--io">
+          <div class="s18-cost-meta">
+            <strong>Thực tế trên đĩa (I/O)</strong>
+            <code>chỉ h + 1 ≤ 5 trang đĩa</code>
+          </div>
+          <div class="s18-io-note">Mỗi nút đã nằm sẵn trong RAM sau 1 lần đọc trang → dịch <code>list</code> chỉ tốn vài nano-giây.</div>
+        </div>
+      </div>
+      <div class="s18-sum-foot s18-sum-foot--warn"><strong>Chốt:</strong> <code>O(M)</code> chạy trong RAM (nano-giây) · Nút thắt thật sự là <code>h + 1</code> lần đọc đĩa (Trang 20–21).</div>
+    </div>
+  `;
+
+  bestTree.querySelectorAll<HTMLButtonElement>('[data-s18-scale]').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = Number(btn.dataset.s18Scale);
+      soundFx.playOrderDial(3 + idx);
+      renderS18SummaryShowdown(slideEl, idx, reducedMotion);
+    });
+  });
+}
+
 function startS18CompareLoop(slideEl: HTMLElement, opIdx: number, reducedMotion: boolean): void {
   stopS18Loop(slideEl);
   slideEl.dataset.activeOp = String(opIdx);
+
+  slideEl.querySelectorAll<HTMLElement>('.s18-tab').forEach((btn) => {
+    btn.classList.toggle('is-on', Number(btn.dataset.op) === opIdx);
+  });
+
+  if (opIdx === 4) {
+    slideEl.querySelectorAll<HTMLElement>('.complexity-table tbody tr').forEach((tr) => {
+      tr.classList.remove('is-active-row');
+    });
+    renderS18SummaryShowdown(slideEl, 2, reducedMotion);
+    return;
+  }
+
   const spec = buildS18Compare(opIdx);
   slideEl.querySelector<HTMLElement>('[data-role="best-title"]')!.textContent = spec.bestTitle;
   slideEl.querySelector<HTMLElement>('[data-role="best-cost"]')!.textContent = spec.bestCost;
   slideEl.querySelector<HTMLElement>('[data-role="worst-title"]')!.textContent = spec.worstTitle;
   slideEl.querySelector<HTMLElement>('[data-role="worst-cost"]')!.textContent = spec.worstCost;
 
-  slideEl.querySelectorAll<HTMLElement>('.s18-tab').forEach((btn) => {
-    btn.classList.toggle('is-on', Number(btn.dataset.op) === opIdx);
-  });
   slideEl.querySelectorAll<HTMLElement>('.complexity-table tbody tr').forEach((tr) => {
     tr.classList.toggle('is-active-row', Number(tr.dataset.row) === opIdx);
   });

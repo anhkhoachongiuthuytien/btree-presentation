@@ -247,6 +247,12 @@ function playSemanticStepSound(
         return;
       }
       break;
+    case 19: // Time complexity finale: Scale Showdown (10^9 keys -> 5 levels)
+      if (step === 4) {
+        soundFx.playScaleCollapse();
+        return;
+      }
+      break;
     case 20: // Average complexity geometric probability decay
       if (step >= 1 && step <= 3) {
         soundFx.playDecayProbability(step);
