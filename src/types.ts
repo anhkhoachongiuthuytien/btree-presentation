@@ -4,11 +4,7 @@ export type SlideTheme =
   | 'blue'
   | 'white'
   | 'xfs-blue'
-  | 'ch-01'
-  | 'ch-02'
-  | 'ch-03'
-  | 'ch-04'
-  | 'ch-05';
+  | 'chapter';
 
 export type TransitionKind = 'open-chapter' | 'connect-shape' | 'swap-example';
 

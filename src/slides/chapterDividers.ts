@@ -116,7 +116,7 @@ export const chapter01Slide = buildChapterDividerSlide({
   plainTitle: 'Phần 1: Bài toán & Cấu trúc B-tree',
   titleHtml: 'Bài toán &amp; Cấu trúc<br/><span>B-tree Cân bằng</span>',
   subtitle: 'Từ nút thắt đọc trang đĩa bộ nhớ ngoài đến cây tìm kiếm M nhánh đồng mức lá.',
-  theme: 'ch-01',
+  theme: 'chapter',
   rangeLabel: 'TRANG 04 – 06',
   pills: [
     { label: 'Bài toán, đầu vào & đầu ra', targetSlide: 4 },
@@ -199,7 +199,7 @@ export const chapter02Slide = buildChapterDividerSlide({
   plainTitle: 'Phần 2: Các phép toán trong B-tree',
   titleHtml: 'Các phép toán<br/><span>Search · Insert · Delete</span>',
   subtitle: 'Tách nút dây chuyền khi tràn khóa · Mượn khóa (Borrow) &amp; Gộp nút (Merge) khi thiếu khóa.',
-  theme: 'ch-02',
+  theme: 'chapter',
   rangeLabel: 'TRANG 08 – 14',
   pills: [
     { label: 'Search(k) dùng bisect', targetSlide: 8 },
@@ -287,7 +287,7 @@ export const chapter03Slide = buildChapterDividerSlide({
   plainTitle: 'Phần 3: Cài đặt Python & Demo trực tiếp',
   titleHtml: 'Cài đặt Python<br/><span>&amp; Chạy thử trực tiếp</span>',
   subtitle: 'Từ lớp BTreeNode, BTree gọn sạch bằng bisect_left đến mô phỏng chạy live demo_btree.py.',
-  theme: 'ch-03',
+  theme: 'chapter',
   rangeLabel: 'TRANG 16 – 20',
   pills: [
     { label: 'BTreeNode, BTree & search', targetSlide: 16 },
@@ -349,7 +349,7 @@ export const chapter04Slide = buildChapterDividerSlide({
   plainTitle: 'Phần 4: Độ phức tạp của B-tree',
   titleHtml: 'Độ phức tạp<br/><span>Thời gian &amp; Không gian</span>',
   subtitle: 'Chứng minh chiều cao h = O(log_M N), chi phí các thao tác, kỳ vọng trung bình và RAM vs Đĩa.',
-  theme: 'ch-04',
+  theme: 'chapter',
   rangeLabel: 'TRANG 22 – 26',
   pills: [
     { label: 'Chiều cao h (N_max vs N_min)', targetSlide: 22 },
@@ -409,7 +409,7 @@ export const chapter05Slide = buildChapterDividerSlide({
   plainTitle: 'Phần 5: Các biến thể & Ứng dụng thực tế',
   titleHtml: 'Các biến thể<br/><span>&amp; Ứng dụng thực tế</span>',
   subtitle: 'Từ B+ Tree, B* Tree đến InnoDB, HFS+, Berkeley DB và cặp chỉ mục vùng trống XFS.',
-  theme: 'ch-05',
+  theme: 'chapter',
   rangeLabel: 'TRANG 28 – 35',
   pills: [
     { label: 'B+ Tree (Range Scan & Copy-up)', targetSlide: 28 },
