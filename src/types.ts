@@ -6,7 +6,16 @@ export type SlideTheme =
   | 'xfs-blue'
   | 'chapter';
 
-export type TransitionKind = 'open-chapter' | 'connect-shape' | 'swap-example';
+export type TransitionKind =
+  | 'open-chapter'
+  | 'iris-bloom'
+  | 'cube-turn'
+  | 'split-curtain'
+  | 'vertical-lift'
+  | 'diagonal-wipe'
+  | 'page-peel'
+  | 'connect-shape'
+  | 'swap-example';
 
 export interface TransitionSpec {
   from: number; // 1-based slide number

@@ -6313,6 +6313,64 @@ button.stack-frame:hover {
   will-change: transform, opacity;
 }
 
+/* Expanding halo ring for iris-bloom transitions */
+.tr-iris-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 66vmax;
+  height: 66vmax;
+  border-radius: 50%;
+  border: 3px solid rgba(96, 165, 250, 0.85);
+  box-shadow: 0 0 34px 6px rgba(82, 132, 255, 0.45), inset 0 0 24px rgba(191, 219, 254, 0.4);
+  will-change: transform, opacity;
+}
+
+/* Twin outward split beams for split-curtain transitions */
+.tr-split-beam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.1), #38bdf8 30%, #ffffff 50%, #38bdf8 70%, rgba(56, 189, 248, 0.1));
+  box-shadow: 0 0 22px 5px rgba(56, 189, 248, 0.6);
+  will-change: transform, opacity;
+}
+
+/* Slanted drafting glint for diagonal-wipe transitions */
+.tr-diag-glint {
+  position: absolute;
+  top: -12%;
+  bottom: -12%;
+  left: 0;
+  width: 24px;
+  background: linear-gradient(90deg, transparent, rgba(147, 197, 253, 0.55) 45%, rgba(255, 255, 255, 0.85) 50%, rgba(147, 197, 253, 0.55) 55%, transparent);
+  filter: blur(1px);
+  will-change: transform, opacity;
+}
+
+/* Moving editorial spine shadow for page-peel transitions */
+.tr-peel-spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 44px;
+  background: linear-gradient(90deg, rgba(15, 29, 58, 0.34), rgba(82, 132, 255, 0.12) 45%, transparent);
+  will-change: transform, opacity;
+}
+
+/* Distinct accent badges on transition pill */
+.tr-pill--open-chapter .tr-pill__kind { background: #2563eb; }
+.tr-pill--iris-bloom .tr-pill__kind { background: #0284c7; }
+.tr-pill--cube-turn .tr-pill__kind { background: #4f46e5; }
+.tr-pill--split-curtain .tr-pill__kind { background: #0d9488; }
+.tr-pill--vertical-lift .tr-pill__kind { background: #7c3aed; }
+.tr-pill--diagonal-wipe .tr-pill__kind { background: #d97706; }
+.tr-pill--page-peel .tr-pill__kind { background: #0369a1; }
+.tr-pill--swap-example .tr-pill__kind { background: #059669; }
+
 /* Universal Staggered Slide-Entrance Choreography (.slide-entering) */
 @keyframes ent-rise {
   from { opacity: 0; transform: translateY(15px); }
