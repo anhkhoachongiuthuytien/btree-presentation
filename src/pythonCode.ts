@@ -121,12 +121,20 @@ export const PYTHON_LINES = FULL_PYTHON_SOURCE.split('\n');
 
 const PY_KEYWORDS = new Set([
   'from', 'import', 'class', 'def', 'if', 'else', 'elif', 'return',
-  'while', 'and', 'or', 'not', 'is', 'None', 'True', 'False', 'raise',
+  'while', 'for', 'in', 'and', 'or', 'not', 'is', 'raise', 'as',
+  'pass', 'break', 'continue', 'with', 'try', 'except', 'lambda',
+]);
+
+const PY_CONSTANTS = new Set([
+  'None', 'True', 'False',
+]);
+
+const PY_CLASSES = new Set([
+  'BTreeNode', 'BTree', 'ValueError', 'int', 'bool', 'list', 'str', 'dict', 'tuple', 'annotations',
 ]);
 
 const PY_BUILTINS = new Set([
-  'self', 'len', 'int', 'bool', 'list', 'ValueError', 'bisect_left',
-  'BTreeNode', 'BTree',
+  'print', 'len', 'range', 'bisect_left', 'enumerate', 'min', 'max', 'abs', 'sorted', 'zip',
 ]);
 
 function escapeHtml(s: string): string {
@@ -155,24 +163,83 @@ export function highlightPythonLine(rawLine: string): string {
   const codePart = commentIdx >= 0 ? rawLine.slice(0, commentIdx) : rawLine;
   const commentPart = commentIdx >= 0 ? rawLine.slice(commentIdx) : '';
 
-  const tokenRegex = /("[^"]*"|'[^']*'|\b[A-Za-z_][A-Za-z0-9_]*\b|\b\d+\b)/g;
+  const tokenRegex =
+    /("(?:[^"\\]|\\.)*(?:"|$)|'(?:[^'\\]|\\.)*(?:'|$)|\b[A-Za-z_][A-Za-z0-9_]*\b|\b\d+(?:\.\d+)?\b|->|==|!=|<=|>=|\/\/|\+=|-=|[=<>+\-*/]|[()[\]{}]|[.,:])/g;
+
   let out = '';
   let lastIndex = 0;
+  let prevWord = '';
+  let prevNonSpace = '';
+  let parenDepth = 0;
+  let inDefSig = false;
   let match: RegExpExecArray | null;
+
   while ((match = tokenRegex.exec(codePart)) !== null) {
-    out += escapeHtml(codePart.slice(lastIndex, match.index));
+    const between = codePart.slice(lastIndex, match.index);
+    out += escapeHtml(between);
+    const trimmedBetween = between.trim();
+    if (trimmedBetween) {
+      prevNonSpace = trimmedBetween[trimmedBetween.length - 1];
+    }
+
     const tok = match[0];
+    const afterRest = codePart.slice(match.index + tok.length);
+    const nextTrimmed = afterRest.trimStart();
+    const nextChar = nextTrimmed[0] ?? '';
+
     if (tok.startsWith('"') || tok.startsWith("'")) {
       out += `<span class="py-str">${escapeHtml(tok)}</span>`;
-    } else if (/^\d+$/.test(tok)) {
+      prevWord = '';
+    } else if (/^\d/.test(tok)) {
       out += `<span class="py-num">${tok}</span>`;
-    } else if (PY_KEYWORDS.has(tok)) {
-      out += `<span class="py-kw">${tok}</span>`;
-    } else if (PY_BUILTINS.has(tok)) {
-      out += `<span class="py-bi">${tok}</span>`;
+      prevWord = '';
+    } else if (/^(?:->|==|!=|<=|>=|\/\/|\+=|-=|[=<>+\-*/])$/.test(tok)) {
+      out += `<span class="py-op">${escapeHtml(tok)}</span>`;
+      prevWord = '';
+    } else if (/^[()[\]{}]$/.test(tok)) {
+      if (tok === '(') parenDepth++;
+      else if (tok === ')') {
+        parenDepth = Math.max(0, parenDepth - 1);
+        if (parenDepth === 0) inDefSig = false;
+      }
+      const brCls = tok === '[' || tok === ']' ? 'py-br-sq' : 'py-br';
+      out += `<span class="${brCls}">${tok}</span>`;
+      prevWord = '';
+    } else if (tok === '.' || tok === ',' || tok === ':') {
+      out += `<span class="py-punc">${tok}</span>`;
+      prevWord = '';
     } else {
-      out += escapeHtml(tok);
+      // Identifier
+      let cls = 'py-var';
+      if (tok === 'self') {
+        cls = 'py-self';
+      } else if (PY_KEYWORDS.has(tok)) {
+        cls = 'py-kw';
+        if (tok === 'def') inDefSig = true;
+      } else if (PY_CONSTANTS.has(tok)) {
+        cls = 'py-const';
+      } else if (prevWord === 'def') {
+        cls = 'py-def';
+      } else if (prevWord === 'class' || PY_CLASSES.has(tok)) {
+        cls = 'py-cls';
+      } else if (PY_BUILTINS.has(tok)) {
+        cls = 'py-bi';
+      } else if (nextChar === '(') {
+        cls = 'py-fn';
+      } else if (prevNonSpace === '.') {
+        cls = 'py-prop';
+      } else if (
+        prevWord === 'for' ||
+        (inDefSig && parenDepth > 0 && prevNonSpace !== ':') ||
+        (parenDepth > 0 && ((nextChar === '=' && !nextTrimmed.startsWith('==')) || nextChar === ':'))
+      ) {
+        cls = 'py-param';
+      }
+      out += `<span class="${cls}">${escapeHtml(tok)}</span>`;
+      prevWord = tok;
     }
+
+    prevNonSpace = tok[tok.length - 1];
     lastIndex = match.index + tok.length;
   }
   out += escapeHtml(codePart.slice(lastIndex));

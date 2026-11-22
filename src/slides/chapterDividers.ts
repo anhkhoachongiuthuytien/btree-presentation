@@ -311,13 +311,13 @@ export const chapter03Slide = buildChapterDividerSlide({
       <text x="420" y="39" text-anchor="middle" fill="#FFFFFF" font-size="10.5" font-weight="800" font-family="'IBM Plex Mono', monospace">LIVE</text>
 
       <!-- Highlighted syntax lines -->
-      <text x="36" y="80" fill="#93C5FD" font-size="15" font-weight="700" font-family="'IBM Plex Mono', monospace">class <tspan fill="#FEF08A">BTree</tspan>:</text>
-      <text x="56" y="108" fill="#CBD5E1" font-size="14" font-family="'IBM Plex Mono', monospace">def <tspan fill="#4ADE80">search</tspan>(self, k): <tspan fill="#64748B"># bisect_left</tspan></text>
-      <rect x="26" y="119" width="428" height="28" rx="3" fill="rgba(82,132,255,0.22)"/>
-      <rect x="26" y="119" width="4" height="28" fill="#FEF08A"/>
-      <text x="56" y="138" fill="#FFFFFF" font-size="14" font-weight="700" font-family="'IBM Plex Mono', monospace">def <tspan fill="#FEF08A">insert</tspan>(self, k): <tspan fill="#93C5FD">_split_if_full()</tspan></text>
-      <text x="56" y="168" fill="#CBD5E1" font-size="14" font-family="'IBM Plex Mono', monospace">def <tspan fill="#4ADE80">delete</tspan>(self, k): <tspan fill="#64748B"># predecessor</tspan></text>
-      <text x="56" y="198" fill="#CBD5E1" font-size="14" font-family="'IBM Plex Mono', monospace">def <tspan fill="#4ADE80">_fix_underflow</tspan>(parent, i):</text>
+      <text x="36" y="80" fill="#C084FC" font-size="15" font-weight="700" font-family="'IBM Plex Mono', monospace">class <tspan fill="#FBBF24">BTree</tspan><tspan fill="#94A3B8">:</tspan></text>
+      <text x="56" y="108" fill="#C084FC" font-size="14" font-weight="700" font-family="'IBM Plex Mono', monospace">def <tspan fill="#38BDF8">search</tspan><tspan fill="#93C5FD" font-weight="400">(</tspan><tspan fill="#F472B6" font-style="italic" font-weight="400">self</tspan><tspan fill="#94A3B8" font-weight="400">, </tspan><tspan fill="#FDBA74" font-weight="400">k</tspan><tspan fill="#93C5FD" font-weight="400">)</tspan><tspan fill="#94A3B8" font-weight="400">: </tspan><tspan fill="#7C93B8" font-style="italic" font-weight="400"># bisect_left</tspan></text>
+      <rect x="26" y="119" width="428" height="28" rx="3" fill="rgba(56,189,248,0.2)"/>
+      <rect x="26" y="119" width="4" height="28" fill="#FDE047"/>
+      <text x="56" y="138" fill="#C084FC" font-size="14" font-weight="700" font-family="'IBM Plex Mono', monospace">def <tspan fill="#38BDF8">insert</tspan><tspan fill="#93C5FD" font-weight="400">(</tspan><tspan fill="#F472B6" font-style="italic" font-weight="400">self</tspan><tspan fill="#94A3B8" font-weight="400">, </tspan><tspan fill="#FDBA74" font-weight="400">k</tspan><tspan fill="#93C5FD" font-weight="400">)</tspan><tspan fill="#94A3B8" font-weight="400">: </tspan><tspan fill="#2DD4BF" font-weight="600">_split_if_full</tspan><tspan fill="#93C5FD" font-weight="400">()</tspan></text>
+      <text x="56" y="168" fill="#C084FC" font-size="14" font-weight="700" font-family="'IBM Plex Mono', monospace">def <tspan fill="#38BDF8">delete</tspan><tspan fill="#93C5FD" font-weight="400">(</tspan><tspan fill="#F472B6" font-style="italic" font-weight="400">self</tspan><tspan fill="#94A3B8" font-weight="400">, </tspan><tspan fill="#FDBA74" font-weight="400">k</tspan><tspan fill="#93C5FD" font-weight="400">)</tspan><tspan fill="#94A3B8" font-weight="400">: </tspan><tspan fill="#7C93B8" font-style="italic" font-weight="400"># predecessor</tspan></text>
+      <text x="56" y="198" fill="#C084FC" font-size="14" font-weight="700" font-family="'IBM Plex Mono', monospace">def <tspan fill="#38BDF8">_fix_underflow</tspan><tspan fill="#93C5FD" font-weight="400">(</tspan><tspan fill="#FDBA74" font-weight="400">parent</tspan><tspan fill="#94A3B8" font-weight="400">, </tspan><tspan fill="#FDBA74" font-weight="400">i</tspan><tspan fill="#93C5FD" font-weight="400">)</tspan><tspan fill="#94A3B8" font-weight="400">:</tspan></text>
       <rect x="318" y="185" width="8" height="17" fill="#FEF08A" class="chd-caret"/>
 
       <!-- Glowing fiber conduit from Python to RAM Tree -->
