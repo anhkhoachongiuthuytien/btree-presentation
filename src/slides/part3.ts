@@ -1163,14 +1163,14 @@ function playPyDemoStep(
       charIdx++;
       soundFx.playKeystroke(ch, colRatio);
       const isPunct = /[\[\](){}=:,.'"\+\-\*\/]/.test(ch);
-      const base = ch === ' ' ? 20 : isPunct ? 27 : 21;
-      const jitter = Math.floor(Math.random() * 9);
+      const base = ch === ' ' ? 32 : isPunct ? 36 : 27;
+      const jitter = Math.floor(Math.random() * 12);
       rt.timerId = window.setTimeout(tick, base + jitter);
     } else if (lineIdx < linesToType.length - 1) {
       soundFx.playKeystroke('\n');
       lineIdx++;
       charIdx = 0;
-      rt.timerId = window.setTimeout(tick, 120);
+      rt.timerId = window.setTimeout(tick, 155);
     } else {
       if (step > 0) {
         soundFx.playKeystroke('\n');

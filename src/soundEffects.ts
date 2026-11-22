@@ -445,121 +445,70 @@ class SoundEngine {
   // ==========================================================================
 
   /**
-   * 3-layer tactile mechanical switch synthesis (PBT thock + stem snap + desk resonance):
-   * - Normal chars: crisp organic PBT thock with slight natural pitch jitter
-   * - Punctuation/brackets: slightly brighter clicky transient
-   * - Spacebar (' '): deeper, wider hollow stabilizer thock
-   * - Enter ('\n'): heavy return thump + crisp actuation double-impulse
+   * Mẫu #2 — Laptop Scissor-Switch synthesis (MacBook / ThinkPad physical noise-impulse model):
+   * Pure ultra-short filtered transients (5–12ms), zero synthetic oscillator whistle.
+   * - Normal chars: crisp plastic scissor contact (3.6kHz) + subtle flat board tap (1.05kHz)
+   * - Spacebar (' '): wider, lower flat stabilizer tap (2.2kHz / 680Hz)
+   * - Enter ('\n'): crisp return double-impulse (2.6kHz + 1.8kHz @ +12ms)
    */
   public playKeystroke(ch = 'a', colRatio?: number): void {
     if (!this.isReady() || !this.ctx) return;
 
     const nowMs = performance.now();
-    if (ch !== '\n' && ch !== ' ' && nowMs - this.lastKeystrokeAt < 18) return;
+    if (ch !== '\n' && ch !== ' ' && nowMs - this.lastKeystrokeAt < 16) return;
     this.lastKeystrokeAt = nowMs;
     this.notifyPulse();
 
-    const jitter = 0.91 + Math.random() * 0.18;
-    const subtlePan =
-      colRatio !== undefined
-        ? -0.24 + Math.max(0, Math.min(1, colRatio)) * 0.48
-        : (Math.random() - 0.5) * 0.24;
+    const j = 0.92 + Math.random() * 0.16;
+    const isSpace = ch === ' ';
+    const isEnter = ch === '\n';
+    const isPunct = !isSpace && !isEnter && /[\[\](){}=:,.'"\+\-\*\/]/.test(ch);
+    const pan = isSpace
+      ? 0
+      : isEnter
+        ? 0.25
+        : colRatio !== undefined
+          ? -0.22 + Math.max(0, Math.min(1, colRatio)) * 0.44
+          : (Math.random() - 0.5) * 0.24;
 
-    if (ch === '\n') {
-      // Heavy mechanical Return key
-      this.playTone({
-        freq: 175 * jitter,
-        endFreq: 68,
-        glide: 0.042,
-        attack: 0.002,
-        duration: 0.065,
-        type: 'triangle',
-        gain: 0.26,
-        lpFreq: 720,
-        pan: 0.25,
-      });
-      this.playNoise({
-        duration: 0.024,
-        attack: 0.002,
-        filterType: 'bandpass',
-        freq: 1950 * jitter,
-        q: 1.5,
-        gain: 0.17,
-        pan: 0.25,
-      });
-      this.playNoise({
-        duration: 0.016,
-        attack: 0.002,
-        filterType: 'highpass',
-        freq: 3000,
-        gain: 0.09,
-        delay: 0.024,
-        pan: 0.25,
-      });
-      return;
-    }
+    const fHi = isSpace ? 2200 : isEnter ? 2600 : (isPunct ? 3900 : 3600) * j;
+    const fLo = isSpace ? 680 : isEnter ? 980 : 1050 * j;
 
-    if (ch === ' ') {
-      // Wide hollow spacebar stabilizer thock
-      this.playTone({
-        freq: 145 * jitter,
-        endFreq: 60,
-        glide: 0.036,
-        attack: 0.002,
-        duration: 0.056,
-        type: 'triangle',
-        gain: 0.23,
-        lpFreq: 560,
-        pan: 0,
-      });
-      this.playNoise({
-        duration: 0.02,
-        attack: 0.002,
-        filterType: 'bandpass',
-        freq: 1350 * jitter,
-        q: 1.3,
-        gain: 0.13,
-        pan: 0,
-      });
-      return;
-    }
-
-    const isPunct = /[\[\](){}=:,.'"\+\-\*\/]/.test(ch);
-
-    // Layer 1: Tactile PBT keycap bottom-out thock
-    this.playTone({
-      freq: (isPunct ? 255 : 215) * jitter,
-      endFreq: 86,
-      glide: 0.024,
-      attack: 0.0015,
-      duration: 0.036,
-      type: 'triangle',
-      gain: 0.18,
-      lpFreq: 880,
-      pan: subtlePan,
-    });
-
-    // Layer 2: Crisp mechanical switch stem actuation snap
+    // Layer 1: Ultra-short crisp plastic scissor-switch contact click
     this.playNoise({
-      duration: 0.015,
-      attack: 0.0015,
+      duration: 0.007,
+      attack: 0.0007,
       filterType: 'bandpass',
-      freq: (isPunct ? 3200 : 2500) * jitter,
-      q: isPunct ? 2.4 : 1.7,
-      gain: isPunct ? 0.13 : 0.1,
-      pan: subtlePan,
+      freq: fHi,
+      q: 1.7,
+      gain: isPunct ? 0.34 : 0.32,
+      pan,
     });
 
-    // Layer 3: Subtle keycap release upstroke
+    // Layer 2: Subtle flat laptop chassis / board tap
     this.playNoise({
-      duration: 0.01,
-      attack: 0.0015,
-      filterType: 'highpass',
-      freq: 3500,
-      gain: 0.045,
-      delay: 0.018,
-      pan: subtlePan,
+      duration: 0.011,
+      attack: 0.001,
+      filterType: 'bandpass',
+      freq: fLo,
+      q: 1.5,
+      gain: isSpace || isEnter ? 0.38 : 0.26,
+      pan,
     });
+
+    // Layer 3: Enter key return double-impulse
+    if (isEnter) {
+      this.playNoise({
+        duration: 0.012,
+        attack: 0.001,
+        filterType: 'bandpass',
+        freq: 1800,
+        q: 1.4,
+        gain: 0.22,
+        delay: 0.012,
+        pan,
+      });
+    }
   }
 
   /** Brief Python interpreter execution hum right after pressing Enter on Slide 17 */
