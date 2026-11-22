@@ -1036,9 +1036,12 @@ const slide18: SlideDef = {
     bestCells.forEach((c) => c.classList.toggle('is-best-hl', step >= 4));
     goto19.classList.toggle('is-lit', step >= 4);
 
-    const activeOp = step === 2 ? 2 : step === 3 ? 3 : step === 4 ? 2 : 1;
-    // Avoid restarting Search when simply advancing from step 0 -> step 1 if already on Search
-    if (prev === 0 && step === 1 && ctx.slideEl.dataset.activeOp === '1') {
+    const activeOp = step === 2 ? 2 : step >= 3 ? 3 : 1;
+    // Avoid restarting Search (0 -> 1) or Delete (3 -> 4) when already showing that operation
+    if (
+      (prev === 0 && step === 1 && ctx.slideEl.dataset.activeOp === '1') ||
+      (prev === 3 && step === 4 && ctx.slideEl.dataset.activeOp === '3')
+    ) {
       return;
     }
     startS18CompareLoop(ctx.slideEl, activeOp, ctx.getReducedMotion());

@@ -37,13 +37,22 @@ body {
   transition: background-color 220ms ease;
 }
 
-body[data-slide-theme="cover"],
+body[data-slide-theme="cover"] {
+  background-color: var(--bg-blue);
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.34) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.34) 1px, transparent 1px);
+  background-size: 36px 36px;
+  background-position: center center;
+}
+
 body[data-slide-theme="blue"] {
   background-color: var(--bg-blue);
   background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.28) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.28) 1px, transparent 1px);
   background-size: 32px 32px;
+  background-position: center center;
 }
 
 body[data-slide-theme="xfs-blue"] {
@@ -52,6 +61,7 @@ body[data-slide-theme="xfs-blue"] {
     linear-gradient(to right, rgba(255, 255, 255, 0.26) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.26) 1px, transparent 1px);
   background-size: 32px 32px;
+  background-position: center center;
 }
 
 body[data-slide-theme="white"],
@@ -61,6 +71,7 @@ body[data-slide-theme="toc"] {
     linear-gradient(to right, #e5effb 1px, transparent 1px),
     linear-gradient(to bottom, #e5effb 1px, transparent 1px);
   background-size: 32px 32px;
+  background-position: center center;
 }
 
 /* Reveal overrides for crisp 1280x720 edge-to-edge full-screen stage */
@@ -180,10 +191,14 @@ body:not(.podium-hidden) .ghost-corner-dock {
   height: 720px;
   position: relative;
   overflow: hidden;
+  background: transparent;
 }
 
-/* Canva Theme Backgrounds & Grid Papers */
-.theme-cover .slide-stage {
+/* Keep opaque themed grid ONLY during slide transitions & Reveal Overview thumbnails
+   so settled full-screen slides share ONE single unbroken viewport grid with zero seam. */
+.reveal.overview .theme-cover .slide-stage,
+.theme-cover.is-leaving-slide .slide-stage,
+.theme-cover.is-entering-slide .slide-stage {
   background-color: var(--bg-blue);
   background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.34) 1px, transparent 1px),
@@ -191,7 +206,9 @@ body:not(.podium-hidden) .ghost-corner-dock {
   background-size: 36px 36px;
 }
 
-.theme-blue .slide-stage {
+.reveal.overview .theme-blue .slide-stage,
+.theme-blue.is-leaving-slide .slide-stage,
+.theme-blue.is-entering-slide .slide-stage {
   background-color: var(--bg-blue);
   background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.28) 1px, transparent 1px),
@@ -199,7 +216,9 @@ body:not(.podium-hidden) .ghost-corner-dock {
   background-size: 32px 32px;
 }
 
-.theme-xfs-blue .slide-stage {
+.reveal.overview .theme-xfs-blue .slide-stage,
+.theme-xfs-blue.is-leaving-slide .slide-stage,
+.theme-xfs-blue.is-entering-slide .slide-stage {
   background-color: var(--bg-xfs);
   background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.26) 1px, transparent 1px),
@@ -207,8 +226,12 @@ body:not(.podium-hidden) .ghost-corner-dock {
   background-size: 32px 32px;
 }
 
-.theme-white .slide-stage,
-.theme-toc .slide-stage {
+.reveal.overview .theme-white .slide-stage,
+.reveal.overview .theme-toc .slide-stage,
+.theme-white.is-leaving-slide .slide-stage,
+.theme-white.is-entering-slide .slide-stage,
+.theme-toc.is-leaving-slide .slide-stage,
+.theme-toc.is-entering-slide .slide-stage {
   background-color: #ffffff;
   background-image:
     linear-gradient(to right, #e5effb 1px, transparent 1px),
